@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887d9c2c33d3b4a4dbc186b8a2a28a16, type: 3}
+  m_Name: island_chain
+  m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.MapDefinition
+  mapId: island_chain
+  displayName: Island Chain (8 Sectors)
+  playerCount: 2
+  victoryPointsRequired: 4
+  sectors:
+  - sectorName: Western Isle
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 0
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 9
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Coral Bay
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000007000000
+  - sectorName: Volcano Island
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 020000000100000004000000
+  - sectorName: Treasure Atoll
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000004000000
+  - sectorName: Palm Harbor
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000006000000
+  - sectorName: Jade Reef
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0700000008000000
+  - sectorName: Spice Island
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000006000000
+  - sectorName: Eastern Isle
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 1
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 9
+    resourceNodes: 06000000040000000500000008000000
+  edges:
+  - sectorA: 0
+    sectorB: 1
+  - sectorA: 1
+    sectorB: 2
+  - sectorA: 1
+    sectorB: 5
+  - sectorA: 2
+    sectorB: 3
+  - sectorA: 2
+    sectorB: 4
+  - sectorA: 3
+    sectorB: 4
+  - sectorA: 4
+    sectorB: 5
+  - sectorA: 5
+    sectorB: 6
+  - sectorA: 6
+    sectorB: 7
+  playerStarts:
+  - sectorIndex: 0
+    playerId: 0
+  - sectorIndex: 7
+    playerId: 1

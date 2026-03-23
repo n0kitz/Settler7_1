@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31eca5b9a751c48ca839030dce59e94d, type: 3}
+  m_Name: tailor
+  m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.WorkYardDefinition
+  workYardId: tailor
+  displayName: Tailor
+  parentBuildingType: 4
+  recipe: {fileID: 11400000, guid: a08b21e097a174b4595aa454e423e808, type: 2}
+  requiredResourceNode: 0
+  icon: {fileID: 0}
+  prefab: {fileID: 0}

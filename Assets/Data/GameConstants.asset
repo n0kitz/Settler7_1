@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e073cd6dd1c14828abc981cc7c63523, type: 3}
+  m_Name: GameConstants
+  m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.GameConstants
+  prestigePointsPerLevel: 5
+  maxWorkYardsPerBuilding: 3
+  carrierMaxItems: 3
+  victoryCountdownSeconds: 180
+  maxSoldiersPerGeneral: 35
+  maxGenerals: 5
+  residenceBasePop: 4
+  residenceUpgradePop: 4
+  nobleResidenceBasePop: 5
+  nobleResidenceUpgradePop: 5
+  hygieneResidenceBonus: 2
+  hygieneNobleBonus: 4
+  plainFoodMultiplier: 2
+  fancyFoodMultiplier: 3
+  nobleResidencePlainMultiplier: 1
+  nobleResidenceFancyMultiplier: 2
+  vpFieldMarshalMin: 20
+  vpMetropolisMin: 25
+  vpEmperorMin: 3
+  vpBankerMin: 25
+  vpSunKingMin: 5
+  vpTradingCompanyMin: 5
+  vpFountainMin: 3
+  vpPacifistMinSeconds: 600
+  vpEconomistMinPercent: 75
+  vpGeneralissimoMin: 20
+  cameraPanSpeed: 20
+  cameraZoomSpeed: 10
+  cameraRotateSpeed: 90
+  cameraMinDistance: 15
+  cameraMaxDistance: 200
+  cameraMinElevation: 0.5
+  cameraMaxElevation: 1.3
+  cameraSectorOverviewThreshold: 120
+  constructionBaseTime: 10
+  constructorBaseCost: 1

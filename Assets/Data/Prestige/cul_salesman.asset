@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7d57a6c4f5d34e33859b42f3c6e13e2, type: 3}
+  m_Name: cul_salesman
+  m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.PrestigeUnlockDefinition
+  unlockId: cul_salesman
+  displayName: Salesman Training
+  description: Train salesmen (advanced traders)
+  branch: 2
+  minLevel: 3
+  prerequisite: {fileID: 11400000, guid: 0f638248275c446e6868f08d191ded10, type: 2}
+  icon: {fileID: 0}

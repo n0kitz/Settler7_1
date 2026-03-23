@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31eca5b9a751c48ca839030dce59e94d, type: 3}
+  m_Name: goldsmith
+  m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.WorkYardDefinition
+  workYardId: goldsmith
+  displayName: Goldsmith
+  parentBuildingType: 4
+  recipe: {fileID: 11400000, guid: cae734e2d209a4a0da5d1e2b6e5671a4, type: 2}
+  requiredResourceNode: 0
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
