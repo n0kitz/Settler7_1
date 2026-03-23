@@ -41,6 +41,17 @@ A faithful recreation of Die Siedler 7's gameplay systems in Unity 6. Local only
 4. SO .asset files created via Editor menu scripts (`Settlers > Generate All`)
 5. Prefabs, materials, lighting, 3D models → user configures in Unity Editor
 
+## Slash Commands
+- `/validate` — Check architecture rules, file sizes, layer separation
+- `/status` — Show file counts and project state
+- `/update-memory` — Sync memory files with actual codebase
+
+## Assembly Definitions
+- `Settlers.Simulation` — Pure C#, `noEngineReferences: true`. Any `using UnityEngine` = compile error.
+- `Settlers.Game` — Presentation + UI + Data layers. References Simulation + TMPro.
+- `Settlers.Editor` — Editor-only scripts. References Simulation + Game.
+- `Settlers.Tests` — Editor test assembly. References Simulation + NUnit.
+
 ## Game Design: §1 Map & Sectors
 
 Maps are predefined, divided into sectors connected via a graph (18-43+ sectors). Maps support 1-4 players.

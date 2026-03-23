@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/normenkitzmann/Unity/Settler7_1/.claude/hooks/protect-unity-files.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash /Users/normenkitzmann/Unity/Settler7_1/.claude/hooks/check-layer-violation.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "deny": [
+      "Edit(ProjectSettings/**)",
+      "Edit(Library/**)",
+      "Edit(.git/**)",
+      "Bash(rm -rf *)",
+      "Bash(git push *)"
+    ]
+  }
+}

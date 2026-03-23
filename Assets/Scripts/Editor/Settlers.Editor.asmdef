@@ -1,0 +1,19 @@
+{
+    "name": "Settlers.Editor",
+    "rootNamespace": "Settlers.Editor",
+    "references": [
+        "Settlers.Simulation",
+        "Settlers.Game"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
