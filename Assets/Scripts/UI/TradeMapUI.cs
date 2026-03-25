@@ -1,17 +1,11 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 using Settlers.Simulation;
 
 namespace Settlers.UI
 {
-    /// <summary>
-    /// Trade map overlay showing outpost network.
-    /// Displays claimed/unclaimed outposts with exchange details.
-    /// Click to send a trader or execute a trade.
-    /// Toggle with R key.
-    /// </summary>
     public class TradeMapUI : MonoBehaviour
     {
         [SerializeField] private GameObject _panelRoot;
@@ -20,145 +14,136 @@ namespace Settlers.UI
         [SerializeField] private Transform _outpostsContainer;
         [SerializeField] private Transform _activeTradesContainer;
 
-        private bool _isVisible;
+        internal static readonly Color SPECIAL_COLOR = new Color(0.6f, 0.5f, 0.2f, 0.9f);
+        internal static readonly Color UNCLAIMED_COLOR = new Color(0.33f, 0.38f, 0.44f, 0.9f);
+        private static readonly Color OWNED_COLOR = new Color(0.15f, 0.35f, 0.55f, 0.9f);
+        private static readonly Color OTHER_COLOR = new Color(0.5f, 0.15f, 0.15f, 0.9f);
+
         internal readonly Dictionary<string, Image> _outpostImages = new();
         internal readonly Dictionary<string, TextMeshProUGUI> _outpostLabels = new();
-        private readonly List<GameObject> _dynamicElements = new();
 
-        internal static readonly Color UNCLAIMED_COLOR = new Color(0.3f, 0.35f, 0.4f, 0.9f);
-        internal static readonly Color CLAIMED_OWN_COLOR = new Color(0.2f, 0.55f, 0.35f, 0.9f);
-        internal static readonly Color CLAIMED_OTHER_COLOR = new Color(0.55f, 0.25f, 0.2f, 0.9f);
-        internal static readonly Color SPECIAL_COLOR = new Color(0.6f, 0.5f, 0.2f, 0.9f);
+        private float _refreshTimer;
+        private const float REFRESH_INTERVAL = 0.5f;
+
+        public bool IsVisible => _panelRoot != null && _panelRoot.activeSelf;
 
         public void Show()
         {
-            _isVisible = true;
             if (_panelRoot != null) _panelRoot.SetActive(true);
-            Refresh();
+            RefreshNodes();
         }
 
-        public void Hide()
-        {
-            _isVisible = false;
-            if (_panelRoot != null) _panelRoot.SetActive(false);
-        }
+        public void Hide() { if (_panelRoot != null) _panelRoot.SetActive(false); }
+        public void Toggle() { if (IsVisible) Hide(); else Show(); }
 
-        public void Toggle()
-        {
-            if (_isVisible) Hide(); else Show();
-        }
-
-        public bool IsVisible => _isVisible;
-
-        private void Update()
-        {
-            if (_isVisible) Refresh();
-        }
-
-        private void Refresh()
+        public void OnOutpostClicked(string outpostId)
         {
             var gc = Presentation.GameController.Instance;
             if (gc == null || gc.State == null) return;
 
             int playerId = 0;
             var trade = gc.State.Trade;
-            var tradeMap = gc.State.TradeMapData;
+            var outpost = trade.Map.GetOutpost(outpostId);
+            if (outpost == null) return;
 
-            if (_statusText != null)
+            if (!outpost.IsClaimed)
             {
-                int claimed = tradeMap.GetClaimedCount(playerId);
-                _statusText.text = $"Outposts Claimed: {claimed}/{tradeMap.AllOutposts.Count}";
-            }
-
-            foreach (var kvp in _outpostImages)
-            {
-                string outpostId = kvp.Key;
-                var img = kvp.Value;
-                var outpost = tradeMap.GetOutpost(outpostId);
-                if (outpost == null) continue;
-
-                if (outpost.ClaimedBy == playerId) img.color = CLAIMED_OWN_COLOR;
-                else if (outpost.IsClaimed) img.color = CLAIMED_OTHER_COLOR;
-                else if (outpost.IsSpecial) img.color = SPECIAL_COLOR;
-                else img.color = UNCLAIMED_COLOR;
-
-                var label = _outpostLabels.TryGetValue(outpostId, out var l) ? l : null;
-                if (label != null)
+                bool sent = trade.SendTrader(playerId, outpostId);
+                if (sent)
                 {
-                    string status = outpost.ClaimedBy == playerId ? " [YOURS]"
-                        : outpost.IsClaimed ? $" [P{outpost.ClaimedBy}]" : "";
-                    label.text = $"{outpost.DisplayName}{status}";
+                    UpdateStatus($"Trader sent to {outpost.DisplayName}!", UIColors.TEXT_GREEN_LIGHT);
+                }
+                else
+                {
+                    UpdateStatus("Cannot send trader — need Export Office prestige unlock.",
+                        UIColors.TEXT_RED_BRIGHT);
                 }
             }
-
-            foreach (var go in _dynamicElements)
-                if (go != null) Destroy(go);
-            _dynamicElements.Clear();
-
-            if (_activeTradesContainer != null)
+            else if (outpost.ClaimedBy == playerId)
             {
-                foreach (var task in trade.ActiveTasks)
+                bool traded = trade.ExecuteTrade(playerId, outpostId);
+                if (traded)
                 {
-                    if (task.PlayerId != playerId) continue;
-                    int pct = (int)(task.Progress * 100);
-                    var label = CreateDynamicLabel(_activeTradesContainer,
-                        $"Trader → {task.OutpostId} [{pct}%]");
-                    _dynamicElements.Add(label);
+                    UpdateStatus(
+                        $"Traded {outpost.InputAmount} {outpost.InputResource} → {outpost.OutputAmount} {outpost.OutputResource}!",
+                        UIColors.TEXT_GREEN_LIGHT);
                 }
+                else
+                {
+                    UpdateStatus(
+                        $"Not enough {outpost.InputResource}! (need {outpost.InputAmount})",
+                        UIColors.TEXT_RED_BRIGHT);
+                }
+            }
+            else
+            {
+                UpdateStatus("This outpost belongs to another player!", UIColors.TEXT_RED_BRIGHT);
+            }
 
-                if (trade.ActiveTasks.Count == 0)
-                {
-                    var noTrades = CreateDynamicLabel(_activeTradesContainer, "No active traders.");
-                    noTrades.GetComponent<TextMeshProUGUI>().color = new Color(0.6f, 0.6f, 0.6f);
-                    _dynamicElements.Add(noTrades);
-                }
+            RefreshNodes();
+        }
+
+        private void Update()
+        {
+            if (!IsVisible) return;
+            _refreshTimer -= Time.deltaTime;
+            if (_refreshTimer <= 0f)
+            {
+                _refreshTimer = REFRESH_INTERVAL;
+                RefreshNodes();
             }
         }
 
-        internal void OnOutpostClicked(string outpostId)
+        private void RefreshNodes()
         {
             var gc = Presentation.GameController.Instance;
             if (gc == null || gc.State == null) return;
 
             int playerId = 0;
-            var tradeMap = gc.State.TradeMapData;
-            var outpost = tradeMap.GetOutpost(outpostId);
-            if (outpost == null) return;
+            var trade = gc.State.Trade;
 
-            if (outpost.ClaimedBy == playerId)
+            if (_statusText != null)
             {
-                bool traded = gc.State.Trade.ExecuteTrade(playerId, outpostId);
-                Debug.Log(traded
-                    ? $"Trade executed at {outpost.DisplayName}"
-                    : $"Cannot trade at {outpost.DisplayName}: insufficient resources");
-            }
-            else if (!outpost.IsClaimed)
-            {
-                bool sent = gc.State.Trade.SendTrader(playerId, outpostId);
-                Debug.Log(sent
-                    ? $"Trader sent to claim {outpost.DisplayName}"
-                    : "Cannot send trader (need Export Office prestige unlock)");
+                int claimed = trade.Map.GetClaimedCount(playerId);
+                int total = trade.Map.AllOutposts.Count;
+                int active = 0;
+                foreach (var task in trade.ActiveTasks)
+                    if (task.PlayerId == playerId) active++;
+                _statusText.text = $"Outposts: {claimed}/{total}  |  Traders en route: {active}";
+                _statusText.color = UIColors.TEXT_GOLD;
             }
 
-            Refresh();
+            foreach (var kvp in _outpostImages)
+            {
+                string opId = kvp.Key;
+                var img = kvp.Value;
+                if (img == null) continue;
+
+                var outpost = trade.Map.GetOutpost(opId);
+                if (outpost == null) continue;
+
+                if (!outpost.IsClaimed)
+                {
+                    img.color = outpost.IsSpecial ? SPECIAL_COLOR : UNCLAIMED_COLOR;
+                }
+                else if (outpost.ClaimedBy == playerId)
+                {
+                    img.color = OWNED_COLOR;
+                }
+                else
+                {
+                    img.color = OTHER_COLOR;
+                }
+            }
         }
 
-        private GameObject CreateDynamicLabel(Transform parent, string text)
+        private void UpdateStatus(string msg, Color color)
         {
-            var go = new GameObject("DynLabel");
-            go.transform.SetParent(parent, false);
-            go.AddComponent<RectTransform>().sizeDelta = new Vector2(0f, 18f);
-            go.AddComponent<LayoutElement>().preferredHeight = 18f;
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.text = text;
-            tmp.fontSize = 12;
-            tmp.color = Color.white;
-            tmp.textWrappingMode = TextWrappingModes.Normal;
-            tmp.overflowMode = TextOverflowModes.Truncate;
-            return go;
+            if (_statusText == null) return;
+            _statusText.text = msg;
+            _statusText.color = color;
         }
 
-        /// <summary>Create the trade map UI programmatically.</summary>
         public static TradeMapUI Create(Transform canvasTransform, TMP_FontAsset font)
         {
             return TradeMapUIFactory.Create(canvasTransform, font);

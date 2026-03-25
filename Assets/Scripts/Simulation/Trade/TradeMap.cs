@@ -127,6 +127,8 @@ namespace Settlers.Simulation
             return mapId switch
             {
                 "large_valley" => CreateLargeValleyTradeMap(),
+                "crown_war" => FourPlayerTradeMapFactory.CreateCrownWarTradeMap(),
+                "empire" => FourPlayerTradeMapFactory.CreateEmpireTradeMap(),
                 _ => CreateTestTradeMap()
             };
         }

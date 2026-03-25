@@ -79,7 +79,7 @@ namespace Settlers.UI
             titleRect.anchoredPosition = new Vector2(0f, -60f);
             titleRect.sizeDelta = new Vector2(500f, 50f);
             titleText.alignment = TextAlignmentOptions.Center;
-            titleText.color = new Color(0.9f, 0.82f, 0.55f);
+            titleText.color = UIColors.TEXT_HEADER_GOLD;
 
             // Subtitle
             var subtitleText = UIFactory.CreateLabel(panelGo.transform, "Subtitle",
@@ -115,16 +115,19 @@ namespace Settlers.UI
             UIFactory.SetField(ui, "_titleText", titleText);
 
             // New Game button
-            CreateMenuButton(buttonContainer.transform, "New Game", font,
-                new Color(0.2f, 0.5f, 0.25f, 0.9f), ui.OnNewGameClicked);
+            UIFactory.CreateButton(buttonContainer.transform, "New Game", font,
+                UIColors.BUTTON_GREEN, ui.OnNewGameClicked,
+                new Vector2(280f, 48f), 20f);
 
             // Load Game button
-            CreateMenuButton(buttonContainer.transform, "Load Game", font,
-                new Color(0.25f, 0.35f, 0.5f, 0.9f), ui.OnLoadGameClicked);
+            UIFactory.CreateButton(buttonContainer.transform, "Load Game", font,
+                UIColors.BUTTON_BLUE, ui.OnLoadGameClicked,
+                new Vector2(280f, 48f), 20f);
 
             // Quit button
-            CreateMenuButton(buttonContainer.transform, "Quit", font,
-                new Color(0.5f, 0.2f, 0.2f, 0.9f), ui.OnQuitClicked);
+            UIFactory.CreateButton(buttonContainer.transform, "Quit", font,
+                UIColors.BUTTON_RED, ui.OnQuitClicked,
+                new Vector2(280f, 48f), 20f);
 
             // Version text (bottom)
             var versionText = UIFactory.CreateLabel(panelGo.transform, "Version",
@@ -142,37 +145,5 @@ namespace Settlers.UI
             return ui;
         }
 
-        private static void CreateMenuButton(Transform parent, string label,
-            TMP_FontAsset font, Color bgColor, UnityEngine.Events.UnityAction onClick)
-        {
-            var btnGo = new GameObject($"Btn_{label.Replace(" ", "")}");
-            btnGo.transform.SetParent(parent, false);
-
-            var rect = btnGo.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(280f, 48f);
-
-            var layoutElem = btnGo.AddComponent<LayoutElement>();
-            layoutElem.preferredHeight = 48f;
-            layoutElem.preferredWidth = 280f;
-
-            var btnImage = btnGo.AddComponent<Image>();
-            btnImage.color = bgColor;
-
-            var btn = btnGo.AddComponent<Button>();
-            var colors = btn.colors;
-            colors.highlightedColor = bgColor * 1.2f;
-            colors.pressedColor = bgColor * 0.8f;
-            btn.colors = colors;
-            btn.onClick.AddListener(onClick);
-
-            var text = UIFactory.CreateLabel(btnGo.transform, "Label",
-                label, 20, FontStyles.Bold, font);
-            var textRect = text.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-            text.alignment = TextAlignmentOptions.Center;
-        }
     }
 }

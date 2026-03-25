@@ -99,9 +99,15 @@ namespace Settlers.UI
             if (_constructionText != null)
             {
                 int queued = state.Construction.GetQueuedCount(0);
-                _constructionText.text = queued > 0
-                    ? $"Building: {queued} in progress"
-                    : "";
+                if (queued > 0)
+                {
+                    _constructionText.text = $"Building: {queued} in progress";
+                    _constructionText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _constructionText.gameObject.SetActive(false);
+                }
             }
 
             // Prestige
@@ -145,8 +151,8 @@ namespace Settlers.UI
                 int secs = (int)remaining % 60;
                 _countdownText.text = $"VICTORY IN: {mins}:{secs:D2}";
                 _countdownText.color = remaining < 30f
-                    ? new Color(1f, 0.3f, 0.3f)
-                    : new Color(1f, 0.85f, 0.3f);
+                    ? UIColors.TEXT_RED_BRIGHT
+                    : UIColors.HIGHLIGHT_GOLD;
             }
         }
 
@@ -177,7 +183,7 @@ namespace Settlers.UI
             hudRect.sizeDelta = new Vector2(0f, 160f);
 
             var bg = hudGo.AddComponent<Image>();
-            bg.color = new Color(0.08f, 0.08f, 0.08f, 0.85f);
+            bg.color = UIColors.PANEL_DARK;
 
             var layout = hudGo.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(10, 10, 4, 4);
@@ -188,16 +194,17 @@ namespace Settlers.UI
 
             // Resource line
             var resourcesText = UIFactory.CreateLabel(hudGo.transform, "ResourcesText", "", 13, font);
-            resourcesText.color = new Color(0.9f, 0.85f, 0.6f);
+            resourcesText.color = UIColors.TEXT_GOLD;
             resourcesText.richText = true;
 
             // Population line
             var popText = UIFactory.CreateLabel(hudGo.transform, "PopulationText", "", 13, font);
-            popText.color = new Color(0.6f, 0.9f, 0.7f);
+            popText.color = UIColors.TEXT_GREEN_LIGHT;
 
             // Construction line
             var constText = UIFactory.CreateLabel(hudGo.transform, "ConstructionText", "", 12, font);
             constText.color = new Color(0.7f, 0.7f, 0.9f);
+            constText.gameObject.SetActive(false);
 
             // Prestige line
             var prestigeText = UIFactory.CreateLabel(hudGo.transform, "PrestigeText", "", 12, font);
@@ -205,11 +212,11 @@ namespace Settlers.UI
 
             // VP line
             var vpText = UIFactory.CreateLabel(hudGo.transform, "VPText", "", 13, font);
-            vpText.color = new Color(1f, 0.85f, 0.3f);
+            vpText.color = UIColors.HIGHLIGHT_GOLD;
 
             // Countdown timer (hidden by default)
             var countdownText = UIFactory.CreateLabel(hudGo.transform, "CountdownText", "", 14, font);
-            countdownText.color = new Color(1f, 0.85f, 0.3f);
+            countdownText.color = UIColors.HIGHLIGHT_GOLD;
             countdownText.fontStyle = FontStyles.Bold;
             countdownText.gameObject.SetActive(false);
 

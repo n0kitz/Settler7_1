@@ -111,7 +111,7 @@ namespace Settlers.UI
             boxRect.offsetMax = Vector2.zero;
 
             var boxBg = boxGo.AddComponent<Image>();
-            boxBg.color = new Color(0.08f, 0.08f, 0.1f, 0.95f);
+            boxBg.color = UIColors.PANEL_BLUE_DARK;
 
             // Title
             var titleText = UIFactory.CreateLabel(boxGo.transform, "Title",
@@ -123,7 +123,7 @@ namespace Settlers.UI
             titleRect.anchoredPosition = new Vector2(0f, -20f);
             titleRect.sizeDelta = new Vector2(0f, 36f);
             titleText.alignment = TextAlignmentOptions.Center;
-            titleText.color = new Color(0.9f, 0.82f, 0.55f);
+            titleText.color = UIColors.TEXT_HEADER_GOLD;
 
             // Button container
             var btnContainer = new GameObject("Buttons");
@@ -144,20 +144,20 @@ namespace Settlers.UI
             UIFactory.SetField(ui, "_panelRoot", panelGo);
 
             // Resume button
-            CreateButton(btnContainer.transform, "Resume", font,
-                new Color(0.2f, 0.5f, 0.25f, 0.9f), ui.OnResumeClicked);
+            UIFactory.CreateButton(btnContainer.transform, "Resume", font,
+                UIColors.BUTTON_GREEN, ui.OnResumeClicked);
 
             // Save Game button
-            CreateButton(btnContainer.transform, "Save Game", font,
-                new Color(0.25f, 0.35f, 0.5f, 0.9f), ui.OnSaveGameClicked);
+            UIFactory.CreateButton(btnContainer.transform, "Save Game", font,
+                UIColors.BUTTON_BLUE, ui.OnSaveGameClicked);
 
             // Load Game button
-            CreateButton(btnContainer.transform, "Load Game", font,
-                new Color(0.25f, 0.35f, 0.5f, 0.9f), ui.OnLoadGameClicked);
+            UIFactory.CreateButton(btnContainer.transform, "Load Game", font,
+                UIColors.BUTTON_BLUE, ui.OnLoadGameClicked);
 
             // Quit to Menu button
-            CreateButton(btnContainer.transform, "Quit to Menu", font,
-                new Color(0.5f, 0.2f, 0.2f, 0.9f), ui.OnQuitToMenuClicked);
+            UIFactory.CreateButton(btnContainer.transform, "Quit to Menu", font,
+                UIColors.BUTTON_RED, ui.OnQuitToMenuClicked);
 
             // Create the save slot panel (shared by save and load)
             ui._saveSlotUI = SaveSlotUI.Create(canvasTransform, font);
@@ -166,36 +166,5 @@ namespace Settlers.UI
             return ui;
         }
 
-        private static void CreateButton(Transform parent, string label,
-            TMP_FontAsset font, Color bgColor, UnityEngine.Events.UnityAction onClick)
-        {
-            var btnGo = new GameObject($"Btn_{label.Replace(" ", "")}");
-            btnGo.transform.SetParent(parent, false);
-
-            var rect = btnGo.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0f, 44f);
-
-            var le = btnGo.AddComponent<LayoutElement>();
-            le.preferredHeight = 44f;
-
-            var btnImage = btnGo.AddComponent<Image>();
-            btnImage.color = bgColor;
-
-            var btn = btnGo.AddComponent<Button>();
-            var colors = btn.colors;
-            colors.highlightedColor = bgColor * 1.2f;
-            colors.pressedColor = bgColor * 0.8f;
-            btn.colors = colors;
-            btn.onClick.AddListener(onClick);
-
-            var text = UIFactory.CreateLabel(btnGo.transform, "Label",
-                label, 18, FontStyles.Bold, font);
-            var textRect = text.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-            text.alignment = TextAlignmentOptions.Center;
-        }
     }
 }

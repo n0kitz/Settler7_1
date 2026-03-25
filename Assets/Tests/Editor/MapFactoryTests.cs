@@ -84,9 +84,63 @@ namespace Settlers.Tests
         }
 
         [Test]
-        public void GetMapIds_Returns4Maps()
+        public void CrownWar_Has18Sectors_4Players()
         {
-            Assert.AreEqual(4, MapFactory.GetMapIds().Length);
+            var info = MapFactory.CreateMap("crown_war");
+            Assert.AreEqual(18, info.Graph.SectorCount);
+            Assert.AreEqual(4, info.PlayerCount);
+            Assert.AreEqual(5, info.VPRequired);
+        }
+
+        [Test]
+        public void Empire_Has24Sectors_4Players()
+        {
+            var info = MapFactory.CreateMap("empire");
+            Assert.AreEqual(24, info.Graph.SectorCount);
+            Assert.AreEqual(4, info.PlayerCount);
+            Assert.AreEqual(6, info.VPRequired);
+        }
+
+        [Test]
+        public void AllMaps_StartingSectorsHaveBasicResources()
+        {
+            foreach (var mapId in MapFactory.GetMapIds())
+            {
+                var info = MapFactory.CreateMap(mapId);
+                for (int i = 0; i < info.Graph.SectorCount; i++)
+                {
+                    var sector = info.Graph.GetSector(i);
+                    if (!sector.IsPlayerOwned) continue;
+                    Assert.IsTrue(sector.HasResource(ResourceNodeType.Forest),
+                        $"Map {mapId}, sector {sector.Name}: missing Forest");
+                    Assert.IsTrue(sector.HasResource(ResourceNodeType.Stone),
+                        $"Map {mapId}, sector {sector.Name}: missing Stone");
+                    Assert.IsTrue(sector.HasResource(ResourceNodeType.FertileLand),
+                        $"Map {mapId}, sector {sector.Name}: missing FertileLand");
+                }
+            }
+        }
+
+        [Test]
+        public void AllMaps_StartingSectorsHaveNoGold()
+        {
+            foreach (var mapId in MapFactory.GetMapIds())
+            {
+                var info = MapFactory.CreateMap(mapId);
+                for (int i = 0; i < info.Graph.SectorCount; i++)
+                {
+                    var sector = info.Graph.GetSector(i);
+                    if (!sector.IsPlayerOwned) continue;
+                    Assert.IsFalse(sector.HasResource(ResourceNodeType.Gold),
+                        $"Map {mapId}, sector {sector.Name}: should not have Gold at start");
+                }
+            }
+        }
+
+        [Test]
+        public void GetMapIds_Returns7Maps()
+        {
+            Assert.AreEqual(7, MapFactory.GetMapIds().Length);
         }
     }
 }

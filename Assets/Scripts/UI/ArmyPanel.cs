@@ -1,65 +1,51 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 using Settlers.Simulation;
 
 namespace Settlers.UI
 {
     /// <summary>
-    /// Army management panel. Shows generals, their units, training queue.
-    /// Allows hiring generals, training units, and sending armies.
+    /// Shows generals, army composition, training queue, and unit training buttons.
     /// Toggle with M key.
     /// </summary>
     public class ArmyPanel : MonoBehaviour
     {
         [SerializeField] private GameObject _panelRoot;
-        [SerializeField] private TextMeshProUGUI _titleText;
-        [SerializeField] private TextMeshProUGUI _summaryText;
+        [SerializeField] private TextMeshProUGUI _statusText;
         [SerializeField] private Transform _generalsContainer;
         [SerializeField] private Transform _trainingContainer;
-        [SerializeField] private TextMeshProUGUI _feedbackText;
+        [SerializeField] private TextMeshProUGUI _trainingQueueText;
 
-        private bool _isVisible;
-        private readonly List<GameObject> _dynamicElements = new();
+        internal TMP_FontAsset _font;
         private float _refreshTimer;
-        private const float REFRESH_INTERVAL = 0.25f;
+        private const float REFRESH_INTERVAL = 0.5f;
+        private readonly List<GameObject> _generalRows = new();
+
+        public bool IsVisible => _panelRoot != null && _panelRoot.activeSelf;
 
         public void Show()
         {
-            _isVisible = true;
-            if (_panelRoot != null)
-                _panelRoot.SetActive(true);
-            Refresh();
+            if (_panelRoot != null) _panelRoot.SetActive(true);
+            RefreshNow();
         }
 
-        public void Hide()
-        {
-            _isVisible = false;
-            if (_panelRoot != null)
-                _panelRoot.SetActive(false);
-        }
-
-        public void Toggle()
-        {
-            if (_isVisible) Hide();
-            else Show();
-        }
-
-        public bool IsVisible => _isVisible;
+        public void Hide() { if (_panelRoot != null) _panelRoot.SetActive(false); }
+        public void Toggle() { if (IsVisible) Hide(); else Show(); }
 
         private void Update()
         {
-            if (!_isVisible) return;
+            if (!IsVisible) return;
             _refreshTimer -= Time.deltaTime;
             if (_refreshTimer <= 0f)
             {
                 _refreshTimer = REFRESH_INTERVAL;
-                Refresh();
+                RefreshNow();
             }
         }
 
-        private void Refresh()
+        private void RefreshNow()
         {
             var gc = Presentation.GameController.Instance;
             if (gc == null || gc.State == null) return;
@@ -68,221 +54,109 @@ namespace Settlers.UI
             var army = gc.State.Army;
             var generals = army.GetGenerals(playerId);
 
-            // Summary
-            if (_summaryText != null)
+            if (_statusText != null)
             {
-                int totalArmy = army.GetTotalArmySize(playerId);
-                _summaryText.text = $"Generals: {generals.Count}/5  Total Army: {totalArmy}";
+                int total = army.GetTotalArmySize(playerId);
+                _statusText.text = $"Generals: {generals.Count}/5  |  Total Soldiers: {total}";
             }
 
-            // Clear dynamic elements
-            foreach (var go in _dynamicElements)
+            foreach (var go in _generalRows)
                 if (go != null) Destroy(go);
-            _dynamicElements.Clear();
+            _generalRows.Clear();
 
-            // Show each general
-            if (_generalsContainer != null)
+            foreach (var gen in generals)
+                _generalRows.Add(CreateGeneralRow(gen));
+
+            if (_trainingQueueText != null)
             {
-                foreach (var gen in generals)
+                var queue = army.TrainingQueue;
+                if (queue.Count == 0)
                 {
-                    var label = CreateDynamicLabel(_generalsContainer,
-                        $"General #{gen.Id} @ Sector {gen.SectorId}  " +
-                        $"[{gen.TotalSoldiers}/{gen.MaxSoldiers}]" +
-                        (gen.IsMoving ? " (Moving)" : ""));
-                    _dynamicElements.Add(label);
-
-                    // Unit breakdown
-                    foreach (var kvp in gen.Units)
+                    _trainingQueueText.text = "No units training.";
+                }
+                else
+                {
+                    string txt = "";
+                    foreach (var task in queue)
                     {
-                        if (kvp.Value > 0)
-                        {
-                            var unitLabel = CreateDynamicLabel(_generalsContainer,
-                                $"   {kvp.Key}: {kvp.Value}");
-                            unitLabel.GetComponent<TextMeshProUGUI>().fontSize = 11;
-                            unitLabel.GetComponent<TextMeshProUGUI>().color =
-                                new Color(0.7f, 0.8f, 0.7f);
-                            _dynamicElements.Add(unitLabel);
-                        }
+                        if (task.PlayerId != playerId) continue;
+                        int pct = (int)(task.Progress / task.TotalTime * 100f);
+                        txt += $"{task.UnitType} — {pct}%\n";
                     }
-                }
-
-                if (generals.Count == 0)
-                {
-                    var noGen = CreateDynamicLabel(_generalsContainer,
-                        "No generals. Hire one at the Tavern.");
-                    noGen.GetComponent<TextMeshProUGUI>().color =
-                        new Color(0.6f, 0.6f, 0.6f);
-                    _dynamicElements.Add(noGen);
-                }
-            }
-
-            // Show training queue
-            if (_trainingContainer != null)
-            {
-                var tasks = army.TrainingQueue;
-                foreach (var task in tasks)
-                {
-                    if (task.PlayerId != playerId) continue;
-                    int pct = (int)(task.Progress * 100);
-                    var label = CreateDynamicLabel(_trainingContainer,
-                        $"Training {task.UnitType} [{pct}%]");
-                    _dynamicElements.Add(label);
-                }
-
-                if (tasks.Count == 0)
-                {
-                    var noTrain = CreateDynamicLabel(_trainingContainer,
-                        "No units in training.");
-                    noTrain.GetComponent<TextMeshProUGUI>().color =
-                        new Color(0.6f, 0.6f, 0.6f);
-                    _dynamicElements.Add(noTrain);
+                    _trainingQueueText.text = txt.Length > 0 ? txt.TrimEnd() : "No units training.";
                 }
             }
         }
 
-        private GameObject CreateDynamicLabel(Transform parent, string text)
+        private GameObject CreateGeneralRow(General gen)
         {
-            var go = new GameObject("DynLabel");
-            go.transform.SetParent(parent, false);
+            var rowGo = new GameObject($"General_{gen.Id}");
+            rowGo.transform.SetParent(_generalsContainer, false);
 
-            var rect = go.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0f, 18f);
+            rowGo.AddComponent<RectTransform>().sizeDelta = new Vector2(0f, 60f);
+            rowGo.AddComponent<LayoutElement>().preferredHeight = 60f;
 
-            var layoutElem = go.AddComponent<LayoutElement>();
-            layoutElem.preferredHeight = 18f;
+            var bg = rowGo.AddComponent<Image>();
+            bg.color = gen.IsMoving
+                ? new Color(0.15f, 0.15f, 0.25f, 0.8f)
+                : UIColors.PANEL_GRAY_MEDIUM;
 
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.text = text;
-            tmp.fontSize = 12;
-            tmp.color = Color.white;
-            tmp.textWrappingMode = TextWrappingModes.Normal;
-            tmp.overflowMode = TextOverflowModes.Truncate;
-            var font = UIFactory.GetDefaultFont();
-            if (font != null) tmp.font = font;
+            string moving = gen.IsMoving ? " [MOVING]" : "";
+            string header = $"General #{gen.Id}  —  Sector {gen.SectorId}{moving}  " +
+                            $"({gen.TotalSoldiers}/{gen.MaxSoldiers})";
 
-            return go;
+            var headerText = UIFactory.CreateLabel(rowGo.transform, "Header", header,
+                13, FontStyles.Bold, _font);
+            var hRect = headerText.GetComponent<RectTransform>();
+            hRect.anchorMin = new Vector2(0f, 0.5f);
+            hRect.anchorMax = new Vector2(1f, 1f);
+            hRect.offsetMin = new Vector2(8f, 0f);
+            hRect.offsetMax = new Vector2(-8f, -2f);
+            headerText.alignment = TextAlignmentOptions.MidlineLeft;
+
+            string units = "";
+            foreach (var kvp in gen.Units)
+                if (kvp.Value > 0) units += $"{kvp.Key}:{kvp.Value}  ";
+            if (units.Length == 0) units = "(empty)";
+
+            var unitsText = UIFactory.CreateLabel(rowGo.transform, "Units", units.TrimEnd(),
+                11, FontStyles.Normal, _font);
+            unitsText.color = UIColors.TEXT_GRAY_DIM;
+            var uRect = unitsText.GetComponent<RectTransform>();
+            uRect.anchorMin = new Vector2(0f, 0f);
+            uRect.anchorMax = new Vector2(1f, 0.5f);
+            uRect.offsetMin = new Vector2(8f, 2f);
+            uRect.offsetMax = new Vector2(-8f, 0f);
+            unitsText.alignment = TextAlignmentOptions.MidlineLeft;
+
+            var statsText = UIFactory.CreateLabel(rowGo.transform, "Stats",
+                $"ATK:{gen.TotalAttack}  DEF:{gen.TotalDefense}", 11, FontStyles.Normal, _font);
+            statsText.color = UIColors.TEXT_GOLD;
+            statsText.alignment = TextAlignmentOptions.MidlineRight;
+            var sRect = statsText.GetComponent<RectTransform>();
+            sRect.anchorMin = new Vector2(0.7f, 0.5f);
+            sRect.anchorMax = new Vector2(1f, 1f);
+            sRect.offsetMin = new Vector2(0f, 0f);
+            sRect.offsetMax = new Vector2(-8f, -2f);
+
+            return rowGo;
         }
 
-        /// <summary>Create the army panel UI programmatically.</summary>
+        internal void TrainUnit(UnitType unitType)
+        {
+            var gc = Presentation.GameController.Instance;
+            if (gc == null || gc.State == null) return;
+
+            var sectors = gc.State.Graph.GetSectorsOwnedBy(0);
+            if (sectors.Count == 0) return;
+
+            gc.State.Army.TrainUnit(0, sectors[0].Id, unitType);
+            RefreshNow();
+        }
+
         public static ArmyPanel Create(Transform canvasTransform, TMP_FontAsset font)
         {
-            var panelGo = new GameObject("ArmyPanel");
-            panelGo.transform.SetParent(canvasTransform, false);
-
-            var panelRect = panelGo.AddComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(0.15f, 0.1f);
-            panelRect.anchorMax = new Vector2(0.85f, 0.9f);
-            panelRect.offsetMin = Vector2.zero;
-            panelRect.offsetMax = Vector2.zero;
-
-            var panelBg = panelGo.AddComponent<Image>();
-            panelBg.color = new Color(0.08f, 0.06f, 0.1f, 0.95f);
-
-            // Title
-            var titleText = CreateLabel(panelGo.transform, "Title",
-                "Army Management", 20, FontStyles.Bold, font);
-            var titleRect = titleText.GetComponent<RectTransform>();
-            titleRect.anchorMin = new Vector2(0f, 1f);
-            titleRect.anchorMax = new Vector2(1f, 1f);
-            titleRect.pivot = new Vector2(0.5f, 1f);
-            titleRect.anchoredPosition = new Vector2(0f, -8f);
-            titleRect.sizeDelta = new Vector2(0f, 28f);
-            titleText.alignment = TextAlignmentOptions.Center;
-
-            // Summary
-            var summaryText = CreateLabel(panelGo.transform, "Summary",
-                "Generals: 0/5  Total Army: 0", 14, FontStyles.Normal, font);
-            summaryText.color = new Color(0.9f, 0.8f, 0.5f);
-            var summaryRect = summaryText.GetComponent<RectTransform>();
-            summaryRect.anchorMin = new Vector2(0f, 1f);
-            summaryRect.anchorMax = new Vector2(1f, 1f);
-            summaryRect.pivot = new Vector2(0.5f, 1f);
-            summaryRect.anchoredPosition = new Vector2(0f, -38f);
-            summaryRect.sizeDelta = new Vector2(0f, 20f);
-            summaryText.alignment = TextAlignmentOptions.Center;
-
-            // Two-column layout
-            var columnsRoot = new GameObject("Columns");
-            columnsRoot.transform.SetParent(panelGo.transform, false);
-            var columnsRect = columnsRoot.AddComponent<RectTransform>();
-            columnsRect.anchorMin = new Vector2(0f, 0f);
-            columnsRect.anchorMax = new Vector2(1f, 1f);
-            columnsRect.offsetMin = new Vector2(10f, 10f);
-            columnsRect.offsetMax = new Vector2(-10f, -65f);
-
-            var columnsLayout = columnsRoot.AddComponent<HorizontalLayoutGroup>();
-            columnsLayout.spacing = 10f;
-            columnsLayout.childForceExpandWidth = true;
-            columnsLayout.childForceExpandHeight = true;
-            columnsLayout.padding = new RectOffset(5, 5, 5, 5);
-
-            var generalsCol = CreateScrollColumn(columnsRoot.transform, "Generals", font);
-            var trainingCol = CreateScrollColumn(columnsRoot.transform, "Training Queue", font);
-
-            // Component
-            var panel = panelGo.AddComponent<ArmyPanel>();
-            SetField(panel, "_panelRoot", panelGo);
-            SetField(panel, "_titleText", titleText);
-            SetField(panel, "_summaryText", summaryText);
-            SetField(panel, "_generalsContainer", generalsCol.transform);
-            SetField(panel, "_trainingContainer", trainingCol.transform);
-
-            panelGo.SetActive(false);
-            return panel;
-        }
-
-        private static GameObject CreateScrollColumn(Transform parent, string label,
-            TMP_FontAsset font)
-        {
-            var colGo = new GameObject($"Col_{label}");
-            colGo.transform.SetParent(parent, false);
-            colGo.AddComponent<RectTransform>();
-
-            var colBg = colGo.AddComponent<Image>();
-            colBg.color = new Color(0.12f, 0.12f, 0.15f, 0.8f);
-
-            var colLayout = colGo.AddComponent<VerticalLayoutGroup>();
-            colLayout.padding = new RectOffset(6, 6, 6, 6);
-            colLayout.spacing = 3f;
-            colLayout.childForceExpandWidth = true;
-            colLayout.childForceExpandHeight = false;
-            colLayout.childAlignment = TextAnchor.UpperLeft;
-
-            var headerText = CreateLabel(colGo.transform, "Header", label, 15,
-                FontStyles.Bold, font);
-            headerText.alignment = TextAlignmentOptions.Center;
-            headerText.color = new Color(0.9f, 0.7f, 0.4f);
-
-            return colGo;
-        }
-
-        private static TextMeshProUGUI CreateLabel(Transform parent, string name,
-            string text, float fontSize, FontStyles style, TMP_FontAsset font)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-
-            var rect = go.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0f, fontSize + 6f);
-
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.text = text;
-            tmp.fontSize = fontSize;
-            tmp.fontStyle = style;
-            tmp.color = Color.white;
-            tmp.textWrappingMode = TextWrappingModes.Normal;
-            tmp.overflowMode = TextOverflowModes.Truncate;
-            if (font != null) tmp.font = font;
-
-            return tmp;
-        }
-
-        private static void SetField(object target, string fieldName, object value)
-        {
-            var field = target.GetType().GetField(fieldName,
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.Instance);
-            field?.SetValue(target, value);
+            return ArmyPanelFactory.Create(canvasTransform, font);
         }
     }
 }

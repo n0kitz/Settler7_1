@@ -1,16 +1,11 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 using Settlers.Simulation;
 
 namespace Settlers.UI
 {
-    /// <summary>
-    /// Technology tree overlay showing 18 techs in 3 tiers.
-    /// Clicking a tech starts research (if prerequisites met).
-    /// Toggle with T key.
-    /// </summary>
     public class TechTreeUI : MonoBehaviour
     {
         [SerializeField] private GameObject _panelRoot;
@@ -20,43 +15,82 @@ namespace Settlers.UI
         [SerializeField] private Transform _tier2Container;
         [SerializeField] private Transform _tier3Container;
 
-        private bool _isVisible;
+        internal static readonly Color LOCKED_COLOR = new Color(0.25f, 0.25f, 0.25f, 0.9f);
+        private static readonly Color AVAILABLE_COLOR = new Color(0.2f, 0.45f, 0.25f, 0.9f);
+        private static readonly Color OWNED_COLOR = new Color(0.15f, 0.35f, 0.55f, 0.9f);
+        private static readonly Color TAKEN_COLOR = new Color(0.5f, 0.15f, 0.15f, 0.9f);
+        private static readonly Color RESEARCHING_COLOR = new Color(0.5f, 0.45f, 0.1f, 0.9f);
+
         internal readonly Dictionary<string, Image> _nodeImages = new();
         internal readonly Dictionary<string, TextMeshProUGUI> _nodeLabels = new();
 
-        internal static readonly Color AVAILABLE_COLOR = new Color(0.25f, 0.4f, 0.55f, 0.9f);
-        internal static readonly Color RESEARCHED_OWN_COLOR = new Color(0.2f, 0.6f, 0.3f, 0.9f);
-        internal static readonly Color RESEARCHED_OTHER_COLOR = new Color(0.5f, 0.2f, 0.2f, 0.9f);
-        internal static readonly Color BLOCKED_COLOR = new Color(0.5f, 0.45f, 0.15f, 0.9f);
-        internal static readonly Color LOCKED_COLOR = new Color(0.25f, 0.25f, 0.25f, 0.9f);
-        internal static readonly Color RESEARCHING_COLOR = new Color(0.4f, 0.5f, 0.2f, 0.9f);
+        private float _refreshTimer;
+        private const float REFRESH_INTERVAL = 0.5f;
+
+        public bool IsVisible => _panelRoot != null && _panelRoot.activeSelf;
 
         public void Show()
         {
-            _isVisible = true;
             if (_panelRoot != null) _panelRoot.SetActive(true);
-            Refresh();
+            RefreshNodes();
         }
 
-        public void Hide()
+        public void Hide() { if (_panelRoot != null) _panelRoot.SetActive(false); }
+        public void Toggle() { if (IsVisible) Hide(); else Show(); }
+
+        public void OnTechClicked(string techId)
         {
-            _isVisible = false;
-            if (_panelRoot != null) _panelRoot.SetActive(false);
-        }
+            var gc = Presentation.GameController.Instance;
+            if (gc == null || gc.State == null) return;
 
-        public void Toggle()
-        {
-            if (_isVisible) Hide(); else Show();
-        }
+            int playerId = 0;
+            var research = gc.State.Research;
 
-        public bool IsVisible => _isVisible;
+            if (research.HasTech(playerId, techId))
+            {
+                UpdateStatus("Already researched.", UIColors.TEXT_GOLD);
+                return;
+            }
+
+            if (research.IsResearchedGlobally(techId))
+            {
+                UpdateStatus("Already taken by another player!", UIColors.TEXT_RED_BRIGHT);
+                return;
+            }
+
+            if (research.IsBlocked(techId))
+            {
+                UpdateStatus("Currently being researched by another player!", UIColors.TEXT_RED_BRIGHT);
+                return;
+            }
+
+            bool success = research.StartResearch(playerId, techId);
+            if (success)
+            {
+                var def = TechTree.Get(techId);
+                string name = def != null ? def.DisplayName : techId;
+                UpdateStatus($"Researching: {name}...", UIColors.TEXT_GREEN_LIGHT);
+            }
+            else
+            {
+                UpdateStatus("Cannot research — prerequisites not met.", UIColors.TEXT_RED_BRIGHT);
+            }
+
+            RefreshNodes();
+        }
 
         private void Update()
         {
-            if (_isVisible) Refresh();
+            if (!IsVisible) return;
+            _refreshTimer -= Time.deltaTime;
+            if (_refreshTimer <= 0f)
+            {
+                _refreshTimer = REFRESH_INTERVAL;
+                RefreshNodes();
+            }
         }
 
-        private void Refresh()
+        private void RefreshNodes()
         {
             var gc = Presentation.GameController.Instance;
             if (gc == null || gc.State == null) return;
@@ -65,73 +99,60 @@ namespace Settlers.UI
             var research = gc.State.Research;
 
             if (_statusText != null)
-                _statusText.text = $"Technologies Researched: {research.GetTechCount(playerId)}/18";
-
-            string activeResearchId = null;
-            float activeProgress = 0f;
-            foreach (var task in research.ActiveTasks)
             {
-                if (task.PlayerId == playerId)
-                {
-                    activeResearchId = task.TechId;
-                    activeProgress = task.Progress;
-                    break;
-                }
+                int count = research.GetTechCount(playerId);
+                int active = 0;
+                foreach (var task in research.ActiveTasks)
+                    if (task.PlayerId == playerId) active++;
+                _statusText.text = $"Techs: {count}/18  |  Researching: {active}";
+                _statusText.color = UIColors.TEXT_GOLD;
             }
 
             foreach (var kvp in _nodeImages)
             {
                 string techId = kvp.Key;
                 var img = kvp.Value;
-                var label = _nodeLabels.TryGetValue(techId, out var l) ? l : null;
-                var techDef = TechTree.Get(techId);
-                if (techDef == null) continue;
-
-                string displayText = techDef.DisplayName;
+                if (img == null) continue;
 
                 if (research.HasTech(playerId, techId))
-                    img.color = RESEARCHED_OWN_COLOR;
+                {
+                    img.color = OWNED_COLOR;
+                }
                 else if (research.IsResearchedGlobally(techId))
-                { img.color = RESEARCHED_OTHER_COLOR; displayText += " [TAKEN]"; }
-                else if (techId == activeResearchId)
-                { img.color = RESEARCHING_COLOR; displayText += $" [{(int)(activeProgress * 100)}%]"; }
+                {
+                    img.color = TAKEN_COLOR;
+                }
                 else if (research.IsBlocked(techId))
-                { img.color = BLOCKED_COLOR; displayText += " [BLOCKED]"; }
-                else if (CanResearch(research, playerId, techId))
+                {
+                    img.color = RESEARCHING_COLOR;
+                }
+                else if (CanResearch(playerId, techId, research))
+                {
                     img.color = AVAILABLE_COLOR;
+                }
                 else
+                {
                     img.color = LOCKED_COLOR;
-
-                if (label != null) label.text = displayText;
+                }
             }
         }
 
-        private bool CanResearch(ResearchSystem research, int playerId, string techId)
+        private static bool CanResearch(int playerId, string techId, ResearchSystem research)
         {
-            if (research.IsResearchedGlobally(techId)) return false;
-            if (research.IsBlocked(techId)) return false;
-            if (research.HasTech(playerId, techId)) return false;
-            var techDef = TechTree.Get(techId);
-            if (techDef == null) return false;
-            if (techDef.PrerequisiteId != null && !research.HasTech(playerId, techDef.PrerequisiteId))
+            var def = TechTree.Get(techId);
+            if (def == null) return false;
+            if (def.PrerequisiteId != null && !research.HasTech(playerId, def.PrerequisiteId))
                 return false;
             return true;
         }
 
-        internal void OnTechClicked(string techId)
+        private void UpdateStatus(string msg, Color color)
         {
-            var gc = Presentation.GameController.Instance;
-            if (gc == null || gc.State == null) return;
-            bool started = gc.State.Research.StartResearch(0, techId);
-            if (started)
-            {
-                var def = TechTree.Get(techId);
-                Debug.Log($"Started researching: {def?.DisplayName ?? techId}");
-            }
-            Refresh();
+            if (_statusText == null) return;
+            _statusText.text = msg;
+            _statusText.color = color;
         }
 
-        /// <summary>Create the tech tree UI programmatically.</summary>
         public static TechTreeUI Create(Transform canvasTransform, TMP_FontAsset font)
         {
             return TechTreeUIFactory.Create(canvasTransform, font);

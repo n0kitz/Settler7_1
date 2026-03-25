@@ -42,7 +42,18 @@ namespace Settlers.UI
 
             // --- Existing subscriptions (all players) ---
             gc.Events.Subscribe<SectorConqueredEvent>(e =>
-                Show($"Sector conquered by Player {e.NewOwnerId + 1}!", COLOR_MILITARY));
+            {
+                var sector = gc.State.Graph.GetSector(e.SectorId);
+                string name = sector?.Name ?? $"sector {e.SectorId}";
+                string method = e.Method switch
+                {
+                    ConquestMethod.Proselytism => " (proselytism)",
+                    ConquestMethod.Bribery => " (bribery)",
+                    _ => ""
+                };
+                string who = e.NewOwnerId == 0 ? "You conquered" : $"Player {e.NewOwnerId + 1} conquered";
+                Show($"{who} {name}{method}!", COLOR_MILITARY);
+            });
             gc.Events.Subscribe<TechResearchedEvent>(e =>
             {
                 if (e.PlayerId == 0)

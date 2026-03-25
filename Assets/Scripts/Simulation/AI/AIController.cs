@@ -5,11 +5,13 @@ namespace Settlers.Simulation
     /// Delegates economy to AIEconomy, handles path-specific strategy.
     /// Pure C# — no UnityEngine references.
     /// </summary>
-    public class AIController
+    public partial class AIController
     {
         private readonly GameState _state;
         private readonly int _playerId;
         private float _decisionTimer;
+        private float _stallTimer;
+        private int _lastVPCount;
         private AIPhase _phase;
         private AIPath _chosenPath;
 
@@ -81,6 +83,9 @@ namespace Settlers.Simulation
             AIEconomy.ManageQuests(_state, _playerId);
             SpendPrestigeUnlocks();
 
+            // Fortify owned sectors when possible
+            TryFortify();
+
             // Path-specific actions
             switch (_chosenPath)
             {
@@ -89,8 +94,12 @@ namespace Settlers.Simulation
                 case AIPath.Trade: TickTrade(); break;
             }
 
-            // Opportunistic: try proselytism on adjacent neutral sectors
+            // Consider switching path if stalled
+            ConsiderPathSwitch();
+
+            // Opportunistic: try proselytism or bribery on adjacent neutral sectors
             TryProselytism();
+            TryBribery();
         }
 
         private void SpendPrestigeUnlocks()
@@ -125,133 +134,6 @@ namespace Settlers.Simulation
             }
         }
 
-        private void TickMilitary()
-        {
-            var generals = _state.Army.GetGenerals(_playerId);
-            var sectors = _state.Graph.GetSectorsOwnedBy(_playerId);
-            if (sectors.Count == 0) return;
-
-            // Hire generals if possible
-            if (generals.Count == 0)
-                _state.Army.HireGeneral(_playerId, sectors[0]);
-
-            // Train units in home sector
-            if (_state.Prestige.HasUnlock(_playerId, "mil_pikeman") &&
-                AIEconomy.GetResource(_state, _playerId, ResourceType.Weapons) >= 1)
-                _state.Army.TrainUnit(_playerId, sectors[0], UnitType.Pikeman);
-
-            // Also train musketeers if unlocked (needed for fortified sectors)
-            if (_state.Prestige.HasUnlock(_playerId, "mil_musketeer") &&
-                AIEconomy.GetResource(_state, _playerId, ResourceType.Weapons) >= 1)
-                _state.Army.TrainUnit(_playerId, sectors[0], UnitType.Musketeer);
-
-            // Assign soldiers to generals
-            foreach (var gen in generals)
-                if (gen.TotalSoldiers < gen.MaxSoldiers)
-                    _state.Army.AssignUnit(gen, UnitType.Pikeman);
-
-            // Attack when ready
-            if (generals.Count > 0 && generals[0].TotalSoldiers >= 8 && !generals[0].IsMoving)
-            {
-                int target = FindAttackTarget(generals[0]);
-                if (target >= 0)
-                    _state.Army.MoveArmy(generals[0], target);
-            }
-        }
-
-        private int FindAttackTarget(General gen)
-        {
-            // First check for weak neutral sectors nearby
-            int bestTarget = -1;
-            int bestScore = int.MinValue;
-
-            foreach (int n in _state.Graph.GetNeighbors(gen.SectorId))
-            {
-                var sector = _state.Graph.GetSector(n);
-                if (sector.OwnerId == _playerId) continue;
-
-                int score = 0;
-                if (sector.IsNeutral)
-                {
-                    score = 100 - sector.GarrisonStrength * 5;
-                    if (sector.IsFortified) score -= 30;
-                    if (sector.VPRewardId != null) score += 50;
-                }
-                else
-                {
-                    // Enemy sector — only attack if strong advantage
-                    score = gen.TotalAttack - sector.GarrisonStrength * 10 - 20;
-                }
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestTarget = n;
-                }
-            }
-
-            return bestScore > 0 ? bestTarget : -1;
-        }
-
-        private void TickTechnology()
-        {
-            bool anyActive = false;
-            foreach (var task in _state.Research.ActiveTasks)
-                if (task.PlayerId == _playerId) { anyActive = true; break; }
-
-            if (!anyActive)
-            {
-                // Prioritize lower tiers first
-                foreach (var tech in TechTree.All)
-                {
-                    if (_state.Research.HasTech(_playerId, tech.Id)) continue;
-                    if (_state.Research.StartResearch(_playerId, tech.Id)) break;
-                }
-            }
-        }
-
-        private void TickTrade()
-        {
-            if (!_state.Prestige.HasUnlock(_playerId, "cul_export_office")) return;
-
-            // Claim unclaimed outposts
-            foreach (var outpost in _state.TradeMapData.AllOutposts)
-            {
-                if (!outpost.IsClaimed)
-                {
-                    _state.Trade.SendTrader(_playerId, outpost.Id);
-                    break;
-                }
-            }
-
-            // Execute trades on claimed outposts when we have the input resource
-            foreach (var outpost in _state.TradeMapData.AllOutposts)
-            {
-                if (outpost.ClaimedBy != _playerId) continue;
-                int have = AIEconomy.GetResource(_state, _playerId, outpost.InputResource);
-                if (have >= outpost.InputAmount)
-                    _state.Trade.ExecuteTrade(_playerId, outpost.Id);
-            }
-        }
-
-        /// <summary>Opportunistic proselytism on adjacent neutral sectors.</summary>
-        private void TryProselytism()
-        {
-            var sectors = _state.Graph.GetSectorsOwnedBy(_playerId);
-            foreach (int owned in sectors)
-            {
-                foreach (int n in _state.Graph.GetNeighbors(owned))
-                {
-                    var neighbor = _state.Graph.GetSector(n);
-                    if (!neighbor.IsNeutral) continue;
-                    if (neighbor.IsFortified) continue; // skip fortified for proselytism
-
-                    int clericCount = 6;
-                    if (_state.Conquest.StartProselytism(_playerId, n, clericCount))
-                        return; // One at a time
-                }
-            }
-        }
     }
 
     public enum AIPhase { EarlyEconomy, PathSelection, Execution }

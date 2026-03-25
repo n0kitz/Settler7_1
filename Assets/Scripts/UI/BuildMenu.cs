@@ -48,7 +48,7 @@ namespace Settlers.UI
             _affordabilityTimer -= Time.deltaTime;
             if (_affordabilityTimer <= 0f)
             {
-                _affordabilityTimer = 1f;
+                _affordabilityTimer = 0.2f;
                 RefreshAffordability();
             }
         }
@@ -175,7 +175,7 @@ namespace Settlers.UI
             // Feedback text (hidden by default)
             var feedbackText = UIFactory.CreateLabel(panelGo.transform, "FeedbackText", "", 14,
                 FontStyles.Bold, font);
-            feedbackText.color = new Color(1f, 0.3f, 0.3f);
+            feedbackText.color = UIColors.TEXT_RED_BRIGHT;
             feedbackText.gameObject.SetActive(false);
 
             // BuildMenu component
@@ -207,7 +207,7 @@ namespace Settlers.UI
         {
             var headerText = UIFactory.CreateLabel(parent, $"Header_{label}", label, 11,
                 FontStyles.Bold, font);
-            headerText.color = new Color(0.6f, 0.6f, 0.6f);
+            headerText.color = UIColors.TEXT_GRAY_DIM;
             var le = headerText.gameObject.AddComponent<LayoutElement>();
             le.preferredHeight = 16f;
         }

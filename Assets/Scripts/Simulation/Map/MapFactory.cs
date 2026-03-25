@@ -28,6 +28,8 @@ namespace Settlers.Simulation
                 "mountain_pass" => CreateMountainPass(),
                 "island_chain" => CreateIslandChain(),
                 "large_valley" => CreateLargeValley(),
+                "crown_war" => CreateCrownWar(),
+                "empire" => CreateEmpire(),
                 _ => CreateTestValley()
             };
         }
@@ -35,7 +37,8 @@ namespace Settlers.Simulation
         /// <summary>Get all available map IDs.</summary>
         public static string[] GetMapIds() => new[]
         {
-            "test_valley", "twin_rivers", "mountain_pass", "island_chain", "large_valley"
+            "test_valley", "twin_rivers", "mountain_pass", "island_chain", "large_valley",
+            "crown_war", "empire"
         };
 
         // --- Map 1: Test Valley (6 sectors, 2 players) ---
@@ -227,6 +230,34 @@ namespace Settlers.Simulation
                 PlayerCount = 3,
                 VPRequired = 5,
                 Graph = LargeMapFactory.CreateTwelveSectorMap()
+            };
+        }
+
+        // --- Map 6: Crown War (18 sectors, 4 players) ---
+        // Diamond layout with 4 player corners, resource ring, and contested center.
+        public static MapInfo CreateCrownWar()
+        {
+            return new MapInfo
+            {
+                Id = "crown_war",
+                DisplayName = "Crown War (18 Sectors, 4 Players)",
+                PlayerCount = 4,
+                VPRequired = 5,
+                Graph = FourPlayerMapFactory.CreateEighteenSectorMap()
+            };
+        }
+
+        // --- Map 7: Empire (24 sectors, 4 players) ---
+        // Full-scale map with three rings of expansion.
+        public static MapInfo CreateEmpire()
+        {
+            return new MapInfo
+            {
+                Id = "empire",
+                DisplayName = "Empire (24 Sectors, 4 Players)",
+                PlayerCount = 4,
+                VPRequired = 6,
+                Graph = FourPlayerMapFactory.CreateTwentyFourSectorMap()
             };
         }
 

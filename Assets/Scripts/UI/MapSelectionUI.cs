@@ -69,10 +69,10 @@ namespace Settlers.UI
             panelRect.offsetMax = Vector2.zero;
 
             var panelBg = panelGo.AddComponent<Image>();
-            panelBg.color = new Color(0.08f, 0.08f, 0.1f, 0.95f);
+            panelBg.color = UIColors.PANEL_BLUE_DARK;
 
             // Title
-            var titleText = CreateLabel(panelGo.transform, "Title",
+            var titleText = UIFactory.CreateLabel(panelGo.transform, "Title",
                 "Select Map", 24, FontStyles.Bold, font);
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
@@ -102,7 +102,7 @@ namespace Settlers.UI
             listLayout.childAlignment = TextAnchor.UpperLeft;
 
             // Details panel
-            var detailsText = CreateLabel(panelGo.transform, "Details",
+            var detailsText = UIFactory.CreateLabel(panelGo.transform, "Details",
                 "Select a map to see details", 14, FontStyles.Normal, font);
             var detailsRect = detailsText.GetComponent<RectTransform>();
             detailsRect.anchorMin = new Vector2(0.55f, 0.25f);
@@ -122,7 +122,7 @@ namespace Settlers.UI
             startRect.offsetMax = Vector2.zero;
 
             var startBg = startBtnGo.AddComponent<Image>();
-            startBg.color = new Color(0.2f, 0.5f, 0.25f, 0.9f);
+            startBg.color = UIColors.BUTTON_GREEN;
 
             var startBtn = startBtnGo.AddComponent<Button>();
             var startColors = startBtn.colors;
@@ -130,7 +130,7 @@ namespace Settlers.UI
             startColors.pressedColor = new Color(0.15f, 0.4f, 0.2f);
             startBtn.colors = startColors;
 
-            var startLabel = CreateLabel(startBtnGo.transform, "Label",
+            var startLabel = UIFactory.CreateLabel(startBtnGo.transform, "Label",
                 "Start Game", 18, FontStyles.Bold, font);
             var startLabelRect = startLabel.GetComponent<RectTransform>();
             startLabelRect.anchorMin = Vector2.zero;
@@ -141,10 +141,10 @@ namespace Settlers.UI
 
             // Component
             var ui = panelGo.AddComponent<MapSelectionUI>();
-            SetField(ui, "_panelRoot", panelGo);
-            SetField(ui, "_mapListContainer", listGo.transform);
-            SetField(ui, "_titleText", titleText);
-            SetField(ui, "_detailsText", detailsText);
+            UIFactory.SetField(ui, "_panelRoot", panelGo);
+            UIFactory.SetField(ui, "_mapListContainer", listGo.transform);
+            UIFactory.SetField(ui, "_titleText", titleText);
+            UIFactory.SetField(ui, "_detailsText", detailsText);
 
             startBtn.onClick.AddListener(ui.OnStartClicked);
 
@@ -199,33 +199,5 @@ namespace Settlers.UI
             btn.onClick.AddListener(() => ui.OnMapClicked(capturedId));
         }
 
-        private static TextMeshProUGUI CreateLabel(Transform parent, string name,
-            string text, float fontSize, FontStyles style, TMP_FontAsset font)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-
-            var rect = go.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0f, fontSize + 6f);
-
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.text = text;
-            tmp.fontSize = fontSize;
-            tmp.fontStyle = style;
-            tmp.color = Color.white;
-            tmp.textWrappingMode = TextWrappingModes.Normal;
-            tmp.overflowMode = TextOverflowModes.Truncate;
-            if (font != null) tmp.font = font;
-
-            return tmp;
-        }
-
-        private static void SetField(object target, string fieldName, object value)
-        {
-            var field = target.GetType().GetField(fieldName,
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.Instance);
-            field?.SetValue(target, value);
-        }
     }
 }

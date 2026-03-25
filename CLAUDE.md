@@ -32,6 +32,13 @@ A faithful recreation of Die Siedler 7's gameplay systems in Unity 6. Local only
 | Architecture patterns, SO patterns, testing, system update order | `settlers-unity-architecture` |
 | Camera, terrain, building visuals, lighting, UI layout | `settlers-unity-visuals` |
 | Map design, sector layouts, batch asset creation | `settlers-map-content` |
+| Cost saving, session protocol, token budgets | `cost-saving` |
+
+## Session Protocol
+
+1. Read **CLAUDE.md** (this file) + **MEMORY.md** at session start
+2. Read relevant skill(s) matching the session's layer
+3. Update MEMORY.md at session end
 
 ## Workflow
 
@@ -41,14 +48,9 @@ A faithful recreation of Die Siedler 7's gameplay systems in Unity 6. Local only
 4. SO .asset files created via Editor menu scripts (`Settlers > Generate All`)
 5. Prefabs, materials, lighting, 3D models → user configures in Unity Editor
 
-## Slash Commands
-- `/validate` — Check architecture rules, file sizes, layer separation
-- `/status` — Show file counts and project state
-- `/update-memory` — Sync memory files with actual codebase
-
 ## Assembly Definitions
 - `Settlers.Simulation` — Pure C#, `noEngineReferences: true`. Any `using UnityEngine` = compile error.
-- `Settlers.Game` — Presentation + UI + Data layers. References Simulation + TMPro.
+- `Settlers.Game` — Presentation + UI + Data layers. References Simulation + TMPro + InputSystem.
 - `Settlers.Editor` — Editor-only scripts. References Simulation + Game.
 - `Settlers.Tests` — Editor test assembly. References Simulation + NUnit.
 
@@ -64,10 +66,6 @@ Maps are predefined, divided into sectors connected via a graph (18-43+ sectors)
 3. **Bribery** (neutral only): Coins + Garments + Jewelry. Fastest but most expensive.
 
 **Rewards:** +1 prestige + choice of reward package + sector resource access.
-
-## Game Design: §2–§13
-
-All game mechanics are documented in the `settlers-game-design` skill. **Always read it before implementing or modifying game logic.**
 
 ## Critical Rules (Prevent Bugs)
 
@@ -89,7 +87,8 @@ All game mechanics are documented in the `settlers-game-design` skill. **Always 
 
 ## Project State
 
-See memory files for current phase status, file list, and architecture decisions. 88 scripts + 21 tests = 109 C# files as of 2026-03-23.
+All 15 simulation systems complete. 103 script files + 23 test files.
+Current phase and task queue tracked in MEMORY.md.
 
 ---
 

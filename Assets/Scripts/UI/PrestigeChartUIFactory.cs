@@ -11,8 +11,6 @@ namespace Settlers.UI
     /// </summary>
     public static class PrestigeChartUIFactory
     {
-        private static readonly Color LOCKED_COLOR = new Color(0.3f, 0.3f, 0.3f, 0.9f);
-
         /// <summary>Create the prestige chart UI programmatically.</summary>
         public static PrestigeChartUI Create(Transform canvasTransform, TMP_FontAsset font)
         {
@@ -26,10 +24,10 @@ namespace Settlers.UI
             panelRect.offsetMax = Vector2.zero;
 
             var panelBg = panelGo.AddComponent<Image>();
-            panelBg.color = new Color(0.08f, 0.08f, 0.1f, 0.95f);
+            panelBg.color = UIColors.PANEL_BLUE_DARK;
 
             // Title
-            var titleText = CreateLabel(panelGo.transform, "Title",
+            var titleText = UIFactory.CreateLabel(panelGo.transform, "Title",
                 "Prestige Unlocks", 22, FontStyles.Bold, font);
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
@@ -40,7 +38,7 @@ namespace Settlers.UI
             titleText.alignment = TextAlignmentOptions.Center;
 
             // Status line
-            var statusText = CreateLabel(panelGo.transform, "Status",
+            var statusText = UIFactory.CreateLabel(panelGo.transform, "Status",
                 "Points: 0  Level: 0  Unspent: 0", 15, FontStyles.Normal, font);
             statusText.color = new Color(0.9f, 0.85f, 0.5f);
             var statusRect = statusText.GetComponent<RectTransform>();
@@ -72,12 +70,12 @@ namespace Settlers.UI
 
             // Component
             var chart = panelGo.AddComponent<PrestigeChartUI>();
-            SetField(chart, "_panelRoot", panelGo);
-            SetField(chart, "_titleText", titleText);
-            SetField(chart, "_statusText", statusText);
-            SetField(chart, "_economyColumn", ecoCol.transform);
-            SetField(chart, "_militaryColumn", milCol.transform);
-            SetField(chart, "_cultureColumn", culCol.transform);
+            UIFactory.SetField(chart, "_panelRoot", panelGo);
+            UIFactory.SetField(chart, "_titleText", titleText);
+            UIFactory.SetField(chart, "_statusText", statusText);
+            UIFactory.SetField(chart, "_economyColumn", ecoCol.transform);
+            UIFactory.SetField(chart, "_militaryColumn", milCol.transform);
+            UIFactory.SetField(chart, "_cultureColumn", culCol.transform);
 
             // Populate unlock nodes
             foreach (var def in PrestigeDatabase.All)
@@ -105,7 +103,7 @@ namespace Settlers.UI
             colGo.AddComponent<RectTransform>();
 
             var colBg = colGo.AddComponent<Image>();
-            colBg.color = new Color(0.12f, 0.12f, 0.15f, 0.8f);
+            colBg.color = UIColors.PANEL_GRAY_MEDIUM;
 
             var colLayout = colGo.AddComponent<VerticalLayoutGroup>();
             colLayout.padding = new RectOffset(6, 6, 6, 6);
@@ -114,10 +112,10 @@ namespace Settlers.UI
             colLayout.childForceExpandHeight = false;
             colLayout.childAlignment = TextAnchor.UpperCenter;
 
-            var headerText = CreateLabel(colGo.transform, "Header", label, 16,
+            var headerText = UIFactory.CreateLabel(colGo.transform, "Header", label, 16,
                 FontStyles.Bold, font);
             headerText.alignment = TextAlignmentOptions.Center;
-            headerText.color = new Color(0.9f, 0.8f, 0.4f);
+            headerText.color = UIColors.ACCENT_ORANGE;
 
             return colGo;
         }
@@ -135,14 +133,14 @@ namespace Settlers.UI
             layoutElem.preferredHeight = 44f;
 
             var nodeImg = nodeGo.AddComponent<Image>();
-            nodeImg.color = LOCKED_COLOR;
+            nodeImg.color = PrestigeChartUI.LOCKED_COLOR;
 
             var btn = nodeGo.AddComponent<Button>();
             string capturedId = def.Id;
             btn.onClick.AddListener(() => chart.HandleNodeClicked(capturedId));
 
             // Name text
-            var nameText = CreateLabel(nodeGo.transform, "Name", def.DisplayName, 12,
+            var nameText = UIFactory.CreateLabel(nodeGo.transform, "Name", def.DisplayName, 12,
                 FontStyles.Bold, font);
             var nameRect = nameText.GetComponent<RectTransform>();
             nameRect.anchorMin = new Vector2(0f, 0.5f);
@@ -152,7 +150,7 @@ namespace Settlers.UI
             nameText.alignment = TextAlignmentOptions.MidlineLeft;
 
             // Description text
-            var descText = CreateLabel(nodeGo.transform, "Desc", $"Lv{def.MinLevel}: {def.Description}",
+            var descText = UIFactory.CreateLabel(nodeGo.transform, "Desc", $"Lv{def.MinLevel}: {def.Description}",
                 10, FontStyles.Normal, font);
             descText.color = new Color(0.7f, 0.7f, 0.7f);
             var descRect = descText.GetComponent<RectTransform>();
@@ -165,33 +163,5 @@ namespace Settlers.UI
             chart.RegisterNode(def.Id, nodeImg, btn);
         }
 
-        private static TextMeshProUGUI CreateLabel(Transform parent, string name,
-            string text, float fontSize, FontStyles style, TMP_FontAsset font)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-
-            var rect = go.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0f, fontSize + 6f);
-
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.text = text;
-            tmp.fontSize = fontSize;
-            tmp.fontStyle = style;
-            tmp.color = Color.white;
-            tmp.textWrappingMode = TextWrappingModes.Normal;
-            tmp.overflowMode = TextOverflowModes.Truncate;
-            if (font != null) tmp.font = font;
-
-            return tmp;
-        }
-
-        private static void SetField(object target, string fieldName, object value)
-        {
-            var field = target.GetType().GetField(fieldName,
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.Instance);
-            field?.SetValue(target, value);
-        }
     }
 }

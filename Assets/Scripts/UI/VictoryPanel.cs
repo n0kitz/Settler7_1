@@ -11,7 +11,7 @@ namespace Settlers.UI
     /// VP tracker shown at all times + game over overlay with standings.
     /// Displays VP counts per player, countdown timer, and win/lose result.
     /// </summary>
-    public class VictoryPanel : MonoBehaviour
+    public partial class VictoryPanel : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _vpText;
         [SerializeField] private TextMeshProUGUI _countdownText;
@@ -126,7 +126,7 @@ namespace Settlers.UI
                 "Rank   Player          VP  Sectors  Army  Techs  Trade  Bldgs  Prstg", 13, FontStyles.Bold, _font);
             headerLabel.alignment = TextAlignmentOptions.Center;
             headerLabel.color = new Color(0.9f, 0.85f, 0.6f);
-            headerLabel.enableWordWrapping = false;
+            headerLabel.textWrappingMode = TextWrappingModes.NoWrap;
             var hdrRect = headerLabel.GetComponent<RectTransform>();
             hdrRect.anchorMin = new Vector2(0.15f, 0.56f);
             hdrRect.anchorMax = new Vector2(0.85f, 0.60f);
@@ -152,9 +152,9 @@ namespace Settlers.UI
                     row, 14, _font);
                 rowLabel.alignment = TextAlignmentOptions.Center;
                 rowLabel.richText = true;
-                rowLabel.enableWordWrapping = false;
+                rowLabel.textWrappingMode = TextWrappingModes.NoWrap;
                 rowLabel.color = s.PlayerId == winnerId
-                    ? new Color(1f, 0.85f, 0.3f)
+                    ? UIColors.HIGHLIGHT_GOLD
                     : Color.white;
 
                 var rowRect = rowLabel.GetComponent<RectTransform>();
@@ -186,34 +186,15 @@ namespace Settlers.UI
 
         private void CreateReturnButton(Transform parent, float yCenter)
         {
-            var btnGo = new GameObject("Btn_ReturnToMenu");
-            btnGo.transform.SetParent(parent, false);
+            var btn = UIFactory.CreateButton(parent, "Return to Menu", _font,
+                new Color(0.3f, 0.45f, 0.3f, 0.9f),
+                () => OnReturnToMenu?.Invoke());
 
-            var rect = btnGo.AddComponent<RectTransform>();
+            var rect = btn.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.35f, yCenter - 0.025f);
             rect.anchorMax = new Vector2(0.65f, yCenter + 0.025f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-
-            var bgColor = new Color(0.3f, 0.45f, 0.3f, 0.9f);
-            var btnImage = btnGo.AddComponent<Image>();
-            btnImage.color = bgColor;
-
-            var btn = btnGo.AddComponent<Button>();
-            var colors = btn.colors;
-            colors.highlightedColor = bgColor * 1.2f;
-            colors.pressedColor = bgColor * 0.8f;
-            btn.colors = colors;
-            btn.onClick.AddListener(() => OnReturnToMenu?.Invoke());
-
-            var text = UIFactory.CreateLabel(btnGo.transform, "Label",
-                "Return to Menu", 18, FontStyles.Bold, _font);
-            var textRect = text.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-            text.alignment = TextAlignmentOptions.Center;
         }
 
         private List<PlayerStanding> BuildStandings(GameState state)
@@ -274,103 +255,6 @@ namespace Settlers.UI
             public int Outposts;
             public int Buildings;
             public int Prestige;
-        }
-
-        /// <summary>Create the VP panel + game over overlay programmatically.</summary>
-        public static VictoryPanel Create(Transform canvasTransform, TMP_FontAsset font)
-        {
-            // VP tracker (bottom-right)
-            var panelGo = new GameObject("VictoryPanel");
-            panelGo.transform.SetParent(canvasTransform, false);
-
-            var panelRect = panelGo.AddComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(1f, 0f);
-            panelRect.anchorMax = new Vector2(1f, 0f);
-            panelRect.pivot = new Vector2(1f, 0f);
-            panelRect.anchoredPosition = new Vector2(-10f, 10f);
-            panelRect.sizeDelta = new Vector2(300f, 50f);
-
-            var bg = panelGo.AddComponent<Image>();
-            bg.color = new Color(0.08f, 0.08f, 0.08f, 0.85f);
-
-            var layout = panelGo.AddComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(8, 8, 4, 4);
-            layout.spacing = 2f;
-            layout.childForceExpandWidth = true;
-            layout.childForceExpandHeight = false;
-
-            var vpText = CreateLabel(panelGo.transform, "VPText", "VPs: ...", 13, font);
-            vpText.color = new Color(1f, 0.9f, 0.5f);
-            vpText.richText = true;
-
-            var countdownText = CreateLabel(panelGo.transform, "CountdownText", "", 14, font);
-            countdownText.color = new Color(1f, 0.3f, 0.3f);
-            countdownText.fontStyle = FontStyles.Bold;
-            countdownText.gameObject.SetActive(false);
-
-            // Game over overlay (centered, hidden)
-            var overlayGo = new GameObject("GameOverOverlay");
-            overlayGo.transform.SetParent(canvasTransform, false);
-
-            var overlayRect = overlayGo.AddComponent<RectTransform>();
-            overlayRect.anchorMin = Vector2.zero;
-            overlayRect.anchorMax = Vector2.one;
-            overlayRect.offsetMin = Vector2.zero;
-            overlayRect.offsetMax = Vector2.zero;
-
-            var overlayBg = overlayGo.AddComponent<Image>();
-            overlayBg.color = new Color(0f, 0f, 0f, 0.8f);
-
-            var gameOverText = CreateLabel(overlayGo.transform, "GameOverText",
-                "GAME OVER", 36, font);
-            gameOverText.alignment = TextAlignmentOptions.Center;
-            gameOverText.color = new Color(1f, 0.85f, 0.3f);
-            var goRect = gameOverText.GetComponent<RectTransform>();
-            goRect.anchorMin = new Vector2(0.2f, 0.68f);
-            goRect.anchorMax = new Vector2(0.8f, 0.78f);
-            goRect.offsetMin = Vector2.zero;
-            goRect.offsetMax = Vector2.zero;
-
-            overlayGo.SetActive(false);
-
-            // Component
-            var panel = panelGo.AddComponent<VictoryPanel>();
-            SetField(panel, "_vpText", vpText);
-            SetField(panel, "_countdownText", countdownText);
-            SetField(panel, "_gameOverOverlay", overlayGo);
-            SetField(panel, "_gameOverText", gameOverText);
-            panel._font = font;
-
-            return panel;
-        }
-
-        private static TextMeshProUGUI CreateLabel(Transform parent, string name,
-            string text, float fontSize, TMP_FontAsset font)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-
-            var rect = go.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0f, fontSize + 6f);
-
-            var layoutElem = go.AddComponent<LayoutElement>();
-            layoutElem.preferredHeight = fontSize + 6f;
-
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.text = text;
-            tmp.fontSize = fontSize;
-            tmp.color = Color.white;
-            if (font != null) tmp.font = font;
-
-            return tmp;
-        }
-
-        private static void SetField(object target, string fieldName, object value)
-        {
-            var field = target.GetType().GetField(fieldName,
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.Instance);
-            field?.SetValue(target, value);
         }
     }
 }

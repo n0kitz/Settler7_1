@@ -52,6 +52,48 @@ namespace Settlers.UI
             return CreateLabel(parent, name, text, fontSize, FontStyles.Normal, font);
         }
 
+        /// <summary>
+        /// Creates a standard button with Image, Button (highlight ×1.2, pressed ×0.8),
+        /// LayoutElement, and a centered bold label. Returns the Button component.
+        /// </summary>
+        public static Button CreateButton(Transform parent, string label, TMP_FontAsset font,
+            Color bgColor, UnityEngine.Events.UnityAction onClick,
+            Vector2? sizeDelta = null, float fontSize = 18f)
+        {
+            var size = sizeDelta ?? new Vector2(0f, 44f);
+
+            var btnGo = new GameObject($"Btn_{label.Replace(" ", "")}");
+            btnGo.transform.SetParent(parent, false);
+
+            var rect = btnGo.AddComponent<RectTransform>();
+            rect.sizeDelta = size;
+
+            var le = btnGo.AddComponent<LayoutElement>();
+            le.preferredHeight = size.y;
+            if (size.x > 0f) le.preferredWidth = size.x;
+
+            var btnImage = btnGo.AddComponent<Image>();
+            btnImage.color = bgColor;
+
+            var btn = btnGo.AddComponent<Button>();
+            var colors = btn.colors;
+            colors.highlightedColor = bgColor * 1.2f;
+            colors.pressedColor = bgColor * 0.8f;
+            btn.colors = colors;
+            if (onClick != null) btn.onClick.AddListener(onClick);
+
+            var text = CreateLabel(btnGo.transform, "Label", label, fontSize,
+                FontStyles.Bold, font);
+            var textRect = text.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+            text.alignment = TextAlignmentOptions.Center;
+
+            return btn;
+        }
+
         public static void SetField(object target, string fieldName, object value)
         {
             var field = target.GetType().GetField(fieldName,
