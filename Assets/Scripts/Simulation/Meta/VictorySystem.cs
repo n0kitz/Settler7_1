@@ -2,17 +2,14 @@ using System.Collections.Generic;
 
 namespace Settlers.Simulation
 {
-    /// <summary>
-    /// Tracks all Victory Points (dynamic + permanent), evaluates conditions each tick,
-    /// manages the 3-minute countdown when a player reaches the required VP count.
-    /// Pure C# — no UnityEngine references.
-    /// </summary>
+    /// <summary>Tracks VPs (dynamic + permanent), evaluates conditions, manages countdown.</summary>
     public class VictorySystem
     {
         private readonly GameState _state;
         private readonly EventBus _eventBus;
         private readonly int _vpRequired;
         private readonly float _countdownDuration;
+        private readonly VPThresholds _thresholds;
 
         // Dynamic VPs: can be gained and lost
         private readonly Dictionary<int, HashSet<string>> _dynamicVPs = new();
@@ -30,16 +27,21 @@ namespace Settlers.Simulation
         // Per-player kill counter for Generalissimo VP
         private readonly Dictionary<int, int> _killCount = new();
 
-        public VictorySystem(GameState state, int vpRequired, float countdownDuration)
+        public VictorySystem(GameState state, int vpRequired, float countdownDuration,
+            VPThresholds thresholds = null)
         {
             _state = state;
             _eventBus = state.Events;
             _vpRequired = vpRequired;
             _countdownDuration = countdownDuration;
+            _thresholds = thresholds ?? new VPThresholds();
 
             // Subscribe to combat events for Pacifist + Generalissimo tracking
             _eventBus.Subscribe<CombatResolvedEvent>(OnCombatResolved);
         }
+
+        /// <summary>Active thresholds (for UI display).</summary>
+        public VPThresholds Thresholds => _thresholds;
 
         private void OnCombatResolved(CombatResolvedEvent evt)
         {
@@ -60,22 +62,11 @@ namespace Settlers.Simulation
         public float GetLastAttackTime(int playerId) =>
             _lastAttackTime.TryGetValue(playerId, out var t) ? t : -1f;
 
-        /// <summary>VP count required to win.</summary>
         public int VPRequired => _vpRequired;
-
-        /// <summary>Is the game over?</summary>
         public bool IsGameOver => _gameOver;
-
-        /// <summary>Winner player ID (-1 if no winner yet).</summary>
         public int WinnerId => _winnerId;
-
-        /// <summary>Is a countdown active?</summary>
         public bool IsCountdownActive => _countdownPlayerId >= 0;
-
-        /// <summary>Countdown player ID (-1 if none).</summary>
         public int CountdownPlayerId => _countdownPlayerId;
-
-        /// <summary>Remaining countdown time in seconds.</summary>
         public float CountdownRemaining => _countdownRemaining;
 
         /// <summary>Get total VP count for a player.</summary>
@@ -87,6 +78,17 @@ namespace Settlers.Simulation
             if (_permanentVPs.TryGetValue(playerId, out var perm))
                 count += perm.Count;
             return count;
+        }
+
+        /// <summary>Get all VP IDs held by a player (dynamic + permanent).</summary>
+        public List<string> GetAllVPs(int playerId)
+        {
+            var result = new List<string>();
+            if (_dynamicVPs.TryGetValue(playerId, out var dyn))
+                result.AddRange(dyn);
+            if (_permanentVPs.TryGetValue(playerId, out var perm))
+                result.AddRange(perm);
+            return result;
         }
 
         /// <summary>Check if a player holds a specific VP.</summary>
@@ -122,58 +124,63 @@ namespace Settlers.Simulation
 
         private void EvaluateDynamicVPs()
         {
-            for (int p = 0; p < _state.PlayerCount; p++)
+            var t = _thresholds;
+            int n = _state.PlayerCount;
+
+            // Competitive VPs: highest value above threshold wins (ties keep current holder)
+            EvalCompetitive("vp_field_marshal", t.FieldMarshalArmy, p => _state.Army.GetTotalArmySize(p));
+            EvalCompetitive("vp_metropolis", t.MetropolisWorkers, p => _state.Population.GetEmployedCount(p));
+            EvalCompetitive("vp_emperor", t.EmperorSectors, p => _state.Graph.GetSectorsOwnedBy(p).Count);
+            EvalCompetitive("vp_banker", t.BankerCoins, p => GetCoins(p));
+            EvalCompetitive("vp_sun_king", t.SunKingPrestige, p => _state.Prestige.GetLevel(p));
+            EvalCompetitive("vp_trading_company", t.TradingCompanyOutposts, p => _state.TradeMapData.GetClaimedCount(p));
+            EvalCompetitive("vp_fountain", t.FountainTechs, p => _state.Research.GetTechCount(p));
+            EvalCompetitive("vp_generalissimo", t.GeneralissimoKills, p => GetKillCount(p));
+
+            // Non-competitive VPs: any player meeting the condition holds it
+            for (int p = 0; p < n; p++)
             {
-                EvaluatePlayerDynamicVPs(p);
+                float lastAtk = GetLastAttackTime(p);
+                float timeSinceAttack = lastAtk < 0
+                    ? _state.SimulationTime
+                    : _state.SimulationTime - lastAtk;
+                EvalDynamic(p, "vp_pacifist",
+                    _state.SimulationTime >= t.PacifistSeconds && timeSinceAttack >= t.PacifistSeconds);
+
+                EvalDynamic(p, "vp_economist",
+                    GetStaffingPercent(p) >= t.EconomistStaffPercent);
             }
         }
 
-        private void EvaluatePlayerDynamicVPs(int playerId)
+        /// <summary>Highest value above threshold wins. Ties preserve current holder.</summary>
+        private void EvalCompetitive(string vpId, int threshold, System.Func<int, int> getValue)
         {
-            // Field Marshal: ≥20 army
-            EvalDynamic(playerId, "vp_field_marshal",
-                _state.Army.GetTotalArmySize(playerId) >= 20);
+            int bestPlayer = -1;
+            int bestValue = threshold - 1;
 
-            // Metropolis: ≥25 workers (employed)
-            EvalDynamic(playerId, "vp_metropolis",
-                _state.Population.GetEmployedCount(playerId) >= 25);
+            // Find current holder (for tie-breaking)
+            int currentHolder = -1;
+            for (int p = 0; p < _state.PlayerCount; p++)
+            {
+                if (_dynamicVPs.TryGetValue(p, out var s) && s.Contains(vpId))
+                    currentHolder = p;
+            }
 
-            // Emperor: ≥3 sectors
-            EvalDynamic(playerId, "vp_emperor",
-                _state.Graph.GetSectorsOwnedBy(playerId).Count >= 3);
+            for (int p = 0; p < _state.PlayerCount; p++)
+            {
+                int val = getValue(p);
+                if (val >= threshold)
+                {
+                    if (val > bestValue || (val == bestValue && p == currentHolder))
+                    {
+                        bestValue = val;
+                        bestPlayer = p;
+                    }
+                }
+            }
 
-            // Banker: ≥25 coins
-            var res = _state.PlayerResources.TryGetValue(playerId, out var r) ? r : null;
-            EvalDynamic(playerId, "vp_banker",
-                res != null && res.Get(ResourceType.Coins) >= 25);
-
-            // Sun King: ≥5 prestige level
-            EvalDynamic(playerId, "vp_sun_king",
-                _state.Prestige.GetLevel(playerId) >= 5);
-
-            // Trading Company: ≥5 outposts
-            EvalDynamic(playerId, "vp_trading_company",
-                _state.TradeMapData.GetClaimedCount(playerId) >= 5);
-
-            // Fountain of Knowledge: ≥3 techs
-            EvalDynamic(playerId, "vp_fountain",
-                _state.Research.GetTechCount(playerId) >= 3);
-
-            // Pacifist: ≥10 minutes without attacking
-            float lastAtk = GetLastAttackTime(playerId);
-            float timeSinceAttack = lastAtk < 0
-                ? _state.SimulationTime // never attacked
-                : _state.SimulationTime - lastAtk;
-            EvalDynamic(playerId, "vp_pacifist",
-                _state.SimulationTime >= 600f && timeSinceAttack >= 600f);
-
-            // Economist: ≥75% work yards staffed
-            EvalDynamic(playerId, "vp_economist",
-                GetStaffingPercent(playerId) >= 75);
-
-            // Generalissimo: ≥20 kills
-            EvalDynamic(playerId, "vp_generalissimo",
-                GetKillCount(playerId) >= 20);
+            for (int p = 0; p < _state.PlayerCount; p++)
+                EvalDynamic(p, vpId, p == bestPlayer);
         }
 
         private void EvalDynamic(int playerId, string vpId, bool condition)
@@ -260,6 +267,12 @@ namespace Settlers.Simulation
             }
         }
 
+        private int GetCoins(int playerId)
+        {
+            return _state.PlayerResources.TryGetValue(playerId, out var r)
+                ? r.Get(ResourceType.Coins) : 0;
+        }
+
         private int GetStaffingPercent(int playerId)
         {
             var buildings = _state.Construction.GetBuildingsByPlayer(playerId);
@@ -277,5 +290,4 @@ namespace Settlers.Simulation
             return totalWY > 0 ? (staffedWY * 100) / totalWY : 0;
         }
     }
-
 }

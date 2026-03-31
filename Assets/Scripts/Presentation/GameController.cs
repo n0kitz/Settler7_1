@@ -54,6 +54,9 @@ namespace Settlers.Presentation
         private int _playerCountOverride;
         private int _vpRequiredOverride;
 
+        [Header("Game Constants")]
+        [SerializeField] private Data.GameConstants _gameConstants;
+
         [Header("Construction")]
         [SerializeField] private float _constructionBaseTime = 10f;
         [SerializeField] private int _carrierMaxItems = 3;
@@ -126,8 +129,12 @@ namespace Settlers.Presentation
             var mapInfo = MapFactory.CreateMap(_mapId);
             int playerCount = _playerCountOverride > 0 ? _playerCountOverride : mapInfo.PlayerCount;
             int vpRequired = _vpRequiredOverride > 0 ? _vpRequiredOverride : mapInfo.VPRequired;
+            var vpThresholds = BuildVPThresholds();
+            float countdown = _gameConstants != null
+                ? _gameConstants.victoryCountdownSeconds : 180f;
             State = new GameState(mapInfo.Graph, playerCount: playerCount,
-                _constructionBaseTime, _carrierMaxItems, vpRequired, _mapId);
+                _constructionBaseTime, _carrierMaxItems, vpRequired, _mapId,
+                countdown, vpThresholds);
             _runner = new SimulationRunner(State);
 
             EnsureMaterial();
@@ -177,6 +184,25 @@ namespace Settlers.Presentation
                 _buildingPlacer.OnBuildingPlaced -= HandleBuildingPlaced;
             if (_buildMenu != null)
                 _buildMenu.OnBuildingSelected -= HandleBuildMenuSelection;
+        }
+
+        private Simulation.VPThresholds BuildVPThresholds()
+        {
+            if (_gameConstants == null) return new Simulation.VPThresholds();
+            var gc = _gameConstants;
+            return new Simulation.VPThresholds
+            {
+                FieldMarshalArmy = gc.vpFieldMarshalMin,
+                MetropolisWorkers = gc.vpMetropolisMin,
+                EmperorSectors = gc.vpEmperorMin,
+                BankerCoins = gc.vpBankerMin,
+                SunKingPrestige = gc.vpSunKingMin,
+                TradingCompanyOutposts = gc.vpTradingCompanyMin,
+                FountainTechs = gc.vpFountainMin,
+                PacifistSeconds = gc.vpPacifistMinSeconds,
+                EconomistStaffPercent = gc.vpEconomistMinPercent,
+                GeneralissimoKills = gc.vpGeneralissimoMin
+            };
         }
 
         // Building placement + work yards → GameController.Buildings.cs

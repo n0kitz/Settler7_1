@@ -7,6 +7,14 @@
 
 ## Last Session Summary
 
+### 2026-03-25 — Roslyn cleanup, Editor menu verified, UI stubs confirmed
+
+**What was done:**
+- Deleted incompatible Roslyn plugins from `Assets/Plugins/Roslyn/` (~12MB, 4 DLLs) — Unity 6 has its own compiler
+- Removed empty `Assets/Plugins/` directory
+- Verified `AssetGenerator.cs` + `AssetGeneratorMaps.cs` exist in Editor scripts
+- Verified all 25 UI files present including PrestigeChartUI, TechTreeUI, TradeMapUI, ArmyPanel, TavernUI
+
 ### 2026-03-25 — ArmyPanel + TavernUI Full Implementation
 
 **What was done:**
@@ -51,7 +59,7 @@
 ## Current State
 
 ### File Counts (2026-03-25)
-- 102 script files in `Assets/Scripts/`
+- 103 script files in `Assets/Scripts/`
 - 23 test files in `Assets/Tests/Editor/`
 - ~14,900 lines of C# total
 - All files under 300 lines (architecture rule)
@@ -109,19 +117,14 @@ AITests, BuildingAndWorkYardTests, ConquestRewardTests, ConstructionTests, FoodB
 
 ## Known Bugs
 
-### UNCOMMITTED — Large refactor + compilation fixes sitting in working tree
-- 30+ files changed (refactor + 5 new UI stubs + VictoryPanel fix + skill files)
-- Not committed. Risk of losing work if git operations are done carelessly.
-- Should be committed once Unity compilation is confirmed working.
-- **User action required:** Close Unity, delete `Library/` folder, reopen Unity, verify zero errors in Console.
+_(none known — verify after Unity reimport)_
 
 ---
 
 ## Next Up
 
 1. **Verify Unity compilation** — delete Library/, reopen Unity, check Console for errors
-2. **Commit the refactor** — once compilation passes, commit the 25-file cleanup + asmdef fix
-3. **Run `Settlers > Generate All Assets`** — creates SO .asset files in `Assets/Data/`
+2. **Run `Settlers > Generate All Assets`** — creates SO .asset files in `Assets/Data/`
 4. **Configure SO assets in Inspector** — wire definitions with actual values
 5. **Import TMP Essential Resources** — `Window > TextMeshPro > Import TMP Essential Resources` (needed for fonts)
 6. **Create prefabs** — replace procedural primitives with 3D models
@@ -169,5 +172,6 @@ AITests, BuildingAndWorkYardTests, ConquestRewardTests, ConstructionTests, FoodB
 - **Do NOT edit .meta files or scene files** — Unity owns those. Only edit .cs, .asmdef, and data files.
 - **Do NOT delete Library/ folder without closing Unity first** — corrupts the project cache.
 - **Do NOT amend existing git commits** — always create new commits. Amending after hook failure can destroy previous work.
+- **Do NOT add Roslyn DLLs to Assets/Plugins** — Unity 6 has its own compiler, they are incompatible and cause plugin errors.
 - **Do NOT batch-write multiple files in one turn** — user preference: ONE file per turn, stop, wait for feedback.
 - **Always create stub files before referencing a class anywhere** — CS0246 errors block the entire project from opening in Unity. Every class referenced in code must have a .cs file, even if it's just a stub.

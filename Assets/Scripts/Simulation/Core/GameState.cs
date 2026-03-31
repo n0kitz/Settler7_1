@@ -59,7 +59,8 @@ namespace Settlers.Simulation
 
         public GameState(SectorGraph graph, int playerCount,
             float constructionBaseTime, int carrierMaxItems,
-            int vpRequired = 4, string mapId = "test_valley")
+            int vpRequired = 4, string mapId = "test_valley",
+            float countdownDuration = 180f, VPThresholds vpThresholds = null)
         {
             Graph = graph;
             PlayerCount = playerCount;
@@ -120,8 +121,8 @@ namespace Settlers.Simulation
                     Logistics.PlaceStorehouse(i, sector.OwnerId);
             }
 
-            // Victory system (vpRequired from map, 180s countdown)
-            Victory = new VictorySystem(this, vpRequired: vpRequired, countdownDuration: 180f);
+            // Victory system
+            Victory = new VictorySystem(this, vpRequired, countdownDuration, vpThresholds);
 
             // Quest system
             Quests = new QuestSystem(this);
