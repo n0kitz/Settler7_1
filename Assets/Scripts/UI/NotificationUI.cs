@@ -230,7 +230,7 @@ namespace Settlers.UI
             panelRect.anchorMin = new Vector2(0f, 0f);
             panelRect.anchorMax = new Vector2(0f, 0f);
             panelRect.pivot = new Vector2(0f, 0f);
-            panelRect.anchoredPosition = new Vector2(10f, 10f);
+            panelRect.anchoredPosition = new Vector2(10f, 280f);
             panelRect.sizeDelta = new Vector2(320f, 160f);
 
             var layout = panelGo.AddComponent<VerticalLayoutGroup>();

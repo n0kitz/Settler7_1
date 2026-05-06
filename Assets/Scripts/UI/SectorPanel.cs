@@ -66,6 +66,10 @@ namespace Settlers.UI
             if (kb.cKey.wasPressedThisFrame)
                 TryProselytism(_currentSectorId);
 
+            // N key builds a fortification in selected owned sector
+            if (kb.nKey.wasPressedThisFrame)
+                TryBuildFortification(_currentSectorId);
+
             // Auto-refresh every 0.5s when visible
             _refreshTimer -= Time.deltaTime;
             if (_refreshTimer <= 0f)

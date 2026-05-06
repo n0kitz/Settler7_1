@@ -84,11 +84,13 @@ namespace Settlers.Presentation
         private TradeMapUI _tradeMapUI;
         private ArmyPanel _armyPanel;
         private TavernUI _tavernUI;
+        private UI.QuestPanel _questPanel;
         private Camera _mainCamera;
         private Material _buildingMaterial;
         private WorkerManager _workerManager;
         private CarrierManager _carrierManager;
         private ArmyViewManager _armyViewManager;
+        private ClericManager _clericManager;
 
         private readonly Dictionary<int, BuildingView> _buildingViews = new();
         private Transform _buildingsRoot;
@@ -104,6 +106,7 @@ namespace Settlers.Presentation
             _tradeMapUI = FindAnyObjectByType<TradeMapUI>();
             _armyPanel = FindAnyObjectByType<ArmyPanel>();
             _tavernUI = FindAnyObjectByType<TavernUI>();
+            _questPanel = FindAnyObjectByType<UI.QuestPanel>();
 
             _buildingPlacer = GetComponent<BuildingPlacer>();
             if (_buildingPlacer == null)
@@ -111,7 +114,10 @@ namespace Settlers.Presentation
             _buildingPlacer.OnBuildingPlaced += HandleBuildingPlaced;
         }
 
+        /// <summary>Set by Initialize() — minimal bootstrap done, controller ready.</summary>
         private bool _initialized;
+        /// <summary>Set by InitializeGame() — real game is running. Blocks re-entry.</summary>
+        private bool _gameRunning;
 
         private void Start()
         {
@@ -121,10 +127,29 @@ namespace Settlers.Presentation
                 InitializeGame();
         }
 
-        private void InitializeGame()
+        /// <summary>
+        /// Accept a pre-built GameState and SimulationRunner from BootstrapScene.
+        /// Skips MapFactory / visual spawning — used for minimal bootstrap.
+        /// </summary>
+        public void Initialize(GameState state, SimulationRunner runner)
         {
             if (_initialized) return;
             _initialized = true;
+            State = state;
+            _runner = runner;
+        }
+
+        private void InitializeGame()
+        {
+            if (_gameRunning) return;
+            _gameRunning = true;
+            _initialized = true;
+
+            // Reset static ID counters so IDs are consistent across game sessions
+            Building.ResetIdCounter();
+            WorkYard.ResetIdCounter();
+            Storehouse.ResetIdCounter();
+            ArmySystem.ResetIdCounter();
 
             var mapInfo = MapFactory.CreateMap(_mapId);
             int playerCount = _playerCountOverride > 0 ? _playerCountOverride : mapInfo.PlayerCount;
@@ -136,6 +161,10 @@ namespace Settlers.Presentation
                 _constructionBaseTime, _carrierMaxItems, vpRequired, _mapId,
                 countdown, vpThresholds);
             _runner = new SimulationRunner(State);
+            _runner.EnableAll();
+
+            // Subscribe to simulation events for presentation layer
+            State.Events.Subscribe<BuildingDestroyedEvent>(HandleBuildingDestroyed);
 
             EnsureMaterial();
             EnsureBuildingMaterial();
@@ -160,6 +189,9 @@ namespace Settlers.Presentation
             _armyViewManager = gameObject.AddComponent<ArmyViewManager>();
             _armyViewManager.Initialize(unitsRoot, _buildingMaterial);
 
+            _clericManager = gameObject.AddComponent<ClericManager>();
+            _clericManager.Initialize(unitsRoot, _buildingMaterial);
+
             if (_buildMenu != null)
                 _buildMenu.OnBuildingSelected += HandleBuildMenuSelection;
         }
@@ -175,6 +207,7 @@ namespace Settlers.Presentation
             _workerManager?.Sync(State.Production.AllWorkYards);
             _carrierManager?.Sync(State.Logistics.ActiveTasks);
             _armyViewManager?.Sync(State.Army, State.PlayerCount);
+            _clericManager?.Sync(State.Conquest.ProselytismTasks);
             SyncRoads();
         }
 

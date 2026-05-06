@@ -77,7 +77,7 @@ namespace Settlers.Simulation
             CycleProgress += amount;
             if (CycleProgress >= 1f)
             {
-                CycleProgress = 0f;
+                CycleProgress -= 1f;
                 return true;
             }
             return false;
@@ -88,6 +88,14 @@ namespace Settlers.Simulation
         {
             CycleProgress = 0f;
             InputsReserved = false;
+        }
+
+        /// <summary>Restore work yard state from a save file.</summary>
+        public void RestoreState(bool hasWorker, bool hasTool, float cycleProgress)
+        {
+            HasWorker = hasWorker;
+            HasTool = hasTool;
+            CycleProgress = cycleProgress;
         }
 
         /// <summary>Reset ID counter (for tests).</summary>

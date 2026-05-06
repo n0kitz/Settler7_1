@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Settlers.Simulation;
 using Settlers.UI;
 
 namespace Settlers.Presentation
@@ -71,6 +73,32 @@ namespace Settlers.Presentation
             light.color = new Color(1f, 0.96f, 0.88f);
             light.intensity = 1.2f;
             lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+        }
+
+        private void Start()
+        {
+            // Minimal valid SectorGraph: 1 sector, player 0 owns it
+            var graph = new SectorGraph();
+            graph.AddSector(new Sector(
+                id: 0, name: "Home", ownerId: 0,
+                garrisonStrength: 0, isFortified: false,
+                resourceNodes: new List<ResourceNodeType>(),
+                buildSlots: 4));
+
+            // Construct GameState with real graph
+            var state = new GameState(graph, playerCount: 1,
+                constructionBaseTime: 10f, carrierMaxItems: 3,
+                vpRequired: 4, mapId: "bootstrap");
+
+            // Create runner with all systems disabled
+            var runner = new SimulationRunner(state);
+            runner.DisableAll();
+            runner.OnTickLog = tick => Debug.Log($"SimulationRunner tick #{tick}");
+
+            // Initialize GameController with pre-built state
+            GameController.Instance.Initialize(state, runner);
+
+            Debug.Log("GameController initialized successfully");
         }
 
         private void OnNewGameClicked()

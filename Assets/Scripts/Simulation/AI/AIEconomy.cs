@@ -77,8 +77,7 @@ namespace Settlers.Simulation
                          b.Type != BaseBuildingType.NobleResidence &&
                          b.FoodSetting != FoodSetting.None)
                 {
-                    // Disable food if supply is empty (prevents halt)
-                    // But don't disable on NobleRes — it needs food to function at all
+                    b.SetFoodSetting(FoodSetting.None);
                 }
             }
         }

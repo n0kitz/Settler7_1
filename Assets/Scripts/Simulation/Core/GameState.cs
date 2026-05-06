@@ -142,15 +142,28 @@ namespace Settlers.Simulation
 
             // Wire trade outpost claimed → permanent VP for special outposts
             Events.Subscribe<OutpostClaimedEvent>(OnOutpostClaimed);
+
+            // Wire carrier delivery → deposit goods at destination storehouse owner
+            Events.Subscribe<CarrierDeliveryEvent>(OnCarrierDelivery);
         }
 
         private void OnSectorConquered(SectorConqueredEvent evt)
         {
             Prestige.AwardPoints(evt.NewOwnerId, 1);
 
-            // Auto-place storehouse in newly conquered sector
-            if (!Logistics.HasStorehouse(evt.SectorId))
-                Logistics.PlaceStorehouse(evt.SectorId, evt.NewOwnerId);
+            // Destroy all buildings belonging to the previous owner in this sector
+            if (evt.PreviousOwnerId >= 0)
+            {
+                var destroyed = Construction.RemoveBuildingsInSector(evt.SectorId, evt.PreviousOwnerId);
+                foreach (int buildingId in destroyed)
+                {
+                    Production.UnregisterWorkYardsForBuilding(buildingId);
+                    Events.Publish(new BuildingDestroyedEvent(buildingId, evt.SectorId));
+                }
+            }
+
+            // Replace storehouse with one owned by the new player
+            Logistics.ReplaceStorehouse(evt.SectorId, evt.NewOwnerId);
 
             // Special sector VP
             var sector = Graph.GetSector(evt.SectorId);
@@ -173,6 +186,15 @@ namespace Settlers.Simulation
         {
             if (evt.IsSpecial)
                 Victory.AwardPermanentVP(evt.PlayerId, "vp_special_outpost_" + evt.OutpostId);
+        }
+
+        private void OnCarrierDelivery(CarrierDeliveryEvent evt)
+        {
+            // Deposit delivered goods into the destination storehouse owner's resources
+            var toStorehouse = Logistics.GetStorehouse(evt.ToSectorId);
+            if (toStorehouse == null) return;
+            if (PlayerResources.TryGetValue(toStorehouse.OwnerId, out var res))
+                res.Add(evt.ResourceType, evt.Amount);
         }
 
         /// <summary>Advance simulation time.</summary>

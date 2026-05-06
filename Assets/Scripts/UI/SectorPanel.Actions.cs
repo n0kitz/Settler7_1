@@ -107,6 +107,19 @@ namespace Settlers.UI
                 ShowFeedback("Cannot start proselytism", new Color(1f, 0.4f, 0.4f));
         }
 
+        /// <summary>Try to build a fortification in an owned sector.</summary>
+        private void TryBuildFortification(int sectorId)
+        {
+            var gc = Presentation.GameController.Instance;
+            if (gc == null) return;
+
+            bool ok = gc.TryBuildFortification(sectorId, 0);
+            if (ok)
+                ShowFeedback("Fortification started", Color.green);
+            else
+                ShowFeedback("Cannot fortify: check prestige unlock + 10 Stone", new Color(1f, 0.4f, 0.4f));
+        }
+
         /// <summary>Cycle food setting on all buildings in a sector.</summary>
         private void CycleFoodInSector(int sectorId)
         {

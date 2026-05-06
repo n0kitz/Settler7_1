@@ -48,6 +48,21 @@ namespace Settlers.Simulation
             _blockedTechs.ContainsKey(techId);
 
         /// <summary>
+        /// Directly mark a tech as researched for a player (used when loading saves).
+        /// Does not fire events or check prerequisites.
+        /// </summary>
+        public void RestoreTech(int playerId, string techId)
+        {
+            _globallyResearched.Add(techId);
+            if (!_playerTechs.TryGetValue(playerId, out var set))
+            {
+                set = new HashSet<string>();
+                _playerTechs[playerId] = set;
+            }
+            set.Add(techId);
+        }
+
+        /// <summary>
         /// Start researching a tech. Returns true if research started.
         /// Fails if: tech already researched, already being researched by someone else,
         /// prerequisite not met, or already owned.

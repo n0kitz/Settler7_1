@@ -54,6 +54,9 @@ namespace Settlers.Presentation
             var victoryPanel = VictoryPanel.Create(canvasGo.transform, _defaultFont);
             victoryPanel.OnReturnToMenu += OnQuitToMenu;
 
+            // Quest Panel (toggle with Q key)
+            QuestPanel.Create(canvasGo.transform, _defaultFont);
+
             // Notifications (bottom-left, fading messages)
             NotificationUI.Create(canvasGo.transform);
 
@@ -120,7 +123,7 @@ namespace Settlers.Presentation
 
             // Hotkey hints (small, gray, at bottom)
             var hotkeyHints = CreateTMPLabel(panelGo.transform, "HotkeyHints", 10, FontStyles.Normal);
-            hotkeyHints.text = "[F]Food [U]Upgrade [W]Work [G]Army [C]Convert";
+            hotkeyHints.text = "[F]Food [U]Upgrade [W]Work [G]Army [C]Convert [N]Fortify";
             hotkeyHints.color = UI.UIColors.TEXT_GRAY_DIM;
 
             // Feedback text (bold, hidden by default)

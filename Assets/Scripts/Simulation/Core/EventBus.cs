@@ -111,6 +111,19 @@ namespace Settlers.Simulation
         }
     }
 
+    /// <summary>Fired when a building is destroyed (e.g., on sector conquest).</summary>
+    public readonly struct BuildingDestroyedEvent
+    {
+        public readonly int BuildingId;
+        public readonly int SectorId;
+
+        public BuildingDestroyedEvent(int buildingId, int sectorId)
+        {
+            BuildingId = buildingId;
+            SectorId = sectorId;
+        }
+    }
+
     /// <summary>Fired when a sector is conquered by a player.</summary>
     public readonly struct SectorConqueredEvent
     {

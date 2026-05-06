@@ -28,9 +28,9 @@ namespace Settlers.UI
 
         private static readonly Color[] PLAYER_COLORS =
         {
-            new Color(0.33f, 1f, 0.33f),  // green (player 0)
-            new Color(1f, 0.33f, 0.33f),   // red
-            new Color(0.33f, 0.55f, 1f),   // blue
+            new Color(0.2f, 0.5f, 0.9f),   // blue (player 0 — matches SectorView)
+            new Color(0.9f, 0.2f, 0.2f),   // red
+            new Color(0.2f, 0.8f, 0.3f),   // green
             new Color(1f, 1f, 0.33f)        // yellow
         };
 

@@ -157,6 +157,17 @@ namespace Settlers.Simulation
             return basePop + upgradeBonus;
         }
 
+        /// <summary>
+        /// Restore building state from a save file.
+        /// Directly sets State, ConstructionProgress, and UpgradeLevel.
+        /// </summary>
+        public void RestoreState(BuildingState state, float progress, int upgradeLevel)
+        {
+            State = state;
+            ConstructionProgress = progress;
+            UpgradeLevel = upgradeLevel;
+        }
+
         /// <summary>Reset ID counter (for tests).</summary>
         public static void ResetIdCounter() => _nextId = 0;
     }

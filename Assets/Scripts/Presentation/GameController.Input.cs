@@ -73,6 +73,13 @@ namespace Settlers.Presentation
                 _tavernUI?.Toggle();
             }
 
+            if (Keyboard.current.qKey.wasPressedThisFrame)
+            {
+                if (_questPanel == null)
+                    _questPanel = FindAnyObjectByType<UI.QuestPanel>();
+                _questPanel?.Toggle();
+            }
+
             // Game speed: 1/2/3 keys
             if (Keyboard.current.digit1Key.wasPressedThisFrame) Time.timeScale = 1f;
             if (Keyboard.current.digit2Key.wasPressedThisFrame) Time.timeScale = 2f;

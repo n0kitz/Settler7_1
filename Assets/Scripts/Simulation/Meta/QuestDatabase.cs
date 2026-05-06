@@ -52,7 +52,7 @@ namespace Settlers.Simulation
             quests.Add(q3);
 
             var q4 = new Quest("quest_scholar", "Scholar",
-                "Research any technology.", -1);
+                "Research the Plowing technology.", -1);
             q4.Objectives.Add(QuestObjective.Tech("tech_plowing"));
             q4.Rewards.Add(QuestReward.Prestige(2));
             q4.Rewards.Add(QuestReward.Resource(ResourceType.Books, 3));

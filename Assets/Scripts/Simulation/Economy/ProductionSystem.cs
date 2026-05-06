@@ -39,6 +39,16 @@ namespace Settlers.Simulation
             _allWorkYards.Add(workYard);
         }
 
+        /// <summary>Remove all work yards belonging to a building (e.g., on building destruction).</summary>
+        public void UnregisterWorkYardsForBuilding(int buildingId)
+        {
+            for (int i = _allWorkYards.Count - 1; i >= 0; i--)
+            {
+                if (_allWorkYards[i].BuildingId == buildingId)
+                    _allWorkYards.RemoveAt(i);
+            }
+        }
+
         /// <summary>
         /// Tick all active work yards. For each operational work yard:
         /// 1. Check food boost status
@@ -89,6 +99,8 @@ namespace Settlers.Simulation
                 {
                     // Inputs were already consumed at reservation
                     wy.InputsReserved = false;
+                    // Consume 1 food item per completed cycle when food boost is active
+                    ConsumeFoodForCycle(building, wy.OwnerId);
                     ProduceOutputs(wy.OwnerId, recipe);
                 }
             }
@@ -109,7 +121,8 @@ namespace Settlers.Simulation
                 hasFoodAvailable = HasFancyFood(playerId);
             }
 
-            bool hasFoodMaster = _prestige?.HasUnlock(playerId, "eco_food_master") ?? false;
+            bool hasFoodMaster = (_prestige?.HasUnlock(playerId, "eco_food_master") ?? false)
+                || ((_techEffects?.GetFancyFoodBonus(playerId) ?? 0) > 0);
             return FoodBoostCalculator.GetEffectiveMultiplier(
                 building.Type, setting, hasFoodAvailable, hasFoodMaster);
         }
@@ -128,16 +141,41 @@ namespace Settlers.Simulation
             return res.Get(ResourceType.Sausages) > 0;
         }
 
+        /// <summary>
+        /// Consume 1 food item per completed cycle when food boost is active.
+        /// Plain food: prefers Bread, falls back to Fish. Fancy: Sausages.
+        /// </summary>
+        private void ConsumeFoodForCycle(Building building, int playerId)
+        {
+            if (!_playerResources.TryGetValue(playerId, out var res)) return;
+            var setting = building.FoodSetting;
+            if (setting == FoodSetting.Plain)
+            {
+                if (!res.TrySpend(ResourceType.Bread, 1))
+                    res.TrySpend(ResourceType.Fish, 1);
+            }
+            else if (setting == FoodSetting.Fancy)
+            {
+                res.TrySpend(ResourceType.Sausages, 1);
+            }
+        }
+
         private bool ConsumeInputs(int playerId, RecipeDatabase.RecipeDef recipe)
         {
             if (!_playerResources.TryGetValue(playerId, out var res))
                 return false;
 
+            // Pre-check ALL inputs before spending any — prevents partial consumption
             for (int i = 0; i < recipe.Inputs.Length; i++)
             {
-                if (!res.TrySpend(recipe.Inputs[i].type, recipe.Inputs[i].amount))
+                if (!res.Has(recipe.Inputs[i].type, recipe.Inputs[i].amount))
                     return false;
             }
+
+            // All available — now spend
+            for (int i = 0; i < recipe.Inputs.Length; i++)
+                res.TrySpend(recipe.Inputs[i].type, recipe.Inputs[i].amount);
+
             return true;
         }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Settlers.Simulation
 {
@@ -111,8 +112,7 @@ namespace Settlers.Simulation
         public void Tick(float deltaTime)
         {
             // Reset active counts (snapshot keys to avoid modifying dictionary during iteration)
-            var tempKeys = new List<int>(_activeConstructions.Keys);
-            foreach (var key in tempKeys)
+            foreach (var key in _activeConstructions.Keys.ToList())
                 _activeConstructions[key] = 0;
 
             var completedBuildings = new List<Building>();
@@ -149,6 +149,15 @@ namespace Settlers.Simulation
             }
         }
 
+        /// <summary>
+        /// Get how many constructors are currently active for a player after the last Tick.
+        /// Used by UpgradeSystem to share the constructor pool.
+        /// </summary>
+        public int GetActiveConstructionCount(int playerId)
+        {
+            return _activeConstructions.TryGetValue(playerId, out int count) ? count : 0;
+        }
+
         /// <summary>Get the number of buildings currently in the construction queue for a player.</summary>
         public int GetQueuedCount(int playerId)
         {
@@ -165,6 +174,69 @@ namespace Settlers.Simulation
         public int GetBuildingCountInSector(int sectorId)
         {
             return _buildingsBySector.TryGetValue(sectorId, out var list) ? list.Count : 0;
+        }
+
+        /// <summary>
+        /// Restore a building directly from save data — bypasses slot check and construction
+        /// queue for buildings that are already complete. Only adds to queue if still in progress.
+        /// Fires BuildingPlacedEvent so presentation layer spawns the visual.
+        /// </summary>
+        public Building RestoreBuilding(BaseBuildingType type, int sectorId, int ownerId,
+            int maxWorkYards, float localX, float localZ,
+            BuildingState state, float progress, int upgradeLevel, FoodSetting foodSetting)
+        {
+            var building = new Building(type, sectorId, ownerId, maxWorkYards, localX, localZ);
+            building.RestoreState(state, progress, upgradeLevel);
+            building.SetFoodSetting(foodSetting);
+
+            _allBuildings.Add(building);
+
+            if (!_buildingsBySector.TryGetValue(sectorId, out var sectorList))
+            {
+                sectorList = new List<Building>();
+                _buildingsBySector[sectorId] = sectorList;
+            }
+            sectorList.Add(building);
+
+            if (!_buildingsByPlayer.TryGetValue(ownerId, out var playerList))
+            {
+                playerList = new List<Building>();
+                _buildingsByPlayer[ownerId] = playerList;
+            }
+            playerList.Add(building);
+
+            // Only queue buildings that are still being constructed/upgraded
+            if (state == BuildingState.Planned || state == BuildingState.UnderConstruction
+                || state == BuildingState.Upgrading)
+                _constructionQueue.Add(building);
+
+            _eventBus.Publish(new BuildingPlacedEvent(building.Id, sectorId, type));
+            return building;
+        }
+
+        /// <summary>
+        /// Remove all buildings in a sector owned by a specific player.
+        /// Used on sector conquest (buildings destroyed, winner rebuilds).
+        /// Returns the list of destroyed building IDs for event firing.
+        /// </summary>
+        public List<int> RemoveBuildingsInSector(int sectorId, int ownerId)
+        {
+            var destroyed = new List<int>();
+            if (!_buildingsBySector.TryGetValue(sectorId, out var sectorList))
+                return destroyed;
+
+            for (int i = sectorList.Count - 1; i >= 0; i--)
+            {
+                var b = sectorList[i];
+                if (b.OwnerId != ownerId) continue;
+                sectorList.RemoveAt(i);
+                _allBuildings.Remove(b);
+                _constructionQueue.Remove(b);
+                if (_buildingsByPlayer.TryGetValue(ownerId, out var playerList))
+                    playerList.Remove(b);
+                destroyed.Add(b.Id);
+            }
+            return destroyed;
         }
     }
 }

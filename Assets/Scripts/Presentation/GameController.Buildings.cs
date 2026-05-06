@@ -96,5 +96,16 @@ namespace Settlers.Presentation
                     view.UpdateState(building.State, building.ConstructionProgress);
             }
         }
+
+        /// <summary>Remove a building's view when it is destroyed (e.g., on conquest).</summary>
+        public void HandleBuildingDestroyed(BuildingDestroyedEvent evt)
+        {
+            if (_buildingViews.TryGetValue(evt.BuildingId, out var view))
+            {
+                if (view != null)
+                    Destroy(view.gameObject);
+                _buildingViews.Remove(evt.BuildingId);
+            }
+        }
     }
 }

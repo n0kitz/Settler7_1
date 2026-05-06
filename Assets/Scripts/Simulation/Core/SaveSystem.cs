@@ -77,12 +77,23 @@ namespace Settlers.Simulation
                     sb.AppendLine($"outpost.{op.Id}.claimedBy={op.ClaimedBy}");
             }
 
-            // Victory
+            // Work yards (attached to buildings, save after buildings)
+            foreach (var b in state.Construction.AllBuildings)
+            {
+                foreach (var wy in b.WorkYards)
+                {
+                    sb.AppendLine($"wy.{wy.Id}={wy.TypeId}|{wy.BuildingId}|{wy.SectorId}|" +
+                        $"{wy.OwnerId}|{wy.RequiredResourceNode}|{wy.LocalX:F2}|{wy.LocalZ:F2}|" +
+                        $"{wy.HasWorker}|{wy.HasTool}|{wy.CycleProgress:F4}");
+                }
+            }
+
+            // Permanent VPs only — dynamic VPs are recalculated each tick
             for (int p = 0; p < state.PlayerCount; p++)
             {
-                int vpCount = state.Victory.GetVPCount(p);
-                if (vpCount > 0)
-                    sb.AppendLine($"vp.{p}.count={vpCount}");
+                var allVPs = state.Victory.GetAllVPs(p);
+                if (allVPs.Count > 0)
+                    sb.AppendLine($"vp.{p}.permanent={string.Join(",", allVPs)}");
             }
 
             return sb.ToString();
@@ -112,10 +123,12 @@ namespace Settlers.Simulation
 
         /// <summary>
         /// Apply save data to a GameState. Call after creating a fresh state
-        /// with the same map.
+        /// with the same map. ID counters must be reset before calling this.
         /// </summary>
         public static void ApplyToState(GameState state, Dictionary<string, string> data)
         {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+
             // Sector ownership
             for (int i = 0; i < state.Graph.SectorCount; i++)
             {
@@ -138,7 +151,7 @@ namespace Settlers.Simulation
                 }
             }
 
-            // Prestige points
+            // Prestige
             for (int p = 0; p < state.PlayerCount; p++)
             {
                 if (data.TryGetValue($"prestige.{p}.points", out var ptsStr))
@@ -158,11 +171,97 @@ namespace Settlers.Simulation
                 }
             }
 
-            // Simulation time
+            // Buildings — must be restored before work yards
+            if (data.TryGetValue("buildingCount", out var bcStr) && int.TryParse(bcStr, out int bc))
+            {
+                for (int id = 0; id < bc; id++)
+                {
+                    if (!data.TryGetValue($"building.{id}", out var bStr)) continue;
+                    var parts = bStr.Split('|');
+                    if (parts.Length < 10) continue;
+
+                    var bType = (BaseBuildingType)Enum.Parse(typeof(BaseBuildingType), parts[0]);
+                    int sectorId   = int.Parse(parts[1]);
+                    int ownerId    = int.Parse(parts[2]);
+                    var bState     = (BuildingState)Enum.Parse(typeof(BuildingState), parts[3]);
+                    float prog     = float.Parse(parts[4], inv);
+                    int upLevel    = int.Parse(parts[5]);
+                    int maxWY      = int.Parse(parts[6]);
+                    float lx       = float.Parse(parts[7], inv);
+                    float lz       = float.Parse(parts[8], inv);
+                    var food       = (FoodSetting)Enum.Parse(typeof(FoodSetting), parts[9]);
+
+                    state.Construction.RestoreBuilding(
+                        bType, sectorId, ownerId, maxWY, lx, lz,
+                        bState, prog, upLevel, food);
+                }
+            }
+
+            // Work yards — buildings must already be restored above
+            foreach (var kvp in data)
+            {
+                if (!kvp.Key.StartsWith("wy.")) continue;
+                var parts = kvp.Value.Split('|');
+                if (parts.Length < 10) continue;
+
+                string typeId          = parts[0];
+                int buildingId         = int.Parse(parts[1]);
+                int sectorId           = int.Parse(parts[2]);
+                int ownerId            = int.Parse(parts[3]);
+                var reqNode = (ResourceNodeType)Enum.Parse(typeof(ResourceNodeType), parts[4]);
+                float lx               = float.Parse(parts[5], inv);
+                float lz               = float.Parse(parts[6], inv);
+                bool hasWorker         = bool.Parse(parts[7]);
+                bool hasTool           = bool.Parse(parts[8]);
+                float cycleProgress    = float.Parse(parts[9], inv);
+
+                var building = state.Construction.GetBuilding(buildingId);
+                if (building == null) continue;
+
+                var wy = new WorkYard(typeId, buildingId, sectorId, ownerId, reqNode, lx, lz);
+                wy.RestoreState(hasWorker, hasTool, cycleProgress);
+                building.AttachWorkYard(wy);
+                state.Production.RegisterWorkYard(wy);
+            }
+
+            // Tech research
+            for (int p = 0; p < state.PlayerCount; p++)
+            {
+                if (!data.TryGetValue($"techs.{p}", out var techStr)) continue;
+                foreach (var techId in techStr.Split(','))
+                {
+                    if (!string.IsNullOrEmpty(techId))
+                        state.Research.RestoreTech(p, techId.Trim());
+                }
+            }
+
+            // Trade outpost claims
+            foreach (var kvp in data)
+            {
+                if (!kvp.Key.StartsWith("outpost.") || !kvp.Key.EndsWith(".claimedBy"))
+                    continue;
+                string outpostId = kvp.Key.Substring("outpost.".Length,
+                    kvp.Key.Length - "outpost.".Length - ".claimedBy".Length);
+                int claimOwner = int.Parse(kvp.Value);
+                var outpost = state.TradeMapData.GetOutpost(outpostId);
+                outpost?.TryClaim(claimOwner);
+            }
+
+            // Permanent VPs
+            for (int p = 0; p < state.PlayerCount; p++)
+            {
+                if (!data.TryGetValue($"vp.{p}.permanent", out var vpStr)) continue;
+                foreach (var vpId in vpStr.Split(','))
+                {
+                    if (!string.IsNullOrEmpty(vpId))
+                        state.Victory.AwardPermanentVP(p, vpId.Trim());
+                }
+            }
+
+            // Simulation time (apply last — doesn't affect anything above)
             if (data.TryGetValue("simTime", out var timeStr))
             {
-                float time = float.Parse(timeStr,
-                    System.Globalization.CultureInfo.InvariantCulture);
+                float time = float.Parse(timeStr, inv);
                 state.AdvanceTime(time);
             }
         }

@@ -38,13 +38,28 @@ namespace Settlers.Simulation
         /// <summary>All active carrier tasks.</summary>
         public IReadOnlyList<CarrierTask> ActiveTasks => _activeTasks;
 
-        /// <summary>Place a storehouse in a sector for a player.</summary>
+        /// <summary>Place a storehouse in a sector for a player. No-op if one already exists.</summary>
         public Storehouse PlaceStorehouse(int sectorId, int ownerId)
         {
             if (_storehousesBySector.ContainsKey(sectorId))
                 return _storehousesBySector[sectorId]; // Already has one
 
             var sh = new Storehouse(sectorId, ownerId);
+            _storehousesBySector[sectorId] = sh;
+            _allStorehouses.Add(sh);
+            return sh;
+        }
+
+        /// <summary>
+        /// Replace the storehouse in a sector with a new one for the given owner.
+        /// Used on sector conquest to transfer storehouse ownership.
+        /// </summary>
+        public Storehouse ReplaceStorehouse(int sectorId, int newOwnerId)
+        {
+            if (_storehousesBySector.TryGetValue(sectorId, out var old))
+                _allStorehouses.Remove(old);
+
+            var sh = new Storehouse(sectorId, newOwnerId);
             _storehousesBySector[sectorId] = sh;
             _allStorehouses.Add(sh);
             return sh;

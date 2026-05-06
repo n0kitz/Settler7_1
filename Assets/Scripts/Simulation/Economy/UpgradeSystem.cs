@@ -62,20 +62,34 @@ namespace Settlers.Simulation
         }
 
         /// <summary>
-        /// Tick upgrade progress. Uses available constructors (shared with construction queue).
+        /// Tick upgrade progress. Shares constructor pool with ConstructionSystem.
+        /// Upgrades + active constructions must not exceed constructor count per player.
         /// </summary>
         public void Tick(float deltaTime)
         {
             var completed = new List<Building>();
+            // Track how many upgrade slots we've consumed per player this tick
+            var upgradeSlots = new Dictionary<int, int>();
 
             for (int i = 0; i < _upgradeQueue.Count; i++)
             {
                 var building = _upgradeQueue[i];
+                int playerId = building.OwnerId;
+
+                // Count constructors used by construction + upgrades already started
+                int constructionActive = _construction.GetActiveConstructionCount(playerId);
+                int maxConstructors = _construction.GetConstructorCount(playerId);
+                if (!upgradeSlots.TryGetValue(playerId, out int upgradeActive))
+                    upgradeActive = 0;
+
+                if (constructionActive + upgradeActive >= maxConstructors)
+                    continue; // All constructors busy
+
+                upgradeSlots[playerId] = upgradeActive + 1;
+
                 float progress = deltaTime / _baseUpgradeTime;
                 bool done = building.AdvanceUpgrade(progress);
-
-                if (done)
-                    completed.Add(building);
+                if (done) completed.Add(building);
             }
 
             for (int i = 0; i < completed.Count; i++)
