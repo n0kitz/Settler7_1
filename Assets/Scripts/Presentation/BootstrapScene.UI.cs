@@ -81,9 +81,25 @@ namespace Settlers.Presentation
             _loadSlotUI = SaveSlotUI.Create(canvasGo.transform, _defaultFont);
             _loadSlotUI.OnClosed += OnLoadSlotClosed;
 
+            // Tutorial overlay (hidden until tutorial map starts)
+            TutorialOverlayUI.Create(canvasGo.transform, _defaultFont);
+
+            // Campaign screens
+            _campaignSelect = CampaignSelectionUI.Create(canvasGo.transform, _defaultFont);
+            _campaignSelect.OnMissionSelected += OnCampaignMissionSelected;
+            _campaignSelect.OnBack += OnCampaignBack;
+
+            _missionBriefing = MissionBriefingUI.Create(canvasGo.transform, _defaultFont);
+            _missionBriefing.OnStart += OnMissionStart;
+            _missionBriefing.OnBack += OnMissionBriefingBack;
+
+            MissionCompleteUI.Create(canvasGo.transform, _defaultFont);
+
             // Main Menu (shown at startup, on top)
             _mainMenu = MainMenuUI.Create(canvasGo.transform, _defaultFont);
             _mainMenu.OnNewGame += OnNewGameClicked;
+            _mainMenu.OnCampaign += OnCampaignClicked;
+            _mainMenu.OnTutorial += OnTutorialClicked;
             _mainMenu.OnLoadGame += OnLoadGameClicked;
             _mainMenu.Show();
 

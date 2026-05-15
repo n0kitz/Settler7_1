@@ -89,6 +89,7 @@ namespace Settlers.Presentation
         private CarrierManager _carrierManager;
         private ArmyViewManager _armyViewManager;
         private ClericManager _clericManager;
+        private TutorialSystem _tutorialSystem;
 
         private readonly Dictionary<int, BuildingView> _buildingViews = new();
         private Transform _buildingsRoot;
@@ -192,6 +193,15 @@ namespace Settlers.Presentation
 
             if (_buildMenu != null)
                 _buildMenu.OnBuildingSelected += HandleBuildMenuSelection;
+
+            // Tutorial: activate only on the tutorial map
+            if (MapFactory.IsTutorial(_mapId))
+            {
+                _tutorialSystem = new TutorialSystem(State.Events);
+                var tutorialUI = FindAnyObjectByType<UI.TutorialOverlayUI>();
+                if (tutorialUI != null) tutorialUI.Bind(_tutorialSystem);
+                _tutorialSystem.Activate();
+            }
         }
 
         private void Update()

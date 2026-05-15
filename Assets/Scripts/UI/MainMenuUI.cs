@@ -17,6 +17,12 @@ namespace Settlers.UI
         /// <summary>Fired when the player clicks New Game.</summary>
         public event System.Action OnNewGame;
 
+        /// <summary>Fired when the player clicks Campaign.</summary>
+        public event System.Action OnCampaign;
+
+        /// <summary>Fired when the player clicks Tutorial.</summary>
+        public event System.Action OnTutorial;
+
         /// <summary>Fired when the player clicks Load Game.</summary>
         public event System.Action OnLoadGame;
 
@@ -36,6 +42,18 @@ namespace Settlers.UI
         {
             Hide();
             OnNewGame?.Invoke();
+        }
+
+        private void OnCampaignClicked()
+        {
+            Hide();
+            OnCampaign?.Invoke();
+        }
+
+        private void OnTutorialClicked()
+        {
+            Hide();
+            OnTutorial?.Invoke();
         }
 
         private void OnLoadGameClicked()
@@ -117,6 +135,16 @@ namespace Settlers.UI
             // New Game button
             UIFactory.CreateButton(buttonContainer.transform, "New Game", font,
                 UIColors.BUTTON_GREEN, ui.OnNewGameClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Campaign button
+            UIFactory.CreateButton(buttonContainer.transform, "Campaign", font,
+                new Color(0.6f, 0.4f, 0.1f), ui.OnCampaignClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Tutorial button
+            UIFactory.CreateButton(buttonContainer.transform, "Tutorial", font,
+                new Color(0.3f, 0.5f, 0.7f), ui.OnTutorialClicked,
                 new Vector2(280f, 48f), 20f);
 
             // Load Game button

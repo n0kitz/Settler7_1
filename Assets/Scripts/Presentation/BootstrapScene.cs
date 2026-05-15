@@ -18,6 +18,10 @@ namespace Settlers.Presentation
         private MapSelectionUI _mapSelect;
         private GameSetupUI _gameSetup;
         private SaveSlotUI _loadSlotUI;
+        private UI.CampaignSelectionUI _campaignSelect;
+        private UI.MissionBriefingUI _missionBriefing;
+        private Simulation.CampaignProgress _campaignProgress;
+        private Simulation.Mission _pendingMission;
 
         private void Awake()
         {
@@ -105,6 +109,46 @@ namespace Settlers.Presentation
         {
             _mainMenu.Hide();
             _mapSelect.Show();
+        }
+
+        private void OnTutorialClicked()
+        {
+            _mainMenu.Hide();
+            // Start tutorial map directly — no map/setup screens
+            if (GameController.Instance != null)
+                GameController.Instance.StartGame("tutorial", playerCount: 1, vpRequired: 3);
+        }
+
+        private void OnCampaignClicked()
+        {
+            _mainMenu.Hide();
+            _campaignProgress ??= Simulation.CampaignProgress.Load();
+            _campaignSelect?.Show(_campaignProgress);
+        }
+
+        private void OnCampaignMissionSelected(Simulation.Mission mission)
+        {
+            _pendingMission = mission;
+            _campaignSelect?.Hide();
+            _missionBriefing?.Show(mission);
+        }
+
+        private void OnMissionStart(Simulation.Mission mission)
+        {
+            if (GameController.Instance != null)
+                GameController.Instance.StartGame(mission.MapId, mission.PlayerCount, mission.VPRequired);
+        }
+
+        private void OnMissionBriefingBack()
+        {
+            _missionBriefing?.Hide();
+            _campaignSelect?.Show(_campaignProgress);
+        }
+
+        private void OnCampaignBack()
+        {
+            _campaignSelect?.Hide();
+            _mainMenu.Show();
         }
 
         private void OnLoadGameClicked()
