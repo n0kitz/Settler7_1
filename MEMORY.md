@@ -7,6 +7,19 @@
 
 ## Last Session Summary
 
+### 2026-05-15 — Project review & infrastructure fixes
+
+**What was done:**
+- Fixed `.claude/settings.json` hook paths: changed hardcoded macOS paths to relative paths so hooks actually run
+- Added PostToolUse `check-file-size.sh` hook: warns when a .cs file exceeds 300 lines after any edit
+- Fixed path references in all command files (session-start, session-end, update-memory) from `~/Unity/Settler7_1/` to relative project paths
+- Expanded `settlers-game-design` skill: removed references to non-existent CLAUDE.md §2–§13 sections; moved the full game design spec (buildings, production chains, food boosting, logistics, military, tech, trade, prestige, VPs, quests) directly into the skill
+- Updated CLAUDE.md: added explicit note that full game design spec is in `settlers-game-design` skill; removed hardcoded file count from Project State section
+- Created `project_status.md` and `project_folder_structure.md` auto-memory files (were referenced by /status and /validate but never generated)
+- Moved `HandleClick()` and `SelectSector()` from `GameController.cs` to `GameController.Input.cs` to bring file under 300-line limit (was 321)
+- Created `.github/workflows/ci.yml`: runs code quality checks (layer violations, file sizes, namespace consistency) on every push without needing Unity
+- Created `.claude/commands/test.md`: documents how to run the NUnit test suite
+
 ### 2026-03-25 — Roslyn cleanup, Editor menu verified, UI stubs confirmed
 
 **What was done:**
@@ -58,11 +71,11 @@
 
 ## Current State
 
-### File Counts (2026-03-25)
-- 103 script files in `Assets/Scripts/`
+### File Counts (2026-05-15)
+- 106 script files in `Assets/Scripts/`
 - 23 test files in `Assets/Tests/Editor/`
-- ~14,900 lines of C# total
-- All files under 300 lines (architecture rule)
+- ~16,063 lines of C# total
+- All files under 300 lines (architecture rule enforced by PostToolUse hook)
 
 ### Assembly Definitions
 | Assembly | Location | Rule | References |

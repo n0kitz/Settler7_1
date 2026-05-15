@@ -56,6 +56,8 @@ A faithful recreation of Die Siedler 7's gameplay systems in Unity 6. Local only
 
 ## Game Design: §1 Map & Sectors
 
+> **Full game design spec (§2–§13) lives in the `settlers-game-design` skill.** Read it before implementing any economy, building, food, military, trade, or VP system.
+
 Maps are predefined, divided into sectors connected via a graph (18-43+ sectors). Maps support 1-4 players.
 
 **Sector properties:** Owner (player/neutral/unowned), garrison strength, resource deposits (coal/iron/gold/stone), fertile land, forest, fishing, water, special buildings, event locations, build slots.
@@ -87,7 +89,7 @@ Maps are predefined, divided into sectors connected via a graph (18-43+ sectors)
 
 ## Project State
 
-All 15 simulation systems complete. 103 script files + 23 test files.
+All 15 simulation systems complete. Current file counts in `MEMORY.md` and `project_status.md`.
 Current phase and task queue tracked in MEMORY.md.
 
 ---

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using Settlers.Simulation;
 using Settlers.UI;
 
@@ -238,7 +236,7 @@ namespace Settlers.Presentation
             };
         }
 
-        // Building placement + work yards → GameController.Buildings.cs
+        // Sector click handling → GameController.Input.cs
 
         /// <summary>Get the number of buildings in a sector.</summary>
         public int GetBuildingCountInSector(int sectorId)
@@ -250,40 +248,6 @@ namespace Settlers.Presentation
         public PlayerResources GetPlayerResources(int playerId)
         {
             return State?.PlayerResources.TryGetValue(playerId, out var res) == true ? res : null;
-        }
-
-        // --- Sector Selection ---
-
-        private void HandleClick()
-        {
-            if (_buildingPlacer != null && _buildingPlacer.IsPlacing) return;
-            if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
-
-            // Don't raycast into the 3D world when clicking on UI elements
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit, 500f))
-            {
-                var view = hit.collider.GetComponentInParent<SectorView>();
-                if (view != null) SelectSector(view);
-            }
-        }
-
-        private void SelectSector(SectorView view)
-        {
-            if (_selectedSector != null) _selectedSector.Deselect();
-            _selectedSector = view;
-            _selectedSector.Select();
-
-            var sector = Graph.GetSector(view.SectorId);
-            int buildingCount = Construction.GetBuildingCountInSector(view.SectorId);
-            Debug.Log($"Selected: {sector.Name} (ID:{sector.Id}, " +
-                $"Owner:{sector.OwnerId}, Buildings:{buildingCount}/{sector.BuildSlots})");
-
-            if (_sectorPanel != null)
-                _sectorPanel.ShowSector(view.SectorId);
         }
 
         // --- Public API ---
