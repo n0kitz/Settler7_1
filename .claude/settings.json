@@ -33,7 +33,8 @@
       "Edit(Library/**)",
       "Edit(.git/**)",
       "Bash(rm -rf *)",
-      "Bash(git push *)"
+      "Bash(git push --force*)",
+      "Bash(git push -f *)"
     ]
   }
 }
