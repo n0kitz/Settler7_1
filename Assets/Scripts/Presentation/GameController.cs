@@ -41,16 +41,22 @@ namespace Settlers.Presentation
         /// Start a game with custom player count and VP requirement.
         /// Called by GameSetupUI after the player configures settings.
         /// </summary>
-        public void StartGame(string mapId, int playerCount, int vpRequired)
+        public void StartGame(string mapId, int playerCount, int vpRequired,
+            AIDifficultyLevel difficulty = AIDifficultyLevel.Normal,
+            AIPersonalityType personality = AIPersonalityType.Builder)
         {
             _mapId = mapId;
             _playerCountOverride = playerCount;
             _vpRequiredOverride = vpRequired;
+            _aiDifficulty = difficulty;
+            _aiPersonality = personality;
             InitializeGame();
         }
 
         private int _playerCountOverride;
         private int _vpRequiredOverride;
+        private AIDifficultyLevel _aiDifficulty = AIDifficultyLevel.Normal;
+        private AIPersonalityType _aiPersonality = AIPersonalityType.Builder;
 
         [Header("Game Constants")]
         [SerializeField] private Data.GameConstants _gameConstants;
@@ -156,9 +162,14 @@ namespace Settlers.Presentation
             var vpThresholds = BuildVPThresholds();
             float countdown = _gameConstants != null
                 ? _gameConstants.victoryCountdownSeconds : 180f;
+            var profile = Simulation.AIBehaviorProfile.Create(_aiPersonality, _aiDifficulty);
+            var aiProfiles = new Simulation.AIBehaviorProfile[playerCount - 1];
+            for (int i = 0; i < aiProfiles.Length; i++)
+                aiProfiles[i] = profile;
+
             State = new GameState(mapInfo.Graph, playerCount: playerCount,
                 _constructionBaseTime, _carrierMaxItems, vpRequired, _mapId,
-                countdown, vpThresholds);
+                countdown, vpThresholds, aiProfiles);
             _runner = new SimulationRunner(State);
             _runner.EnableAll();
 
@@ -227,58 +238,28 @@ namespace Settlers.Presentation
                 _buildMenu.OnBuildingSelected -= HandleBuildMenuSelection;
         }
 
-        private Simulation.VPThresholds BuildVPThresholds()
-        {
-            if (_gameConstants == null) return new Simulation.VPThresholds();
-            var gc = _gameConstants;
-            return new Simulation.VPThresholds
-            {
-                FieldMarshalArmy = gc.vpFieldMarshalMin,
-                MetropolisWorkers = gc.vpMetropolisMin,
-                EmperorSectors = gc.vpEmperorMin,
-                BankerCoins = gc.vpBankerMin,
-                SunKingPrestige = gc.vpSunKingMin,
-                TradingCompanyOutposts = gc.vpTradingCompanyMin,
-                FountainTechs = gc.vpFountainMin,
-                PacifistSeconds = gc.vpPacifistMinSeconds,
-                EconomistStaffPercent = gc.vpEconomistMinPercent,
-                GeneralissimoKills = gc.vpGeneralissimoMin
-            };
-        }
-
+        // BuildVPThresholds() → GameController.Buildings.cs
         // Sector click handling → GameController.Input.cs
 
         /// <summary>Get the number of buildings in a sector.</summary>
-        public int GetBuildingCountInSector(int sectorId)
-        {
-            return Construction.GetBuildingCountInSector(sectorId);
-        }
+        public int GetBuildingCountInSector(int sectorId) =>
+            Construction.GetBuildingCountInSector(sectorId);
 
         /// <summary>Get a player's resource inventory.</summary>
-        public PlayerResources GetPlayerResources(int playerId)
-        {
-            return State?.PlayerResources.TryGetValue(playerId, out var res) == true ? res : null;
-        }
-
-        // --- Public API ---
+        public PlayerResources GetPlayerResources(int playerId) =>
+            State?.PlayerResources.TryGetValue(playerId, out var res) == true ? res : null;
 
         /// <summary>Award prestige points to a player.</summary>
-        public void AwardPrestige(int playerId, int points)
-        {
+        public void AwardPrestige(int playerId, int points) =>
             State?.Prestige.AwardPoints(playerId, points);
-        }
 
         /// <summary>Try to upgrade a building.</summary>
-        public bool TryUpgradeBuilding(int buildingId)
-        {
-            return State?.Upgrades.TryStartUpgrade(buildingId) ?? false;
-        }
+        public bool TryUpgradeBuilding(int buildingId) =>
+            State?.Upgrades.TryStartUpgrade(buildingId) ?? false;
 
-        /// <summary>Try to build a fortification in a sector (costs 10 stone, prestige-gated).</summary>
-        public bool TryBuildFortification(int sectorId, int playerId)
-        {
-            return State?.Fortification.StartFortification(playerId, sectorId) ?? false;
-        }
+        /// <summary>Try to build a fortification in a sector.</summary>
+        public bool TryBuildFortification(int sectorId, int playerId) =>
+            State?.Fortification.StartFortification(playerId, sectorId) ?? false;
 
         /// <summary>Try to build a paved road between two sectors (costs 5 stone).</summary>
         public bool TryBuildPavedRoad(int sectorA, int sectorB, int playerId)

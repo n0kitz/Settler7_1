@@ -60,7 +60,8 @@ namespace Settlers.Simulation
         public GameState(SectorGraph graph, int playerCount,
             float constructionBaseTime, int carrierMaxItems,
             int vpRequired = 4, string mapId = "test_valley",
-            float countdownDuration = 180f, VPThresholds vpThresholds = null)
+            float countdownDuration = 180f, VPThresholds vpThresholds = null,
+            AIBehaviorProfile[] aiProfiles = null)
         {
             Graph = graph;
             PlayerCount = playerCount;
@@ -132,7 +133,21 @@ namespace Settlers.Simulation
             // AI players (all non-zero players are AI)
             AIPlayers = new List<AIController>();
             for (int p = 1; p < playerCount; p++)
-                AIPlayers.Add(new AIController(this, p));
+            {
+                var profile = (aiProfiles != null && p - 1 < aiProfiles.Length)
+                    ? aiProfiles[p - 1]
+                    : AIBehaviorProfile.Default;
+
+                if (profile.Difficulty.StartingBonusCoins > 0)
+                    PlayerResources[p].Set(ResourceType.Coins,
+                        profile.Difficulty.StartingBonusCoins);
+                if (profile.Difficulty.StartingBonusPlanks > 0)
+                    PlayerResources[p].Set(ResourceType.Planks,
+                        PlayerResources[p].Get(ResourceType.Planks)
+                        + profile.Difficulty.StartingBonusPlanks);
+
+                AIPlayers.Add(new AIController(this, p, profile));
+            }
 
             // Wire sector conquest → prestige award (+1 per sector) + permanent VP
             Events.Subscribe<SectorConqueredEvent>(OnSectorConquered);

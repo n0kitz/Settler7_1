@@ -9,31 +9,34 @@ namespace Settlers.Simulation
     {
         private readonly GameState _state;
         private readonly int _playerId;
+        private readonly AIBehaviorProfile _profile;
         private float _decisionTimer;
         private float _stallTimer;
         private int _lastVPCount;
         private AIPhase _phase;
         private AIPath _chosenPath;
 
-        private const float DECISION_INTERVAL = 5f;
-
-        public AIController(GameState state, int playerId)
+        public AIController(GameState state, int playerId,
+            AIBehaviorProfile profile = null)
         {
             _state = state;
             _playerId = playerId;
+            _profile = profile ?? AIBehaviorProfile.Default;
             _phase = AIPhase.EarlyEconomy;
             _chosenPath = AIPath.None;
+            _decisionTimer = _profile.Difficulty.DecisionInterval;
         }
 
         public AIPhase Phase => _phase;
         public AIPath ChosenPath => _chosenPath;
         public int PlayerId => _playerId;
+        public AIBehaviorProfile Profile => _profile;
 
         public void Tick(float deltaTime)
         {
             _decisionTimer -= deltaTime;
             if (_decisionTimer > 0f) return;
-            _decisionTimer = DECISION_INTERVAL;
+            _decisionTimer = _profile.Difficulty.DecisionInterval;
 
             switch (_phase)
             {
@@ -52,7 +55,7 @@ namespace Settlers.Simulation
             foreach (var b in _state.Construction.GetBuildingsByPlayer(_playerId))
                 if (b.IsOperational) totalOp++;
 
-            if (totalOp >= 4)
+            if (totalOp >= _profile.Personality.EarlyEconomyThreshold)
                 _phase = AIPhase.PathSelection;
         }
 
@@ -61,11 +64,16 @@ namespace Settlers.Simulation
             int sectors = _state.Graph.GetSectorsOwnedBy(_playerId).Count;
             int coins = AIEconomy.GetResource(_state, _playerId, ResourceType.Coins);
             int weapons = AIEconomy.GetResource(_state, _playerId, ResourceType.Weapons);
+            var p = _profile.Personality;
 
-            // Smarter path selection based on resources and map state
-            if (weapons >= 3 || sectors >= 2)
+            // Base scores from resource situation, scaled by personality weights
+            float milScore = (weapons + sectors) * p.MilitaryWeight;
+            float tradeScore = coins * 0.5f * p.TradeWeight;
+            float techScore = 3f * p.TechWeight; // always a viable option
+
+            if (milScore >= tradeScore && milScore >= techScore)
                 _chosenPath = AIPath.Military;
-            else if (coins >= 10)
+            else if (tradeScore >= techScore)
                 _chosenPath = AIPath.Trade;
             else
                 _chosenPath = AIPath.Technology;

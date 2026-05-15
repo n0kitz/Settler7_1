@@ -183,10 +183,12 @@ namespace Settlers.Presentation
             _gameSetup.Show();
         }
 
-        private void OnStartGame(string mapId, int playerCount, int vpRequired)
+        private void OnStartGame(string mapId, int playerCount, int vpRequired,
+            Simulation.AIDifficultyLevel difficulty, Simulation.AIPersonalityType personality)
         {
             if (GameController.Instance != null)
-                GameController.Instance.StartGame(mapId, playerCount, vpRequired);
+                GameController.Instance.StartGame(mapId, playerCount, vpRequired,
+                    difficulty, personality);
         }
 
         private void OnGameSetupBack()
