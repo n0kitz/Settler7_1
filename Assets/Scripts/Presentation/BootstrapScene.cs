@@ -184,11 +184,15 @@ namespace Settlers.Presentation
         }
 
         private void OnStartGame(string mapId, int playerCount, int vpRequired,
-            Simulation.AIDifficultyLevel difficulty, Simulation.AIPersonalityType personality)
+            Simulation.AIDifficultyLevel difficulty, Simulation.AIPersonalityType personality,
+            Simulation.StartingProfileType startingProfile, Simulation.VictoryRuleSetType victoryRules)
         {
-            if (GameController.Instance != null)
-                GameController.Instance.StartGame(mapId, playerCount, vpRequired,
-                    difficulty, personality);
+            if (GameController.Instance == null) return;
+            var rules = new Simulation.GameRules(
+                Simulation.StartingProfile.Get(startingProfile),
+                Simulation.VictoryRuleSet.Get(victoryRules));
+            GameController.Instance.StartGame(mapId, playerCount, vpRequired,
+                difficulty, personality, rules);
         }
 
         private void OnGameSetupBack()

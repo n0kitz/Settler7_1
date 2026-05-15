@@ -17,6 +17,8 @@ namespace Settlers.UI
         [SerializeField] private TextMeshProUGUI _vpText;
         [SerializeField] private TextMeshProUGUI _difficultyText;
         [SerializeField] private TextMeshProUGUI _personalityText;
+        [SerializeField] private TextMeshProUGUI _startingProfileText;
+        [SerializeField] private TextMeshProUGUI _victoryRulesText;
 
         private string _mapId;
         private int _aiCount = 1;
@@ -26,9 +28,12 @@ namespace Settlers.UI
         private int _vpMax = 10;
         private AIDifficultyLevel _difficulty = AIDifficultyLevel.Normal;
         private AIPersonalityType _personality = AIPersonalityType.Builder;
+        private StartingProfileType _startingProfile = StartingProfileType.Default;
+        private VictoryRuleSetType _victoryRules = VictoryRuleSetType.Standard;
 
-        /// <summary>Fired when Start Game is clicked. Args: mapId, totalPlayers, vpRequired, difficulty, personality.</summary>
-        public event System.Action<string, int, int, AIDifficultyLevel, AIPersonalityType> OnStartGame;
+        /// <summary>Fired when Start Game is clicked.</summary>
+        public event System.Action<string, int, int, AIDifficultyLevel, AIPersonalityType,
+            StartingProfileType, VictoryRuleSetType> OnStartGame;
 
         /// <summary>Fired when the player clicks Back.</summary>
         public event System.Action OnBack;
@@ -111,18 +116,49 @@ namespace Settlers.UI
             RefreshLabels();
         }
 
+        private void OnStartingProfileMinus()
+        {
+            _startingProfile = _startingProfile == StartingProfileType.Default
+                ? StartingProfileType.Lean : _startingProfile - 1;
+            RefreshLabels();
+        }
+
+        private void OnStartingProfilePlus()
+        {
+            _startingProfile = _startingProfile == StartingProfileType.Lean
+                ? StartingProfileType.Default : _startingProfile + 1;
+            RefreshLabels();
+        }
+
+        private void OnVictoryRulesMinus()
+        {
+            _victoryRules = _victoryRules == VictoryRuleSetType.Standard
+                ? VictoryRuleSetType.NoConquest : _victoryRules - 1;
+            RefreshLabels();
+        }
+
+        private void OnVictoryRulesPlus()
+        {
+            _victoryRules = _victoryRules == VictoryRuleSetType.NoConquest
+                ? VictoryRuleSetType.Standard : _victoryRules + 1;
+            RefreshLabels();
+        }
+
         private void RefreshLabels()
         {
             if (_aiCountText != null) _aiCountText.text = $"{_aiCount}";
             if (_vpText != null) _vpText.text = $"{_vpRequired}";
             if (_difficultyText != null) _difficultyText.text = $"{_difficulty}";
             if (_personalityText != null) _personalityText.text = $"{_personality}";
+            if (_startingProfileText != null) _startingProfileText.text = $"{_startingProfile}";
+            if (_victoryRulesText != null) _victoryRulesText.text = $"{_victoryRules}";
         }
 
         private void OnStartClicked()
         {
             Hide();
-            OnStartGame?.Invoke(_mapId, 1 + _aiCount, _vpRequired, _difficulty, _personality);
+            OnStartGame?.Invoke(_mapId, 1 + _aiCount, _vpRequired,
+                _difficulty, _personality, _startingProfile, _victoryRules);
         }
 
         private void OnBackClicked()
@@ -209,6 +245,16 @@ namespace Settlers.UI
             var persText = CreateSettingRow(settingsGo.transform, "AI Style", font,
                 ui.OnPersonalityMinus, ui.OnPersonalityPlus);
             UIFactory.SetField(ui, "_personalityText", persText);
+
+            // Starting Resources row
+            var spText = CreateSettingRow(settingsGo.transform, "Resources", font,
+                ui.OnStartingProfileMinus, ui.OnStartingProfilePlus);
+            UIFactory.SetField(ui, "_startingProfileText", spText);
+
+            // Victory Rules row
+            var vrText = CreateSettingRow(settingsGo.transform, "Victory Rules", font,
+                ui.OnVictoryRulesMinus, ui.OnVictoryRulesPlus);
+            UIFactory.SetField(ui, "_victoryRulesText", vrText);
 
             // Buttons container
             var buttonsGo = new GameObject("Buttons");

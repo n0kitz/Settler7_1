@@ -57,25 +57,28 @@ namespace Settlers.Simulation
         /// <summary>Map ID used to create this game.</summary>
         public string MapId { get; }
 
+        /// <summary>Active rules for this session (victory paths, starting resources, etc.).</summary>
+        public GameRules Rules { get; }
+
         public GameState(SectorGraph graph, int playerCount,
             float constructionBaseTime, int carrierMaxItems,
             int vpRequired = 4, string mapId = "test_valley",
             float countdownDuration = 180f, VPThresholds vpThresholds = null,
-            AIBehaviorProfile[] aiProfiles = null)
+            AIBehaviorProfile[] aiProfiles = null, GameRules rules = null)
         {
             Graph = graph;
             PlayerCount = playerCount;
             MapId = mapId;
             Events = new EventBus();
+            Rules = rules ?? GameRules.Default;
 
-            // Per-player resources
+            // Per-player resources — seeded from StartingProfile
             PlayerResources = new Dictionary<int, PlayerResources>();
             for (int p = 0; p < playerCount; p++)
             {
                 var res = new PlayerResources(p, Events);
-                res.Set(ResourceType.Planks, 20);
-                res.Set(ResourceType.Stone, 10);
-                res.Set(ResourceType.Tools, 5);
+                foreach (var kv in Rules.StartingResources.Resources)
+                    res.Set(kv.Key, kv.Value);
                 PlayerResources[p] = res;
             }
 

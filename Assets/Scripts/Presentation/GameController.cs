@@ -43,13 +43,15 @@ namespace Settlers.Presentation
         /// </summary>
         public void StartGame(string mapId, int playerCount, int vpRequired,
             AIDifficultyLevel difficulty = AIDifficultyLevel.Normal,
-            AIPersonalityType personality = AIPersonalityType.Builder)
+            AIPersonalityType personality = AIPersonalityType.Builder,
+            Simulation.GameRules rules = null)
         {
             _mapId = mapId;
             _playerCountOverride = playerCount;
             _vpRequiredOverride = vpRequired;
             _aiDifficulty = difficulty;
             _aiPersonality = personality;
+            _gameRules = rules ?? Simulation.GameRules.Default;
             InitializeGame();
         }
 
@@ -57,6 +59,7 @@ namespace Settlers.Presentation
         private int _vpRequiredOverride;
         private AIDifficultyLevel _aiDifficulty = AIDifficultyLevel.Normal;
         private AIPersonalityType _aiPersonality = AIPersonalityType.Builder;
+        private Simulation.GameRules _gameRules = Simulation.GameRules.Default;
 
         [Header("Game Constants")]
         [SerializeField] private Data.GameConstants _gameConstants;
@@ -169,7 +172,7 @@ namespace Settlers.Presentation
 
             State = new GameState(mapInfo.Graph, playerCount: playerCount,
                 _constructionBaseTime, _carrierMaxItems, vpRequired, _mapId,
-                countdown, vpThresholds, aiProfiles);
+                countdown, vpThresholds, aiProfiles, _gameRules);
             _runner = new SimulationRunner(State);
             _runner.EnableAll();
 

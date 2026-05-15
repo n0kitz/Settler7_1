@@ -74,8 +74,8 @@ namespace Settlers.Presentation
 
             // Game Setup (hidden until map selected)
             _gameSetup = GameSetupUI.Create(canvasGo.transform, _defaultFont);
-            _gameSetup.OnStartGame += (map, players, vp, diff, pers) =>
-                OnStartGame(map, players, vp, diff, pers);
+            _gameSetup.OnStartGame += (map, players, vp, diff, pers, sp, vr) =>
+                OnStartGame(map, players, vp, diff, pers, sp, vr);
             _gameSetup.OnBack += OnGameSetupBack;
 
             // Save Slot UI for main menu Load Game (separate from pause menu's instance)
