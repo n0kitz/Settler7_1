@@ -26,6 +26,9 @@ namespace Settlers.UI
         /// <summary>Fired when the player clicks Load Game.</summary>
         public event System.Action OnLoadGame;
 
+        /// <summary>Fired when the player clicks Map Editor.</summary>
+        public event System.Action OnMapEditor;
+
         public void Show()
         {
             if (_panelRoot != null)
@@ -60,6 +63,12 @@ namespace Settlers.UI
         {
             Hide();
             OnLoadGame?.Invoke();
+        }
+
+        private void OnMapEditorClicked()
+        {
+            Hide();
+            OnMapEditor?.Invoke();
         }
 
         private void OnQuitClicked()
@@ -150,6 +159,11 @@ namespace Settlers.UI
             // Load Game button
             UIFactory.CreateButton(buttonContainer.transform, "Load Game", font,
                 UIColors.BUTTON_BLUE, ui.OnLoadGameClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Map Editor button
+            UIFactory.CreateButton(buttonContainer.transform, "Map Editor", font,
+                new Color(0.35f, 0.28f, 0.5f), ui.OnMapEditorClicked,
                 new Vector2(280f, 48f), 20f);
 
             // Quit button

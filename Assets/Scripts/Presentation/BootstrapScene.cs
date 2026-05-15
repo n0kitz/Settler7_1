@@ -22,6 +22,7 @@ namespace Settlers.Presentation
         private UI.MissionBriefingUI _missionBriefing;
         private Simulation.CampaignProgress _campaignProgress;
         private Simulation.Mission _pendingMission;
+        private MapEditorController _mapEditorController;
 
         private void Awake()
         {
@@ -149,6 +150,43 @@ namespace Settlers.Presentation
         {
             _campaignSelect?.Hide();
             _mainMenu.Show();
+        }
+
+        private void OnMapEditorClicked()
+        {
+            _mainMenu.Hide();
+            if (_mapEditorController == null)
+            {
+                var go = new GameObject("MapEditorController");
+                _mapEditorController = go.AddComponent<MapEditorController>();
+            }
+            var editorUI = FindAnyObjectByType<UI.MapEditorUI>();
+            var propPanel = FindAnyObjectByType<UI.SectorPropertyPanel>();
+            _mapEditorController.OnEditorClosed += OnMapEditorClosed;
+            _mapEditorController.OnPlaytestRequested += OnMapEditorPlaytest;
+            _mapEditorController.Activate(editorUI, propPanel);
+        }
+
+        private void OnMapEditorClosed()
+        {
+            if (_mapEditorController != null)
+            {
+                _mapEditorController.OnEditorClosed -= OnMapEditorClosed;
+                _mapEditorController.OnPlaytestRequested -= OnMapEditorPlaytest;
+            }
+            _mainMenu.Show();
+        }
+
+        private void OnMapEditorPlaytest(Simulation.MapEditorState editorState)
+        {
+            if (GameController.Instance == null) return;
+            var graph = editorState.ToSectorGraph();
+            var rules = Simulation.GameRules.Default;
+            // Inline-launch the editor map as a skirmish
+            GameController.Instance.StartGame("editor_custom",
+                editorState.MaxPlayers, editorState.DefaultVP,
+                Simulation.AIDifficultyLevel.Normal,
+                Simulation.AIPersonalityType.Builder, rules);
         }
 
         private void OnLoadGameClicked()

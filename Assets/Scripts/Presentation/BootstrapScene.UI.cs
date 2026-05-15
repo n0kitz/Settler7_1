@@ -85,6 +85,10 @@ namespace Settlers.Presentation
             // Tutorial overlay (hidden until tutorial map starts)
             TutorialOverlayUI.Create(canvasGo.transform, _defaultFont);
 
+            // Map Editor screens (hidden until "Map Editor" clicked)
+            UI.MapEditorUI.Create(canvasGo.transform, _defaultFont);
+            UI.SectorPropertyPanel.Create(canvasGo.transform, _defaultFont);
+
             // Campaign screens
             _campaignSelect = CampaignSelectionUI.Create(canvasGo.transform, _defaultFont);
             _campaignSelect.OnMissionSelected += OnCampaignMissionSelected;
@@ -102,6 +106,7 @@ namespace Settlers.Presentation
             _mainMenu.OnCampaign += OnCampaignClicked;
             _mainMenu.OnTutorial += OnTutorialClicked;
             _mainMenu.OnLoadGame += OnLoadGameClicked;
+            _mainMenu.OnMapEditor += OnMapEditorClicked;
             _mainMenu.Show();
 
             return canvasGo.transform;
