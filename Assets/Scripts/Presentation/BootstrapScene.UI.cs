@@ -74,18 +74,68 @@ namespace Settlers.Presentation
 
             // Game Setup (hidden until map selected)
             _gameSetup = GameSetupUI.Create(canvasGo.transform, _defaultFont);
-            _gameSetup.OnStartGame += OnStartGame;
+            _gameSetup.OnStartGame += (map, players, vp, diff, pers, sp, vr) =>
+                OnStartGame(map, players, vp, diff, pers, sp, vr);
             _gameSetup.OnBack += OnGameSetupBack;
 
             // Save Slot UI for main menu Load Game (separate from pause menu's instance)
             _loadSlotUI = SaveSlotUI.Create(canvasGo.transform, _defaultFont);
             _loadSlotUI.OnClosed += OnLoadSlotClosed;
 
+            // Tutorial overlay (hidden until tutorial map starts)
+            TutorialOverlayUI.Create(canvasGo.transform, _defaultFont);
+
+            // Map Editor screens (hidden until "Map Editor" clicked)
+            UI.MapEditorUI.Create(canvasGo.transform, _defaultFont);
+            UI.SectorPropertyPanel.Create(canvasGo.transform, _defaultFont);
+
+            // Settings (shown from Main Menu or Pause Menu, starts hidden)
+            _settingsUI = UI.SettingsUI.Create(canvasGo.transform, _defaultFont);
+            _settingsUI.Initialize();
+
+            // Achievements panel (toggle with K key)
+            _achievementsPanel = UI.AchievementsPanel.Create(canvasGo.transform, _defaultFont);
+            _achievementToast  = UI.AchievementToast.Create(canvasGo.transform, _defaultFont);
+
+            // Diplomacy panel (toggle with J key)
+            _diplomacyPanel = UI.DiplomacyPanel.Create(canvasGo.transform, _defaultFont);
+
+            // Post-game summary (shown on game over)
+            _postGameSummary = UI.PostGameSummaryUI.Create(canvasGo.transform, _defaultFont);
+            _postGameSummary.OnReturnToMenu += OnQuitToMenu;
+            _postGameSummary.OnPlayAgain    += () => { /* TODO: restart same map */ };
+
+            // Hall of Fame (shown from main menu)
+            _hallOfFame = UI.HallOfFameUI.Create(canvasGo.transform, _defaultFont);
+
+            // Achievement system (pure C# — lives outside MonoBehaviours)
+            _achievementSystem = new Simulation.AchievementSystem();
+            _playerStats       = new Simulation.PlayerStats();
+
+            // Campaign screens
+            _campaignSelect = CampaignSelectionUI.Create(canvasGo.transform, _defaultFont);
+            _campaignSelect.OnMissionSelected += OnCampaignMissionSelected;
+            _campaignSelect.OnBack += OnCampaignBack;
+
+            _missionBriefing = MissionBriefingUI.Create(canvasGo.transform, _defaultFont);
+            _missionBriefing.OnStart += OnMissionStart;
+            _missionBriefing.OnBack += OnMissionBriefingBack;
+
+            MissionCompleteUI.Create(canvasGo.transform, _defaultFont);
+
             // Main Menu (shown at startup, on top)
             _mainMenu = MainMenuUI.Create(canvasGo.transform, _defaultFont);
             _mainMenu.OnNewGame += OnNewGameClicked;
+            _mainMenu.OnCampaign += OnCampaignClicked;
+            _mainMenu.OnTutorial += OnTutorialClicked;
             _mainMenu.OnLoadGame += OnLoadGameClicked;
+            _mainMenu.OnMapEditor += OnMapEditorClicked;
+            _mainMenu.OnSettings += OnSettingsClicked;
+            _mainMenu.OnAchievements += OnAchievementsClicked;
+            _mainMenu.OnHallOfFame   += OnHallOfFameClicked;
             _mainMenu.Show();
+            pauseMenu.OnSettings += OnSettingsClicked;
+            pauseMenu.OnAchievements += OnAchievementsClicked;
 
             return canvasGo.transform;
         }

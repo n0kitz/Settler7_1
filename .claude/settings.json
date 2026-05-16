@@ -6,11 +6,22 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /Users/normenkitzmann/Unity/Settler7_1/.claude/hooks/protect-unity-files.sh"
+            "command": "bash .claude/hooks/protect-unity-files.sh"
           },
           {
             "type": "command",
-            "command": "bash /Users/normenkitzmann/Unity/Settler7_1/.claude/hooks/check-layer-violation.sh"
+            "command": "bash .claude/hooks/check-layer-violation.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/check-file-size.sh"
           }
         ]
       }
@@ -22,7 +33,8 @@
       "Edit(Library/**)",
       "Edit(.git/**)",
       "Bash(rm -rf *)",
-      "Bash(git push *)"
+      "Bash(git push --force*)",
+      "Bash(git push -f *)"
     ]
   }
 }

@@ -4,7 +4,7 @@ Update MEMORY.md and auto-memory files to match the actual codebase state.
 
 1. **Read current state:**
    - Read `MEMORY.md` in project root (Claude Code's working memory)
-   - Read auto-memory files in `~/.claude/projects/-Users-normenkitzmann-Unity/memory/`
+   - Read `project_status.md` in project root (auto-generated file counts + phase)
 
 2. **Scan the codebase:**
    - Count all `.cs` files under `Assets/Scripts/` and `Assets/Tests/`
@@ -18,8 +18,8 @@ Update MEMORY.md and auto-memory files to match the actual codebase state.
    - Add any new architecture decisions to ## Decisions Made
    - Add any failed approaches to ## What NOT To Do
 
-4. **Update auto-memory files:**
-   - Update `project_folder_structure.md` with current actual files
+4. **Update auto-memory files (project root):**
+   - Update `project_folder_structure.md` with current actual files listed by layer
    - Update `project_status.md` with current file counts and phase info
 
 5. **Report what changed** — show a brief diff of what was updated.

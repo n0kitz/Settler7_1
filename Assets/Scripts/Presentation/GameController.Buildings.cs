@@ -107,5 +107,24 @@ namespace Settlers.Presentation
                 _buildingViews.Remove(evt.BuildingId);
             }
         }
+
+        internal Simulation.VPThresholds BuildVPThresholds()
+        {
+            if (_gameConstants == null) return new Simulation.VPThresholds();
+            var gc = _gameConstants;
+            return new Simulation.VPThresholds
+            {
+                FieldMarshalArmy = gc.vpFieldMarshalMin,
+                MetropolisWorkers = gc.vpMetropolisMin,
+                EmperorSectors = gc.vpEmperorMin,
+                BankerCoins = gc.vpBankerMin,
+                SunKingPrestige = gc.vpSunKingMin,
+                TradingCompanyOutposts = gc.vpTradingCompanyMin,
+                FountainTechs = gc.vpFountainMin,
+                PacifistSeconds = gc.vpPacifistMinSeconds,
+                EconomistStaffPercent = gc.vpEconomistMinPercent,
+                GeneralissimoKills = gc.vpGeneralissimoMin
+            };
+        }
     }
 }

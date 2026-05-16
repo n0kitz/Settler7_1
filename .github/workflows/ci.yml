@@ -1,0 +1,99 @@
+name: Code Quality
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  code-quality:
+    name: Architecture & Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check layer violations (no UnityEngine in Simulation/)
+        run: |
+          echo "=== Layer Separation Check ==="
+          VIOLATIONS=$(grep -rn "using UnityEngine" Assets/Scripts/Simulation/ \
+            --include="*.cs" | grep -v "Vector3\|Mathf" || true)
+          if [ -n "$VIOLATIONS" ]; then
+            echo "FAIL: UnityEngine references found in Simulation layer:"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+          echo "PASS: No UnityEngine references in Simulation/"
+
+      - name: Check file sizes (300-line limit)
+        run: |
+          echo "=== File Size Check (max 300 lines) ==="
+          VIOLATIONS=""
+          while IFS= read -r file; do
+            LINES=$(wc -l < "$file")
+            if [ "$LINES" -gt 300 ]; then
+              VIOLATIONS="${VIOLATIONS}\n  ${file}: ${LINES} lines"
+            fi
+          done < <(find Assets/Scripts Assets/Tests -name "*.cs")
+          if [ -n "$VIOLATIONS" ]; then
+            echo "FAIL: Files exceeding 300-line limit:"
+            printf "%b\n" "$VIOLATIONS"
+            exit 1
+          fi
+          echo "PASS: All files within 300-line limit"
+
+      - name: Check namespace consistency
+        run: |
+          echo "=== Namespace Check ==="
+          SIMULATION_VIOLATIONS=$(grep -rLn "namespace Settlers.Simulation" \
+            Assets/Scripts/Simulation/ --include="*.cs" \
+            | grep -v ".asmdef" || true)
+          PRESENTATION_VIOLATIONS=$(grep -rLn "namespace Settlers.Presentation\|namespace Settlers.UI" \
+            Assets/Scripts/Presentation/ --include="*.cs" || true)
+          UI_VIOLATIONS=$(grep -rLn "namespace Settlers.UI" \
+            Assets/Scripts/UI/ --include="*.cs" || true)
+
+          FOUND=0
+          if [ -n "$SIMULATION_VIOLATIONS" ]; then
+            echo "WARN: Simulation files missing Settlers.Simulation namespace:"
+            echo "$SIMULATION_VIOLATIONS"
+            FOUND=1
+          fi
+          if [ -n "$PRESENTATION_VIOLATIONS" ]; then
+            echo "WARN: Presentation files missing Settlers.Presentation namespace:"
+            echo "$PRESENTATION_VIOLATIONS"
+            FOUND=1
+          fi
+          if [ "$FOUND" -eq 0 ]; then
+            echo "PASS: Namespaces consistent"
+          fi
+
+      - name: Count files and report
+        run: |
+          echo "=== File Count Report ==="
+          SIMULATION=$(find Assets/Scripts/Simulation -name "*.cs" | wc -l)
+          PRESENTATION=$(find Assets/Scripts/Presentation -name "*.cs" | wc -l)
+          UI=$(find Assets/Scripts/UI -name "*.cs" | wc -l)
+          DATA=$(find Assets/Scripts/Data -name "*.cs" | wc -l)
+          EDITOR=$(find Assets/Scripts/Editor -name "*.cs" | wc -l)
+          TESTS=$(find Assets/Tests -name "*.cs" | wc -l)
+          TOTAL=$(find Assets/Scripts -name "*.cs" | wc -l)
+          echo "Simulation: $SIMULATION | Presentation: $PRESENTATION | UI: $UI"
+          echo "Data: $DATA | Editor: $EDITOR | Tests: $TESTS"
+          echo "Scripts total: $TOTAL"
+
+      - name: Verify assembly definitions exist
+        run: |
+          echo "=== Assembly Definition Check ==="
+          for asmdef in \
+            "Assets/Scripts/Simulation/Settlers.Simulation.asmdef" \
+            "Assets/Scripts/Settlers.Game.asmdef" \
+            "Assets/Tests/Editor/Settlers.Tests.asmdef"; do
+            if [ ! -f "$asmdef" ]; then
+              echo "FAIL: Missing $asmdef"
+              exit 1
+            fi
+            echo "PASS: $asmdef"
+          done

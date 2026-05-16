@@ -18,6 +18,21 @@ namespace Settlers.Presentation
         private MapSelectionUI _mapSelect;
         private GameSetupUI _gameSetup;
         private SaveSlotUI _loadSlotUI;
+        private UI.CampaignSelectionUI _campaignSelect;
+        private UI.MissionBriefingUI _missionBriefing;
+        private UI.SettingsUI _settingsUI;
+        private UI.AchievementsPanel _achievementsPanel;
+        private UI.AchievementToast _achievementToast;
+        private Simulation.AchievementSystem _achievementSystem;
+        private Simulation.PlayerStats _playerStats;
+        private Simulation.DiplomacySystem _diplomacySystem;
+        private UI.DiplomacyPanel _diplomacyPanel;
+        private UI.PostGameSummaryUI _postGameSummary;
+        private UI.HallOfFameUI _hallOfFame;
+        private float _gameStartTime;
+        private Simulation.CampaignProgress _campaignProgress;
+        private Simulation.Mission _pendingMission;
+        private MapEditorController _mapEditorController;
 
         private void Awake()
         {
@@ -77,7 +92,6 @@ namespace Settlers.Presentation
 
         private void Start()
         {
-            // Minimal valid SectorGraph: 1 sector, player 0 owns it
             var graph = new SectorGraph();
             graph.AddSector(new Sector(
                 id: 0, name: "Home", ownerId: 0,
@@ -85,26 +99,138 @@ namespace Settlers.Presentation
                 resourceNodes: new List<ResourceNodeType>(),
                 buildSlots: 4));
 
-            // Construct GameState with real graph
             var state = new GameState(graph, playerCount: 1,
                 constructionBaseTime: 10f, carrierMaxItems: 3,
                 vpRequired: 4, mapId: "bootstrap");
 
-            // Create runner with all systems disabled
             var runner = new SimulationRunner(state);
             runner.DisableAll();
             runner.OnTickLog = tick => Debug.Log($"SimulationRunner tick #{tick}");
 
-            // Initialize GameController with pre-built state
             GameController.Instance.Initialize(state, runner);
-
+            WireAchievements();
+            WireDiplomacy();
+            WireVFX();
             Debug.Log("GameController initialized successfully");
+        }
+
+        private void WireAchievements()
+        {
+            var bus = GameController.Instance?.Events;
+            if (bus == null) return;
+            _achievementSystem?.Initialize(bus);
+            _playerStats?.Initialize(bus);
+            _achievementsPanel?.Bind(_achievementSystem, _playerStats);
+            bus.Subscribe<AchievementUnlockedEvent>(e =>
+                _achievementToast?.Show(e.Name));
+            bus.Subscribe<GameOverEvent>(e => OnGameOver(e.WinnerId));
+            _gameStartTime = Time.realtimeSinceStartup;
+        }
+
+        private void WireDiplomacy()
+        {
+            var state = GameController.Instance?.State;
+            if (state == null) return;
+            _diplomacySystem = new Simulation.DiplomacySystem(state);
+            _diplomacyPanel?.Bind(_diplomacySystem, _defaultFont);
         }
 
         private void OnNewGameClicked()
         {
             _mainMenu.Hide();
             _mapSelect.Show();
+        }
+
+        private void OnTutorialClicked()
+        {
+            _mainMenu.Hide();
+            // Start tutorial map directly — no map/setup screens
+            if (GameController.Instance != null)
+                GameController.Instance.StartGame("tutorial", playerCount: 1, vpRequired: 3);
+        }
+
+        private void OnCampaignClicked()
+        {
+            _mainMenu.Hide();
+            _campaignProgress ??= Simulation.CampaignProgress.Load();
+            _campaignSelect?.Show(_campaignProgress);
+        }
+
+        private void OnCampaignMissionSelected(Simulation.Mission mission)
+        {
+            _pendingMission = mission;
+            _campaignSelect?.Hide();
+            _missionBriefing?.Show(mission);
+        }
+
+        private void OnMissionStart(Simulation.Mission mission)
+        {
+            if (GameController.Instance != null)
+                GameController.Instance.StartGame(mission.MapId, mission.PlayerCount, mission.VPRequired);
+        }
+
+        private void OnMissionBriefingBack()
+        {
+            _missionBriefing?.Hide();
+            _campaignSelect?.Show(_campaignProgress);
+        }
+
+        private void OnCampaignBack()
+        {
+            _campaignSelect?.Hide();
+            _mainMenu.Show();
+        }
+
+        private void OnMapEditorClicked()
+        {
+            _mainMenu.Hide();
+            if (_mapEditorController == null)
+            {
+                var go = new GameObject("MapEditorController");
+                _mapEditorController = go.AddComponent<MapEditorController>();
+            }
+            var editorUI = FindAnyObjectByType<UI.MapEditorUI>();
+            var propPanel = FindAnyObjectByType<UI.SectorPropertyPanel>();
+            _mapEditorController.OnEditorClosed += OnMapEditorClosed;
+            _mapEditorController.OnPlaytestRequested += OnMapEditorPlaytest;
+            _mapEditorController.Activate(editorUI, propPanel);
+        }
+
+        private void OnMapEditorClosed()
+        {
+            if (_mapEditorController != null)
+            {
+                _mapEditorController.OnEditorClosed -= OnMapEditorClosed;
+                _mapEditorController.OnPlaytestRequested -= OnMapEditorPlaytest;
+            }
+            _mainMenu.Show();
+        }
+
+        private void OnMapEditorPlaytest(Simulation.MapEditorState editorState)
+        {
+            if (GameController.Instance == null) return;
+            var graph = editorState.ToSectorGraph();
+            var rules = Simulation.GameRules.Default;
+            // Inline-launch the editor map as a skirmish
+            GameController.Instance.StartGame("editor_custom",
+                editorState.MaxPlayers, editorState.DefaultVP,
+                Simulation.AIDifficultyLevel.Normal,
+                Simulation.AIPersonalityType.Builder, rules);
+        }
+
+        private void OnSettingsClicked() => _settingsUI?.Show();
+
+        private void OnAchievementsClicked() => _achievementsPanel?.Show();
+        private void OnHallOfFameClicked()   => _hallOfFame?.Show();
+
+        private void OnGameOver(int winnerId)
+        {
+            var state = GameController.Instance?.State;
+            if (state == null || _playerStats == null) return;
+            float duration = Time.realtimeSinceStartup - _gameStartTime;
+            var result = Simulation.MatchResult.From(state, _playerStats, winnerId, duration);
+            Simulation.MatchHistoryPersistence.Append(result);
+            _postGameSummary?.Show(result);
         }
 
         private void OnLoadGameClicked()
@@ -139,16 +265,19 @@ namespace Settlers.Presentation
             _gameSetup.Show();
         }
 
-        private void OnStartGame(string mapId, int playerCount, int vpRequired)
+        private void OnStartGame(string mapId, int playerCount, int vpRequired,
+            Simulation.AIDifficultyLevel difficulty, Simulation.AIPersonalityType personality,
+            Simulation.StartingProfileType startingProfile, Simulation.VictoryRuleSetType victoryRules)
         {
-            if (GameController.Instance != null)
-                GameController.Instance.StartGame(mapId, playerCount, vpRequired);
+            if (GameController.Instance == null) return;
+            var rules = new Simulation.GameRules(
+                Simulation.StartingProfile.Get(startingProfile),
+                Simulation.VictoryRuleSet.Get(victoryRules));
+            GameController.Instance.StartGame(mapId, playerCount, vpRequired,
+                difficulty, personality, rules);
         }
 
-        private void OnGameSetupBack()
-        {
-            _mapSelect.Show();
-        }
+        private void OnGameSetupBack() => _mapSelect.Show();
 
         private TMP_FontAsset LoadDefaultTMPFont()
         {

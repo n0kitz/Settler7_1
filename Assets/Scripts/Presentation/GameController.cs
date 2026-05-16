@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using Settlers.Simulation;
 using Settlers.UI;
 
@@ -43,16 +41,25 @@ namespace Settlers.Presentation
         /// Start a game with custom player count and VP requirement.
         /// Called by GameSetupUI after the player configures settings.
         /// </summary>
-        public void StartGame(string mapId, int playerCount, int vpRequired)
+        public void StartGame(string mapId, int playerCount, int vpRequired,
+            AIDifficultyLevel difficulty = AIDifficultyLevel.Normal,
+            AIPersonalityType personality = AIPersonalityType.Builder,
+            Simulation.GameRules rules = null)
         {
             _mapId = mapId;
             _playerCountOverride = playerCount;
             _vpRequiredOverride = vpRequired;
+            _aiDifficulty = difficulty;
+            _aiPersonality = personality;
+            _gameRules = rules ?? Simulation.GameRules.Default;
             InitializeGame();
         }
 
         private int _playerCountOverride;
         private int _vpRequiredOverride;
+        private AIDifficultyLevel _aiDifficulty = AIDifficultyLevel.Normal;
+        private AIPersonalityType _aiPersonality = AIPersonalityType.Builder;
+        private Simulation.GameRules _gameRules = Simulation.GameRules.Default;
 
         [Header("Game Constants")]
         [SerializeField] private Data.GameConstants _gameConstants;
@@ -91,6 +98,7 @@ namespace Settlers.Presentation
         private CarrierManager _carrierManager;
         private ArmyViewManager _armyViewManager;
         private ClericManager _clericManager;
+        private TutorialSystem _tutorialSystem;
 
         private readonly Dictionary<int, BuildingView> _buildingViews = new();
         private Transform _buildingsRoot;
@@ -157,9 +165,14 @@ namespace Settlers.Presentation
             var vpThresholds = BuildVPThresholds();
             float countdown = _gameConstants != null
                 ? _gameConstants.victoryCountdownSeconds : 180f;
+            var profile = Simulation.AIBehaviorProfile.Create(_aiPersonality, _aiDifficulty);
+            var aiProfiles = new Simulation.AIBehaviorProfile[playerCount - 1];
+            for (int i = 0; i < aiProfiles.Length; i++)
+                aiProfiles[i] = profile;
+
             State = new GameState(mapInfo.Graph, playerCount: playerCount,
                 _constructionBaseTime, _carrierMaxItems, vpRequired, _mapId,
-                countdown, vpThresholds);
+                countdown, vpThresholds, aiProfiles, _gameRules);
             _runner = new SimulationRunner(State);
             _runner.EnableAll();
 
@@ -194,6 +207,15 @@ namespace Settlers.Presentation
 
             if (_buildMenu != null)
                 _buildMenu.OnBuildingSelected += HandleBuildMenuSelection;
+
+            // Tutorial: activate only on the tutorial map
+            if (MapFactory.IsTutorial(_mapId))
+            {
+                _tutorialSystem = new TutorialSystem(State.Events);
+                var tutorialUI = FindAnyObjectByType<UI.TutorialOverlayUI>();
+                if (tutorialUI != null) tutorialUI.Bind(_tutorialSystem);
+                _tutorialSystem.Activate();
+            }
         }
 
         private void Update()
@@ -219,92 +241,28 @@ namespace Settlers.Presentation
                 _buildMenu.OnBuildingSelected -= HandleBuildMenuSelection;
         }
 
-        private Simulation.VPThresholds BuildVPThresholds()
-        {
-            if (_gameConstants == null) return new Simulation.VPThresholds();
-            var gc = _gameConstants;
-            return new Simulation.VPThresholds
-            {
-                FieldMarshalArmy = gc.vpFieldMarshalMin,
-                MetropolisWorkers = gc.vpMetropolisMin,
-                EmperorSectors = gc.vpEmperorMin,
-                BankerCoins = gc.vpBankerMin,
-                SunKingPrestige = gc.vpSunKingMin,
-                TradingCompanyOutposts = gc.vpTradingCompanyMin,
-                FountainTechs = gc.vpFountainMin,
-                PacifistSeconds = gc.vpPacifistMinSeconds,
-                EconomistStaffPercent = gc.vpEconomistMinPercent,
-                GeneralissimoKills = gc.vpGeneralissimoMin
-            };
-        }
-
-        // Building placement + work yards → GameController.Buildings.cs
+        // BuildVPThresholds() → GameController.Buildings.cs
+        // Sector click handling → GameController.Input.cs
 
         /// <summary>Get the number of buildings in a sector.</summary>
-        public int GetBuildingCountInSector(int sectorId)
-        {
-            return Construction.GetBuildingCountInSector(sectorId);
-        }
+        public int GetBuildingCountInSector(int sectorId) =>
+            Construction.GetBuildingCountInSector(sectorId);
 
         /// <summary>Get a player's resource inventory.</summary>
-        public PlayerResources GetPlayerResources(int playerId)
-        {
-            return State?.PlayerResources.TryGetValue(playerId, out var res) == true ? res : null;
-        }
-
-        // --- Sector Selection ---
-
-        private void HandleClick()
-        {
-            if (_buildingPlacer != null && _buildingPlacer.IsPlacing) return;
-            if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
-
-            // Don't raycast into the 3D world when clicking on UI elements
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit, 500f))
-            {
-                var view = hit.collider.GetComponentInParent<SectorView>();
-                if (view != null) SelectSector(view);
-            }
-        }
-
-        private void SelectSector(SectorView view)
-        {
-            if (_selectedSector != null) _selectedSector.Deselect();
-            _selectedSector = view;
-            _selectedSector.Select();
-
-            var sector = Graph.GetSector(view.SectorId);
-            int buildingCount = Construction.GetBuildingCountInSector(view.SectorId);
-            Debug.Log($"Selected: {sector.Name} (ID:{sector.Id}, " +
-                $"Owner:{sector.OwnerId}, Buildings:{buildingCount}/{sector.BuildSlots})");
-
-            if (_sectorPanel != null)
-                _sectorPanel.ShowSector(view.SectorId);
-        }
-
-        // --- Public API ---
+        public PlayerResources GetPlayerResources(int playerId) =>
+            State?.PlayerResources.TryGetValue(playerId, out var res) == true ? res : null;
 
         /// <summary>Award prestige points to a player.</summary>
-        public void AwardPrestige(int playerId, int points)
-        {
+        public void AwardPrestige(int playerId, int points) =>
             State?.Prestige.AwardPoints(playerId, points);
-        }
 
         /// <summary>Try to upgrade a building.</summary>
-        public bool TryUpgradeBuilding(int buildingId)
-        {
-            return State?.Upgrades.TryStartUpgrade(buildingId) ?? false;
-        }
+        public bool TryUpgradeBuilding(int buildingId) =>
+            State?.Upgrades.TryStartUpgrade(buildingId) ?? false;
 
-        /// <summary>Try to build a fortification in a sector (costs 10 stone, prestige-gated).</summary>
-        public bool TryBuildFortification(int sectorId, int playerId)
-        {
-            return State?.Fortification.StartFortification(playerId, sectorId) ?? false;
-        }
+        /// <summary>Try to build a fortification in a sector.</summary>
+        public bool TryBuildFortification(int sectorId, int playerId) =>
+            State?.Fortification.StartFortification(playerId, sectorId) ?? false;
 
         /// <summary>Try to build a paved road between two sectors (costs 5 stone).</summary>
         public bool TryBuildPavedRoad(int sectorA, int sectorB, int playerId)

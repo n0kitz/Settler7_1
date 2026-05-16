@@ -23,23 +23,27 @@ namespace Settlers.Simulation
         {
             return mapId switch
             {
-                "test_valley" => CreateTestValley(),
-                "twin_rivers" => CreateTwinRivers(),
+                "tutorial"      => TutorialMapFactory.Create(),
+                "test_valley"   => CreateTestValley(),
+                "twin_rivers"   => CreateTwinRivers(),
                 "mountain_pass" => CreateMountainPass(),
-                "island_chain" => CreateIslandChain(),
-                "large_valley" => CreateLargeValley(),
-                "crown_war" => CreateCrownWar(),
-                "empire" => CreateEmpire(),
-                _ => CreateTestValley()
+                "island_chain"  => CreateIslandChain(),
+                "large_valley"  => CreateLargeValley(),
+                "crown_war"     => CreateCrownWar(),
+                "empire"        => CreateEmpire(),
+                _               => CreateTestValley()
             };
         }
 
-        /// <summary>Get all available map IDs.</summary>
+        /// <summary>Get all skirmish map IDs (excludes tutorial).</summary>
         public static string[] GetMapIds() => new[]
         {
             "test_valley", "twin_rivers", "mountain_pass", "island_chain", "large_valley",
             "crown_war", "empire"
         };
+
+        /// <summary>True if this map ID is the tutorial.</summary>
+        public static bool IsTutorial(string mapId) => mapId == "tutorial";
 
         // --- Map 1: Test Valley (6 sectors, 2 players) ---
         // This is the existing TestMapFactory map, kept for compatibility.

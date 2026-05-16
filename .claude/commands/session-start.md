@@ -3,10 +3,10 @@ Mandatory session start protocol. Run this at the beginning of every session.
 ## Steps (execute in this exact order)
 
 ### Step 1 — Read CLAUDE.md
-Read `~/Unity/Settler7_1/CLAUDE.md`. This is the single source of truth for game design, architecture, folder structure, naming conventions, and implementation phases. Never assume anything about the project.
+Read `CLAUDE.md` (project root). This is the single source of truth for game design, architecture, folder structure, naming conventions, and implementation phases. Never assume anything about the project.
 
 ### Step 2 — Read MEMORY.md
-Read `~/Unity/Settler7_1/MEMORY.md`. This contains the last known project state, open bugs with file+line references, queued tasks, and settled decisions. This is what happened since CLAUDE.md was last updated.
+Read `MEMORY.md` (project root). This contains the last known project state, open bugs with file+line references, queued tasks, and settled decisions. This is what happened since CLAUDE.md was last updated.
 
 ### Step 3 — Read cost-saving rules
 Read the `cost-saving` skill. Contains session protocol, golden rules, token budgets, and learned mistakes. Never write code without reading this first.

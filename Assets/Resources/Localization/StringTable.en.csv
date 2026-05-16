@@ -1,0 +1,90 @@
+# Settlers 7 — English string table
+# Format: key,value   (# = comment, \n = newline in value)
+
+# Main Menu
+ui.main_menu.title,Die Siedler VII
+ui.main_menu.subtitle,Paths to a Kingdom
+ui.main_menu.new_game,New Game
+ui.main_menu.campaign,Campaign
+ui.main_menu.tutorial,Tutorial
+ui.main_menu.load_game,Load Game
+ui.main_menu.map_editor,Map Editor
+ui.main_menu.settings,Settings
+ui.main_menu.quit,Quit
+
+# Pause Menu
+ui.pause_menu.title,Paused
+ui.pause_menu.resume,Resume
+ui.pause_menu.save_game,Save Game
+ui.pause_menu.load_game,Load Game
+ui.pause_menu.settings,Settings
+ui.pause_menu.quit_to_menu,Quit to Menu
+
+# Settings
+ui.settings.title,Settings
+ui.settings.audio,Audio
+ui.settings.graphics,Graphics
+ui.settings.language,Language
+ui.settings.controls,Controls
+ui.settings.music_volume,Music Volume
+ui.settings.sfx_volume,SFX Volume
+ui.settings.mute_all,Mute All
+ui.settings.quality,Quality
+ui.settings.fullscreen,Fullscreen
+ui.settings.color_blind,Color Blind Mode
+ui.settings.apply_close,Apply & Close
+ui.settings.cancel,Cancel
+ui.settings.reset_defaults,Reset Defaults
+
+# Settings — Quality levels
+ui.settings.quality.low,Low
+ui.settings.quality.medium,Medium
+ui.settings.quality.high,High
+ui.settings.quality.ultra,Ultra
+
+# Settings — Languages
+ui.settings.language.en,English
+ui.settings.language.de,Deutsch
+ui.settings.language.fr,Français
+
+# Settings — Controls
+ui.settings.controls.action,Action
+ui.settings.controls.binding,Key
+ui.settings.controls.rebind,Rebind
+ui.settings.controls.reset,Reset
+ui.settings.controls.press_key,Press a key...
+ui.settings.controls.toggle_quest,Quests
+ui.settings.controls.toggle_tech,Technology
+ui.settings.controls.toggle_trade,Trade Map
+ui.settings.controls.toggle_army,Army
+ui.settings.controls.toggle_tavern,Tavern
+ui.settings.controls.toggle_prestige,Prestige
+ui.settings.controls.toggle_diplomacy,Diplomacy
+ui.settings.controls.toggle_achievements,Achievements
+ui.settings.controls.toggle_pause,Pause
+
+# HUD
+ui.hud.turn,Turn
+ui.hud.vp,VP
+ui.hud.coins,Coins
+ui.hud.food,Food
+
+# Build Menu
+ui.build.title,Build
+ui.build.cost,Cost
+ui.build.time,Time
+
+# Victory
+ui.victory.winner,Winner!
+ui.victory.defeat,Defeated
+ui.victory.countdown,Countdown
+
+# General
+ui.general.on,ON
+ui.general.off,OFF
+ui.general.yes,Yes
+ui.general.no,No
+ui.general.close,Close
+ui.general.back,Back
+ui.general.confirm,Confirm
+ui.general.cancel,Cancel

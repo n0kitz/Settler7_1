@@ -17,8 +17,26 @@ namespace Settlers.UI
         /// <summary>Fired when the player clicks New Game.</summary>
         public event System.Action OnNewGame;
 
+        /// <summary>Fired when the player clicks Campaign.</summary>
+        public event System.Action OnCampaign;
+
+        /// <summary>Fired when the player clicks Tutorial.</summary>
+        public event System.Action OnTutorial;
+
         /// <summary>Fired when the player clicks Load Game.</summary>
         public event System.Action OnLoadGame;
+
+        /// <summary>Fired when the player clicks Map Editor.</summary>
+        public event System.Action OnMapEditor;
+
+        /// <summary>Fired when the player clicks Settings.</summary>
+        public event System.Action OnSettings;
+
+        /// <summary>Fired when the player clicks Achievements.</summary>
+        public event System.Action OnAchievements;
+
+        /// <summary>Fired when the player clicks Hall of Fame.</summary>
+        public event System.Action OnHallOfFame;
 
         public void Show()
         {
@@ -38,11 +56,33 @@ namespace Settlers.UI
             OnNewGame?.Invoke();
         }
 
+        private void OnCampaignClicked()
+        {
+            Hide();
+            OnCampaign?.Invoke();
+        }
+
+        private void OnTutorialClicked()
+        {
+            Hide();
+            OnTutorial?.Invoke();
+        }
+
         private void OnLoadGameClicked()
         {
             Hide();
             OnLoadGame?.Invoke();
         }
+
+        private void OnMapEditorClicked()
+        {
+            Hide();
+            OnMapEditor?.Invoke();
+        }
+
+        private void OnSettingsClicked()     => OnSettings?.Invoke();
+        private void OnAchievementsClicked() => OnAchievements?.Invoke();
+        private void OnHallOfFameClicked()   => OnHallOfFame?.Invoke();
 
         private void OnQuitClicked()
         {
@@ -119,9 +159,39 @@ namespace Settlers.UI
                 UIColors.BUTTON_GREEN, ui.OnNewGameClicked,
                 new Vector2(280f, 48f), 20f);
 
+            // Campaign button
+            UIFactory.CreateButton(buttonContainer.transform, "Campaign", font,
+                new Color(0.6f, 0.4f, 0.1f), ui.OnCampaignClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Tutorial button
+            UIFactory.CreateButton(buttonContainer.transform, "Tutorial", font,
+                new Color(0.3f, 0.5f, 0.7f), ui.OnTutorialClicked,
+                new Vector2(280f, 48f), 20f);
+
             // Load Game button
             UIFactory.CreateButton(buttonContainer.transform, "Load Game", font,
                 UIColors.BUTTON_BLUE, ui.OnLoadGameClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Map Editor button
+            UIFactory.CreateButton(buttonContainer.transform, "Map Editor", font,
+                new Color(0.35f, 0.28f, 0.5f), ui.OnMapEditorClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Achievements button
+            UIFactory.CreateButton(buttonContainer.transform, "Achievements", font,
+                new Color(0.4f, 0.3f, 0.1f), ui.OnAchievementsClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Hall of Fame button
+            UIFactory.CreateButton(buttonContainer.transform, "Hall of Fame", font,
+                new Color(0.5f, 0.38f, 0.08f), ui.OnHallOfFameClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Settings button
+            UIFactory.CreateButton(buttonContainer.transform, "Settings", font,
+                new Color(0.28f, 0.28f, 0.35f), ui.OnSettingsClicked,
                 new Vector2(280f, 48f), 20f);
 
             // Quit button

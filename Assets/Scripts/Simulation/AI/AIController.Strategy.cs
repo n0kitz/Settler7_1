@@ -33,7 +33,7 @@ namespace Settlers.Simulation
             // Attack when ready — each general acts independently
             foreach (var gen in generals)
             {
-                if (gen.TotalSoldiers >= 8 && !gen.IsMoving)
+                if (gen.TotalSoldiers >= _profile.Difficulty.AttackThreshold && !gen.IsMoving)
                 {
                     int target = FindAttackTarget(gen);
                     if (target >= 0)
@@ -162,8 +162,8 @@ namespace Settlers.Simulation
 
         private void ConsiderPathSwitch()
         {
-            _stallTimer += DECISION_INTERVAL;
-            if (_stallTimer < 30f) return;
+            _stallTimer += _profile.Difficulty.DecisionInterval;
+            if (_stallTimer < _profile.Difficulty.StallDuration) return;
 
             int vps = _state.Victory.GetVPCount(_playerId);
             if (vps > _lastVPCount)
