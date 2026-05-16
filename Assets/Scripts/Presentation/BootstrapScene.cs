@@ -110,6 +110,7 @@ namespace Settlers.Presentation
             GameController.Instance.Initialize(state, runner);
             WireAchievements();
             WireDiplomacy();
+            WireVFX();
             Debug.Log("GameController initialized successfully");
         }
 
