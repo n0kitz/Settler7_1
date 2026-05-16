@@ -93,6 +93,14 @@ namespace Settlers.Presentation
             _settingsUI = UI.SettingsUI.Create(canvasGo.transform, _defaultFont);
             _settingsUI.Initialize();
 
+            // Achievements panel (toggle with K key)
+            _achievementsPanel = UI.AchievementsPanel.Create(canvasGo.transform, _defaultFont);
+            _achievementToast  = UI.AchievementToast.Create(canvasGo.transform, _defaultFont);
+
+            // Achievement system (pure C# — lives outside MonoBehaviours)
+            _achievementSystem = new Simulation.AchievementSystem();
+            _playerStats       = new Simulation.PlayerStats();
+
             // Campaign screens
             _campaignSelect = CampaignSelectionUI.Create(canvasGo.transform, _defaultFont);
             _campaignSelect.OnMissionSelected += OnCampaignMissionSelected;
@@ -112,8 +120,10 @@ namespace Settlers.Presentation
             _mainMenu.OnLoadGame += OnLoadGameClicked;
             _mainMenu.OnMapEditor += OnMapEditorClicked;
             _mainMenu.OnSettings += OnSettingsClicked;
+            _mainMenu.OnAchievements += OnAchievementsClicked;
             _mainMenu.Show();
             pauseMenu.OnSettings += OnSettingsClicked;
+            pauseMenu.OnAchievements += OnAchievementsClicked;
 
             return canvasGo.transform;
         }

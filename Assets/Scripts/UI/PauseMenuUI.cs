@@ -20,6 +20,9 @@ namespace Settlers.UI
         /// <summary>Fired when the player clicks Settings.</summary>
         public event System.Action OnSettings;
 
+        /// <summary>Fired when the player clicks Achievements.</summary>
+        public event System.Action OnAchievements;
+
         /// <summary>Fired when the player clicks Quit to Menu.</summary>
         public event System.Action OnQuitToMenu;
 
@@ -83,10 +86,8 @@ namespace Settlers.UI
                 _saveSlotUI.Show(SaveSlotUI.Mode.Load);
         }
 
-        private void OnSettingsClicked()
-        {
-            OnSettings?.Invoke();
-        }
+        private void OnSettingsClicked()      => OnSettings?.Invoke();
+        private void OnAchievementsClicked()  => OnAchievements?.Invoke();
 
         private void OnQuitToMenuClicked()
         {
@@ -163,6 +164,10 @@ namespace Settlers.UI
             // Load Game button
             UIFactory.CreateButton(btnContainer.transform, "Load Game", font,
                 UIColors.BUTTON_BLUE, ui.OnLoadGameClicked);
+
+            // Achievements button
+            UIFactory.CreateButton(btnContainer.transform, "Achievements", font,
+                new Color(0.4f, 0.3f, 0.1f), ui.OnAchievementsClicked);
 
             // Settings button
             UIFactory.CreateButton(btnContainer.transform, "Settings", font,

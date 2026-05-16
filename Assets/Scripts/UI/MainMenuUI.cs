@@ -32,6 +32,9 @@ namespace Settlers.UI
         /// <summary>Fired when the player clicks Settings.</summary>
         public event System.Action OnSettings;
 
+        /// <summary>Fired when the player clicks Achievements.</summary>
+        public event System.Action OnAchievements;
+
         public void Show()
         {
             if (_panelRoot != null)
@@ -74,10 +77,8 @@ namespace Settlers.UI
             OnMapEditor?.Invoke();
         }
 
-        private void OnSettingsClicked()
-        {
-            OnSettings?.Invoke();
-        }
+        private void OnSettingsClicked()     => OnSettings?.Invoke();
+        private void OnAchievementsClicked() => OnAchievements?.Invoke();
 
         private void OnQuitClicked()
         {
@@ -172,6 +173,11 @@ namespace Settlers.UI
             // Map Editor button
             UIFactory.CreateButton(buttonContainer.transform, "Map Editor", font,
                 new Color(0.35f, 0.28f, 0.5f), ui.OnMapEditorClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Achievements button
+            UIFactory.CreateButton(buttonContainer.transform, "Achievements", font,
+                new Color(0.4f, 0.3f, 0.1f), ui.OnAchievementsClicked,
                 new Vector2(280f, 48f), 20f);
 
             // Settings button

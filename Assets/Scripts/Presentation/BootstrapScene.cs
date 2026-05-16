@@ -21,6 +21,10 @@ namespace Settlers.Presentation
         private UI.CampaignSelectionUI _campaignSelect;
         private UI.MissionBriefingUI _missionBriefing;
         private UI.SettingsUI _settingsUI;
+        private UI.AchievementsPanel _achievementsPanel;
+        private UI.AchievementToast _achievementToast;
+        private Simulation.AchievementSystem _achievementSystem;
+        private Simulation.PlayerStats _playerStats;
         private Simulation.CampaignProgress _campaignProgress;
         private Simulation.Mission _pendingMission;
         private MapEditorController _mapEditorController;
@@ -104,7 +108,19 @@ namespace Settlers.Presentation
             // Initialize GameController with pre-built state
             GameController.Instance.Initialize(state, runner);
 
+            WireAchievements();
             Debug.Log("GameController initialized successfully");
+        }
+
+        private void WireAchievements()
+        {
+            var bus = GameController.Instance?.Events;
+            if (bus == null) return;
+            _achievementSystem?.Initialize(bus);
+            _playerStats?.Initialize(bus);
+            _achievementsPanel?.Bind(_achievementSystem, _playerStats);
+            bus.Subscribe<AchievementUnlockedEvent>(e =>
+                _achievementToast?.Show(e.Name));
         }
 
         private void OnNewGameClicked()
@@ -190,10 +206,9 @@ namespace Settlers.Presentation
                 Simulation.AIPersonalityType.Builder, rules);
         }
 
-        private void OnSettingsClicked()
-        {
-            _settingsUI?.Show();
-        }
+        private void OnSettingsClicked() => _settingsUI?.Show();
+
+        private void OnAchievementsClicked() => _achievementsPanel?.Show();
 
         private void OnLoadGameClicked()
         {
