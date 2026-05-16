@@ -93,13 +93,17 @@ namespace Settlers.UI
             UIFactory.SetField(ui, "_panelRoot", panelGo);
 
             var (musicPct, sfxPct, muteLabel) = CreateAudioSection(content.transform, font, ui);
-            var (qualLabel, fsLabel)            = CreateGraphicsSection(content.transform, font, ui);
+            var (qualLabel, fsLabel)           = CreateGraphicsSection(content.transform, font, ui);
+            var (langLabel, cbLabel)           = CreateLanguageSection(content.transform, font, ui);
+            CreateControlsSection(content.transform, font, ui);
 
             UIFactory.SetField(ui, "_musicPct",        musicPct);
             UIFactory.SetField(ui, "_sfxPct",          sfxPct);
             UIFactory.SetField(ui, "_muteLabel",       muteLabel);
             UIFactory.SetField(ui, "_qualityLabel",    qualLabel);
             UIFactory.SetField(ui, "_fullscreenLabel", fsLabel);
+            UIFactory.SetField(ui, "_languageLabel",   langLabel);
+            UIFactory.SetField(ui, "_colorBlindLabel", cbLabel);
 
             // Bottom buttons
             var btnRow = new GameObject("BtnRow");

@@ -23,6 +23,8 @@ namespace Settlers.Simulation
                     $"MasterMute={state.MasterMute}",
                     $"GraphicsQuality={state.GraphicsQuality}",
                     $"Fullscreen={state.Fullscreen}",
+                    $"Language={state.Language}",
+                    $"ColorBlindMode={state.ColorBlindMode}",
                 };
                 File.WriteAllLines(GetPath(), lines);
             }
@@ -75,6 +77,13 @@ namespace Settlers.Simulation
                     break;
                 case "Fullscreen":
                     s.Fullscreen = string.Equals(val, "True",
+                        StringComparison.OrdinalIgnoreCase);
+                    break;
+                case "Language":
+                    if (!string.IsNullOrWhiteSpace(val)) s.Language = val;
+                    break;
+                case "ColorBlindMode":
+                    s.ColorBlindMode = string.Equals(val, "True",
                         StringComparison.OrdinalIgnoreCase);
                     break;
             }

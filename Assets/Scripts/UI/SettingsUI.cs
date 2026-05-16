@@ -43,6 +43,7 @@ namespace Settlers.UI
         public void Initialize()
         {
             _state = SettingsPersistence.Load();
+            LoadKeyBindings();
             Refresh();
             ApplyToEngine();
         }
@@ -59,11 +60,13 @@ namespace Settlers.UI
                 _qualityLabel.text = QUALITY_NAMES[_state.GraphicsQuality];
             if (_fullscreenLabel != null)
                 _fullscreenLabel.text = _state.Fullscreen ? "ON" : "OFF";
+            RefreshLanguage();
         }
 
         private void Apply()
         {
             SettingsPersistence.Save(_state);
+            SaveKeyBindings();
             ApplyToEngine();
         }
 
@@ -77,6 +80,7 @@ namespace Settlers.UI
             }
             QualitySettings.SetQualityLevel(_state.GraphicsQuality, true);
             Screen.fullScreen = _state.Fullscreen;
+            ApplyLanguage();
         }
 
         // --- Handlers ---
