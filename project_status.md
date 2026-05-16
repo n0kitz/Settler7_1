@@ -5,20 +5,20 @@
 
 ## Current Phase
 
-**All 10 planned phases complete — post-roadmap polish (Steps 1-5)**
-See plan at `.claude/plans/look-over-the-project-twinkling-babbage.md`.
+**All 10 planned phases + 5 post-roadmap steps complete.**
+PR #1 open on `claude/review-project-structure-Y7Rlc` — CI green, awaiting merge.
 
 ## File Counts (2026-05-16)
 
 | Layer | Path | Count |
 |-------|------|-------|
-| Simulation | Assets/Scripts/Simulation/ | 78 |
-| Presentation | Assets/Scripts/Presentation/ | 30 |
-| UI | Assets/Scripts/UI/ | 41 |
+| Simulation | Assets/Scripts/Simulation/ | 90 |
+| Presentation | Assets/Scripts/Presentation/ | 31 |
+| UI | Assets/Scripts/UI/ | 46 |
 | Data | Assets/Scripts/Data/ | 7 |
 | Editor | Assets/Scripts/Editor/ | 2 |
-| **Scripts Total** | Assets/Scripts/ | **158** |
-| Tests | Assets/Tests/Editor/ | 33 |
+| **Scripts Total** | Assets/Scripts/ | **176** |
+| Tests | Assets/Tests/Editor/ | 36 |
 
 ## Assembly Definitions
 
@@ -43,11 +43,15 @@ See plan at `.claude/plans/look-over-the-project-twinkling-babbage.md`.
 | Phase 8 | 046c3e8 | Diplomacy System |
 | Phase 9 | 2899c62 | Post-Game Summary & Hall of Fame |
 | Phase 10 | 6f13dc5 | Visual Polish & Procedural VFX |
-| Step 1 | 293fb5e | CI fix — QuestPanel split |
+| Step 1 | 293fb5e | CI fix — QuestPanel split (305→96 lines) |
+| Step 2 | f8e65b3 | Docs refresh — MEMORY, project_status, folder_structure |
+| Step 3 | 0c52600 | Localization & Accessibility (L.Get(), KeyBindings, ColorBlind) |
+| Step 4 | 5fcc83b | Replay System (ActionRecorder, ReplayController, ReplayUI) |
+| Step 5 | f3b4537 | Modding & Custom Content (ModLoader, ModBrowserUI, ScenarioSelectionUI) |
 
 ## Simulation Systems (all 15 implemented)
 
-Economy (Production, Logistics, Construction, Population, Upgrade, FoodBoost), Military (Army, Combat, Conquest, Fortification), Technology (Research, TechEffects, TechTree), Trade (Trade, Tavern), Meta (Victory, Prestige, Quest, Campaign, Achievement, Diplomacy, PostGame), AI (AIController, AIEconomy, AIPersonality/Difficulty/Profile), Maps (MapFactory×5 + MapEditor), Core (GameState, EventBus, SaveSystem, SimulationRunner, Tutorial), Settings (SettingsState, SettingsPersistence)
+Economy (Production, Logistics, Construction, Population, Upgrade, FoodBoost), Military (Army, Combat, Conquest, Fortification), Technology (Research, TechEffects, TechTree), Trade (Trade, Tavern), Meta (Victory, Prestige, Quest, Campaign, Achievement, Diplomacy, PostGame), AI (AIController, AIEconomy, AIPersonality/Difficulty/Profile), Maps (MapFactory×5 + MapEditor), Core (GameState, EventBus, SaveSystem, SimulationRunner, Tutorial), Settings (SettingsState, SettingsPersistence), Localization (LocalizationDatabase, StringTablePersistence, KeyBindings), Replay (ActionRecord, ActionRecorder, ReplaySerializer), Modding (ModManifest, ModLoader, CustomMapRegistry, CustomAchievementRegistry, ScenarioDefinition)
 
 ## Known Violations
 

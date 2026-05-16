@@ -7,23 +7,31 @@
 
 ## Last Session Summary
 
-### 2026-05-16 — Phases 1-10 complete + CI fix
+### 2026-05-16 — Copilot review check, PR #1 confirmed CI-green
 
-**All 10 planned phases shipped and pushed to `claude/review-project-structure-Y7Rlc`:**
+**What was done:**
+- Checked Copilot review on PR #1 (https://github.com/n0kitz/Settler7_1/pull/1) — twice
+- Both attempts failed: "Copilot encountered an error and was unable to review this pull request" — likely PR is too large (111 files, 10,271 additions)
+- Confirmed "Architecture & Code Quality Checks" CI jobs both passed (success) — code quality checks are green
+- PR #1 is open and mergeable; only the Copilot bot failed, not the actual CI
 
-- **Phase 1** (23aca76) Tutorial & Onboarding Mission — TutorialSystem, TutorialStep, TutorialMapFactory, TutorialOverlayUI
-- **Phase 2** (2e3a75d) Campaign Mode — CampaignProgress, CampaignSystem, Mission, MissionObjective, CampaignSelectionUI, MissionBriefingUI, MissionCompleteUI
-- **Phase 3** (f83c0f9) AI Difficulty & Personalities — AIPersonality, AIDifficulty, AIBehaviorProfile; extended AIController + GameState + GameSetupUI
-- **Phase 4** (6081bde) Skirmish Customization — StartingProfile, VictoryRuleSet, GameRules; extended GameSetupUI to 7-param OnStartGame
-- **Phase 5** (fc58816) In-Game Map Editor — MapEditorState, MapValidation, MapSerializer, MapEditorController, MapEditorUI, SectorPropertyPanel
-- **Phase 6** (dd3f919) Audio & Settings — SettingsState, SettingsPersistence, SettingsUI (3 partials), extended AudioManager with EventBus subscriptions; Settings button in MainMenu + PauseMenu
-- **Phase 7** (dae1e56) Achievements & Statistics — Achievement, AchievementCondition, AchievementSystem, PlayerStats, AchievementProgress, AchievementsPanel, AchievementToast
-- **Phase 8** (046c3e8) Diplomacy System — DiplomacySystem, DiplomaticStatus, DiplomaticAction, AIDiplomacyDecider, DiplomacyPanel
-- **Phase 9** (2899c62) Post-Game Summary & Hall of Fame — MatchResult, MatchHistoryPersistence, ScoreCalculator, PostGameSummaryUI, HallOfFameUI
-- **Phase 10** (6f13dc5) Visual Polish & VFX — ParticleEffectsManager, FloatingTextManager, FloatingTextItem, CameraShake, HighlightOverlay, BootstrapScene.VFX.cs
-- **Step 1** (293fb5e) CI fix — QuestPanel.cs (305 lines) split into QuestPanel.cs + QuestPanel.Factory.cs
+**PR #1 status:** Open, CI green (architecture + file size checks passed). Copilot review errored out — PR too large for bot to process. Safe to merge.
 
-**Current state:** 158 scripts, 33 tests. CI green. All files ≤ 300 lines.
+---
+
+### 2026-05-16 — Post-roadmap Steps 1-5 complete + PR created
+
+**All 5 post-roadmap steps completed and pushed:**
+
+- **Phases 1-10** (23aca76–6f13dc5) All 10 phases already on branch before this work began
+- **Step 1** (293fb5e) CI fix — QuestPanel.cs (305 lines) split into QuestPanel.cs + QuestPanel.Factory.cs (partial)
+- **Step 2** (f8e65b3) Docs refresh — MEMORY.md, project_status.md, project_folder_structure.md regenerated to reflect actual 176 scripts / 36 tests
+- **Step 3** (0c52600) Localization & Accessibility — LocalizationDatabase (L.Get()), StringTablePersistence, KeyBindings, KeyBindingsPersistence, StringTable.en.csv (70+ strings), SettingsUI.Language.cs, SettingsUI.Controls.cs, UIColors.SetColorBlindMode(); 18 NUnit tests
+- **Step 4** (5fcc83b) Replay System — ActionRecord, ActionRecorder, ReplaySerializer, ReplayController (Presentation), ReplayUI with timeline bar; 12 NUnit tests
+- **Step 5** (f3b4537) Modding & Custom Content — ModManifest, ModLoader, CustomMapRegistry, CustomAchievementRegistry, ScenarioDefinition, ModBrowserUI, ScenarioSelectionUI; 11 NUnit tests
+- **PR #1** created: https://github.com/n0kitz/Settler7_1/pull/1
+
+**Current state:** 176 scripts, 36 tests. CI green. All files ≤ 300 lines. PR open, awaiting merge.
 
 ---
 
@@ -94,9 +102,10 @@
 ## Current State
 
 ### File Counts (2026-05-16)
-- 158 script files in `Assets/Scripts/`
-- 33 test files in `Assets/Tests/Editor/`
+- **176 script files** in `Assets/Scripts/` (Simulation 90, Presentation 31, UI 46, Data 7, Editor 2)
+- **36 test files** in `Assets/Tests/Editor/`
 - All files ≤ 300 lines (PostToolUse hook + CI enforcement)
+- **PR #1 open** on `claude/review-project-structure-Y7Rlc` — CI green, ready to merge
 
 ### Assembly Definitions
 | Assembly | Location | Rule | References |
@@ -106,7 +115,7 @@
 | Settlers.Editor | `Assets/Scripts/Editor/` | Editor-only | Simulation, Game |
 | Settlers.Tests | `Assets/Tests/Editor/` | Editor-only, NUnit | Simulation, TestRunner |
 
-### Simulation Layer (Pure C# — 78 files)
+### Simulation Layer (Pure C# — 90 files)
 - **Core:** GameState, EventBus, PlayerResources, SaveSystem, SimulationRunner, Enums, TutorialSystem, TutorialStep
 - **Economy:** Building, WorkYard, Storehouse, ProductionSystem, LogisticsSystem, ConstructionSystem, PopulationSystem, FoodBoostCalculator, UpgradeSystem, RecipeDatabase, BuildingCosts
 - **Military:** ArmySystem, CombatResolver, ConquestSystem, FortificationSystem, General, UnitType
@@ -117,8 +126,11 @@
 - **Meta:** PrestigeSystem+DB, VictorySystem (+Events, VPThresholds), QuestSystem+DB+Events, CampaignProgress, CampaignSystem, Mission, MissionObjective, GameRules, StartingProfile, VictoryRuleSet, Achievement, AchievementCondition, AchievementSystem, AchievementProgress, PlayerStats, MatchResult, MatchHistoryPersistence, ScoreCalculator
 - **Map:** MapFactory (7), LargeMapFactory, FourPlayerMapFactory, TestMapFactory, TutorialMapFactory, Sector, SectorGraph, MapEditorState, MapValidation, MapSerializer
 - **Settings:** SettingsState, SettingsPersistence
+- **Localization:** LocalizationDatabase (L.Get()), StringTablePersistence, KeyBindings, KeyBindingsPersistence
+- **Replay:** ActionRecord, ActionRecorder, ReplaySerializer
+- **Modding:** ModManifest, ModLoader, CustomMapRegistry, CustomAchievementRegistry, ScenarioDefinition
 
-### Presentation Layer (30 files)
+### Presentation Layer (31 files)
 - **GameController** — 4 partials (main, Buildings, Input, SectorVisuals)
 - **BootstrapScene** — 3 partials (main, UI, VFX)
 - **Audio:** AudioManager (wired to EventBus)
@@ -130,8 +142,9 @@
 - **VFX:** ParticleEffectsManager, FloatingTextManager, FloatingTextItem, CameraShake, HighlightOverlay
 - **Editor:** MapEditorController
 - **Save/Load:** SaveLoadController
+- **Replay:** ReplayController (deterministic playback, 1×/2×/4×/8× speed, scrub)
 
-### UI Layer (41 files)
+### UI Layer (46 files)
 All programmatically created (no prefabs):
 - MainMenuUI, GameSetupUI (+Widgets), MapSelectionUI, PauseMenuUI
 - SaveSlotUI (+SlotEntry), HUD, SectorPanel (+Actions), BuildMenu
@@ -139,9 +152,12 @@ All programmatically created (no prefabs):
 - PrestigeChartUI+Factory, VictoryPanel (+Create), NotificationUI
 - QuestPanel (+Factory), MapEditorUI, SectorPropertyPanel
 - AchievementsPanel, AchievementToast, HallOfFameUI, PostGameSummaryUI
-- DiplomacyPanel, SettingsUI (+Audio, +Graphics partials)
+- DiplomacyPanel, SettingsUI (+Audio, +Graphics, +Language, +Controls partials)
 - CampaignSelectionUI, MissionBriefingUI, MissionCompleteUI, TutorialOverlayUI
-- UIFactory, UIColors
+- ReplayUI (timeline bar + speed controls)
+- ModBrowserUI (installed mods list, enable/disable)
+- ScenarioSelectionUI (built-in + mod scenarios, launch)
+- UIFactory, UIColors (with SetColorBlindMode())
 
 ### Data Layer (7 ScriptableObject definitions)
 BuildingDefinition, GameConstants, MapDefinition, ProductionRecipe, TechDefinition, WorkYardDefinition, PrestigeUnlockDefinition
@@ -149,8 +165,8 @@ BuildingDefinition, GameConstants, MapDefinition, ProductionRecipe, TechDefiniti
 ### Editor Scripts (2 files)
 AssetGenerator, AssetGeneratorMaps — menu items under `Settlers/` to generate .asset files
 
-### Tests (33 files)
-AITests, AIPersonalityTests, AchievementTests, BuildingAndWorkYardTests, CampaignTests, ConquestRewardTests, ConstructionTests, DiplomacyTests, FoodBoostTests, FortificationTests, GameRulesTests, InputReservationTests, LargeMapTests, LogisticsTests, MapEditorTests, MapFactoryTests, MilitaryTests, PostGameTests, PrestigeTests, ProductionFoodAndReservationTests, ProductionTests, QuestTests, SaveLoadTests, SectorGraphTests, SettingsTests, TechEffectsIntegrationTests, TechEffectsTests, TechnologyTests, TradeTests, TutorialTests, UpgradeTests, VFXTests, VictoryTests
+### Tests (36 files)
+AITests, AIPersonalityTests, AchievementTests, BuildingAndWorkYardTests, CampaignTests, ConquestRewardTests, ConstructionTests, DiplomacyTests, FoodBoostTests, FortificationTests, GameRulesTests, InputReservationTests, LargeMapTests, LocalizationTests, LogisticsTests, MapEditorTests, MapFactoryTests, MilitaryTests, ModdingTests, PostGameTests, PrestigeTests, ProductionFoodAndReservationTests, ProductionTests, QuestTests, ReplayTests, SaveLoadTests, SectorGraphTests, SettingsTests, TechEffectsIntegrationTests, TechEffectsTests, TechnologyTests, TradeTests, TutorialTests, UpgradeTests, VFXTests, VictoryTests
 
 ---
 
@@ -160,13 +176,13 @@ _(none known — verify after Unity reimport)_
 
 ---
 
-## Next Up (Post-Phase-10 Steps)
+## Next Up
 
-1. **Step 2 (docs)** — ✓ Completed this session (MEMORY.md, project_status.md, project_folder_structure.md)
-2. **Step 3 — Localization & Accessibility** — LocalizationDatabase, StringTable.en.csv, KeyBindings, SettingsUI Language/Controls tabs, color blind palette (~10 files)
-3. **Step 4 — Replay System** — ActionRecord, ActionRecorder, ReplayController, ReplayUI, timeline scrubber (~8 files)
-4. **Step 5 — Modding & Custom Content** — ModLoader, ModBrowserUI, CustomMapRegistry, ScenarioDefinition (~10 files)
-5. **Unity verification** — open Unity, check Console (no CS errors), run Test Runner, exercise each Phase's features in Play Mode
+1. **Merge PR #1** — CI is green, Copilot review failed (bot error — PR too large). Safe to merge.
+2. **Unity verification** — open Unity, check Console (no CS errors), run Test Runner, exercise Play Mode features. Steps 3-5 haven't been manually verified in Unity yet.
+3. **Wire ReplayUI into BootstrapScene** — ReplayController and ReplayUI are written but not yet connected to BootstrapScene.UI.cs or PostGameSummaryUI "Watch Replay" button.
+4. **Wire ModBrowserUI + ScenarioSelectionUI into MainMenuUI** — "Mods" and "Custom Scenarios" buttons referenced in ScenarioSelectionUI but MainMenuUI needs explicit wiring in BootstrapScene.
+5. **StringTable translations** — StringTable.en.csv has 70+ English strings; de/fr placeholders exist but csvs not written. Add when needed.
 6. **Art pass** — import 3D models, materials, AudioClips (out of scope for code-only work)
 
 ---
