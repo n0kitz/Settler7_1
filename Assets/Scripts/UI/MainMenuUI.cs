@@ -35,6 +35,9 @@ namespace Settlers.UI
         /// <summary>Fired when the player clicks Achievements.</summary>
         public event System.Action OnAchievements;
 
+        /// <summary>Fired when the player clicks Hall of Fame.</summary>
+        public event System.Action OnHallOfFame;
+
         public void Show()
         {
             if (_panelRoot != null)
@@ -79,6 +82,7 @@ namespace Settlers.UI
 
         private void OnSettingsClicked()     => OnSettings?.Invoke();
         private void OnAchievementsClicked() => OnAchievements?.Invoke();
+        private void OnHallOfFameClicked()   => OnHallOfFame?.Invoke();
 
         private void OnQuitClicked()
         {
@@ -178,6 +182,11 @@ namespace Settlers.UI
             // Achievements button
             UIFactory.CreateButton(buttonContainer.transform, "Achievements", font,
                 new Color(0.4f, 0.3f, 0.1f), ui.OnAchievementsClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Hall of Fame button
+            UIFactory.CreateButton(buttonContainer.transform, "Hall of Fame", font,
+                new Color(0.5f, 0.38f, 0.08f), ui.OnHallOfFameClicked,
                 new Vector2(280f, 48f), 20f);
 
             // Settings button

@@ -100,6 +100,14 @@ namespace Settlers.Presentation
             // Diplomacy panel (toggle with J key)
             _diplomacyPanel = UI.DiplomacyPanel.Create(canvasGo.transform, _defaultFont);
 
+            // Post-game summary (shown on game over)
+            _postGameSummary = UI.PostGameSummaryUI.Create(canvasGo.transform, _defaultFont);
+            _postGameSummary.OnReturnToMenu += OnQuitToMenu;
+            _postGameSummary.OnPlayAgain    += () => { /* TODO: restart same map */ };
+
+            // Hall of Fame (shown from main menu)
+            _hallOfFame = UI.HallOfFameUI.Create(canvasGo.transform, _defaultFont);
+
             // Achievement system (pure C# — lives outside MonoBehaviours)
             _achievementSystem = new Simulation.AchievementSystem();
             _playerStats       = new Simulation.PlayerStats();
@@ -124,6 +132,7 @@ namespace Settlers.Presentation
             _mainMenu.OnMapEditor += OnMapEditorClicked;
             _mainMenu.OnSettings += OnSettingsClicked;
             _mainMenu.OnAchievements += OnAchievementsClicked;
+            _mainMenu.OnHallOfFame   += OnHallOfFameClicked;
             _mainMenu.Show();
             pauseMenu.OnSettings += OnSettingsClicked;
             pauseMenu.OnAchievements += OnAchievementsClicked;

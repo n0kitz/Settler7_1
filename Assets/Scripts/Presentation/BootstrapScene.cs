@@ -27,6 +27,9 @@ namespace Settlers.Presentation
         private Simulation.PlayerStats _playerStats;
         private Simulation.DiplomacySystem _diplomacySystem;
         private UI.DiplomacyPanel _diplomacyPanel;
+        private UI.PostGameSummaryUI _postGameSummary;
+        private UI.HallOfFameUI _hallOfFame;
+        private float _gameStartTime;
         private Simulation.CampaignProgress _campaignProgress;
         private Simulation.Mission _pendingMission;
         private MapEditorController _mapEditorController;
@@ -89,7 +92,6 @@ namespace Settlers.Presentation
 
         private void Start()
         {
-            // Minimal valid SectorGraph: 1 sector, player 0 owns it
             var graph = new SectorGraph();
             graph.AddSector(new Sector(
                 id: 0, name: "Home", ownerId: 0,
@@ -97,19 +99,15 @@ namespace Settlers.Presentation
                 resourceNodes: new List<ResourceNodeType>(),
                 buildSlots: 4));
 
-            // Construct GameState with real graph
             var state = new GameState(graph, playerCount: 1,
                 constructionBaseTime: 10f, carrierMaxItems: 3,
                 vpRequired: 4, mapId: "bootstrap");
 
-            // Create runner with all systems disabled
             var runner = new SimulationRunner(state);
             runner.DisableAll();
             runner.OnTickLog = tick => Debug.Log($"SimulationRunner tick #{tick}");
 
-            // Initialize GameController with pre-built state
             GameController.Instance.Initialize(state, runner);
-
             WireAchievements();
             WireDiplomacy();
             Debug.Log("GameController initialized successfully");
@@ -124,6 +122,8 @@ namespace Settlers.Presentation
             _achievementsPanel?.Bind(_achievementSystem, _playerStats);
             bus.Subscribe<AchievementUnlockedEvent>(e =>
                 _achievementToast?.Show(e.Name));
+            bus.Subscribe<GameOverEvent>(e => OnGameOver(e.WinnerId));
+            _gameStartTime = Time.realtimeSinceStartup;
         }
 
         private void WireDiplomacy()
@@ -220,6 +220,17 @@ namespace Settlers.Presentation
         private void OnSettingsClicked() => _settingsUI?.Show();
 
         private void OnAchievementsClicked() => _achievementsPanel?.Show();
+        private void OnHallOfFameClicked()   => _hallOfFame?.Show();
+
+        private void OnGameOver(int winnerId)
+        {
+            var state = GameController.Instance?.State;
+            if (state == null || _playerStats == null) return;
+            float duration = Time.realtimeSinceStartup - _gameStartTime;
+            var result = Simulation.MatchResult.From(state, _playerStats, winnerId, duration);
+            Simulation.MatchHistoryPersistence.Append(result);
+            _postGameSummary?.Show(result);
+        }
 
         private void OnLoadGameClicked()
         {
@@ -265,10 +276,7 @@ namespace Settlers.Presentation
                 difficulty, personality, rules);
         }
 
-        private void OnGameSetupBack()
-        {
-            _mapSelect.Show();
-        }
+        private void OnGameSetupBack() => _mapSelect.Show();
 
         private TMP_FontAsset LoadDefaultTMPFont()
         {
