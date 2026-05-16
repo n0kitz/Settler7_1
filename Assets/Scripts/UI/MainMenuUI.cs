@@ -29,6 +29,9 @@ namespace Settlers.UI
         /// <summary>Fired when the player clicks Map Editor.</summary>
         public event System.Action OnMapEditor;
 
+        /// <summary>Fired when the player clicks Settings.</summary>
+        public event System.Action OnSettings;
+
         public void Show()
         {
             if (_panelRoot != null)
@@ -69,6 +72,11 @@ namespace Settlers.UI
         {
             Hide();
             OnMapEditor?.Invoke();
+        }
+
+        private void OnSettingsClicked()
+        {
+            OnSettings?.Invoke();
         }
 
         private void OnQuitClicked()
@@ -164,6 +172,11 @@ namespace Settlers.UI
             // Map Editor button
             UIFactory.CreateButton(buttonContainer.transform, "Map Editor", font,
                 new Color(0.35f, 0.28f, 0.5f), ui.OnMapEditorClicked,
+                new Vector2(280f, 48f), 20f);
+
+            // Settings button
+            UIFactory.CreateButton(buttonContainer.transform, "Settings", font,
+                new Color(0.28f, 0.28f, 0.35f), ui.OnSettingsClicked,
                 new Vector2(280f, 48f), 20f);
 
             // Quit button

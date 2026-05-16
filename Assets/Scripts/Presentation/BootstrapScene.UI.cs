@@ -89,6 +89,10 @@ namespace Settlers.Presentation
             UI.MapEditorUI.Create(canvasGo.transform, _defaultFont);
             UI.SectorPropertyPanel.Create(canvasGo.transform, _defaultFont);
 
+            // Settings (shown from Main Menu or Pause Menu, starts hidden)
+            _settingsUI = UI.SettingsUI.Create(canvasGo.transform, _defaultFont);
+            _settingsUI.Initialize();
+
             // Campaign screens
             _campaignSelect = CampaignSelectionUI.Create(canvasGo.transform, _defaultFont);
             _campaignSelect.OnMissionSelected += OnCampaignMissionSelected;
@@ -107,7 +111,9 @@ namespace Settlers.Presentation
             _mainMenu.OnTutorial += OnTutorialClicked;
             _mainMenu.OnLoadGame += OnLoadGameClicked;
             _mainMenu.OnMapEditor += OnMapEditorClicked;
+            _mainMenu.OnSettings += OnSettingsClicked;
             _mainMenu.Show();
+            pauseMenu.OnSettings += OnSettingsClicked;
 
             return canvasGo.transform;
         }

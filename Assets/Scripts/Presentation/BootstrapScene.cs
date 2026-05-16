@@ -20,6 +20,7 @@ namespace Settlers.Presentation
         private SaveSlotUI _loadSlotUI;
         private UI.CampaignSelectionUI _campaignSelect;
         private UI.MissionBriefingUI _missionBriefing;
+        private UI.SettingsUI _settingsUI;
         private Simulation.CampaignProgress _campaignProgress;
         private Simulation.Mission _pendingMission;
         private MapEditorController _mapEditorController;
@@ -187,6 +188,11 @@ namespace Settlers.Presentation
                 editorState.MaxPlayers, editorState.DefaultVP,
                 Simulation.AIDifficultyLevel.Normal,
                 Simulation.AIPersonalityType.Builder, rules);
+        }
+
+        private void OnSettingsClicked()
+        {
+            _settingsUI?.Show();
         }
 
         private void OnLoadGameClicked()

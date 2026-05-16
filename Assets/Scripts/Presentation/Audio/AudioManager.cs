@@ -54,21 +54,26 @@ namespace Settlers.Presentation
 
         private void Start()
         {
-            // Subscribe to simulation events
-            var gc = GameController.Instance;
-            if (gc?.Events != null)
-            {
-                gc.Events.Subscribe<ProductionCompleteEvent>(e => PlaySFX(_productionComplete));
-                gc.Events.Subscribe<SectorConqueredEvent>(e => PlaySFX(_sectorConquered));
-                gc.Events.Subscribe<TechResearchedEvent>(e => PlaySFX(_techResearched));
-            }
+            SubscribeToEvents();
 
-            // Start background music
             if (_backgroundMusic != null)
             {
                 _musicSource.clip = _backgroundMusic;
                 _musicSource.Play();
             }
+        }
+
+        private void SubscribeToEvents()
+        {
+            var gc = GameController.Instance;
+            if (gc?.Events == null) return;
+
+            gc.Events.Subscribe<BuildingCompletedEvent>(e => PlaySFX(_buildingComplete));
+            gc.Events.Subscribe<ProductionCompleteEvent>(e => PlaySFX(_productionComplete));
+            gc.Events.Subscribe<SectorConqueredEvent>(e => PlaySFX(_sectorConquered));
+            gc.Events.Subscribe<TechResearchedEvent>(e => PlaySFX(_techResearched));
+            gc.Events.Subscribe<VPChangedEvent>(e => { if (e.Gained) PlaySFX(_vpGained); });
+            gc.Events.Subscribe<CombatResolvedEvent>(e => PlaySFX(_combatStart));
         }
 
         /// <summary>Play a sound effect.</summary>
@@ -108,10 +113,21 @@ namespace Settlers.Presentation
         public void ToggleMusic()
         {
             if (_musicSource == null) return;
-            if (_musicSource.isPlaying)
-                _musicSource.Pause();
-            else
-                _musicSource.UnPause();
+            if (_musicSource.isPlaying) _musicSource.Pause();
+            else _musicSource.UnPause();
         }
+
+        /// <summary>Mute or unmute all audio sources.</summary>
+        public void SetMasterMute(bool muted)
+        {
+            if (_musicSource != null) _musicSource.mute = muted;
+            if (_sfxSource != null)   _sfxSource.mute   = muted;
+        }
+
+        /// <summary>Current music volume (0-1).</summary>
+        public float MusicVolume => _musicVolume;
+
+        /// <summary>Current SFX volume (0-1).</summary>
+        public float SfxVolume => _sfxVolume;
     }
 }
