@@ -97,6 +97,9 @@ namespace Settlers.Presentation
             _achievementsPanel = UI.AchievementsPanel.Create(canvasGo.transform, _defaultFont);
             _achievementToast  = UI.AchievementToast.Create(canvasGo.transform, _defaultFont);
 
+            // Diplomacy panel (toggle with J key)
+            _diplomacyPanel = UI.DiplomacyPanel.Create(canvasGo.transform, _defaultFont);
+
             // Achievement system (pure C# — lives outside MonoBehaviours)
             _achievementSystem = new Simulation.AchievementSystem();
             _playerStats       = new Simulation.PlayerStats();

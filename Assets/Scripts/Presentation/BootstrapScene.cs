@@ -25,6 +25,8 @@ namespace Settlers.Presentation
         private UI.AchievementToast _achievementToast;
         private Simulation.AchievementSystem _achievementSystem;
         private Simulation.PlayerStats _playerStats;
+        private Simulation.DiplomacySystem _diplomacySystem;
+        private UI.DiplomacyPanel _diplomacyPanel;
         private Simulation.CampaignProgress _campaignProgress;
         private Simulation.Mission _pendingMission;
         private MapEditorController _mapEditorController;
@@ -109,6 +111,7 @@ namespace Settlers.Presentation
             GameController.Instance.Initialize(state, runner);
 
             WireAchievements();
+            WireDiplomacy();
             Debug.Log("GameController initialized successfully");
         }
 
@@ -121,6 +124,14 @@ namespace Settlers.Presentation
             _achievementsPanel?.Bind(_achievementSystem, _playerStats);
             bus.Subscribe<AchievementUnlockedEvent>(e =>
                 _achievementToast?.Show(e.Name));
+        }
+
+        private void WireDiplomacy()
+        {
+            var state = GameController.Instance?.State;
+            if (state == null) return;
+            _diplomacySystem = new Simulation.DiplomacySystem(state);
+            _diplomacyPanel?.Bind(_diplomacySystem, _defaultFont);
         }
 
         private void OnNewGameClicked()
