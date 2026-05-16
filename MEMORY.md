@@ -7,6 +7,28 @@
 
 ## Last Session Summary
 
+### 2026-05-16 — Phases 1-10 complete + CI fix
+
+**All 10 planned phases shipped and pushed to `claude/review-project-structure-Y7Rlc`:**
+
+- **Phase 1** (23aca76) Tutorial & Onboarding Mission — TutorialSystem, TutorialStep, TutorialMapFactory, TutorialOverlayUI
+- **Phase 2** (2e3a75d) Campaign Mode — CampaignProgress, CampaignSystem, Mission, MissionObjective, CampaignSelectionUI, MissionBriefingUI, MissionCompleteUI
+- **Phase 3** (f83c0f9) AI Difficulty & Personalities — AIPersonality, AIDifficulty, AIBehaviorProfile; extended AIController + GameState + GameSetupUI
+- **Phase 4** (6081bde) Skirmish Customization — StartingProfile, VictoryRuleSet, GameRules; extended GameSetupUI to 7-param OnStartGame
+- **Phase 5** (fc58816) In-Game Map Editor — MapEditorState, MapValidation, MapSerializer, MapEditorController, MapEditorUI, SectorPropertyPanel
+- **Phase 6** (dd3f919) Audio & Settings — SettingsState, SettingsPersistence, SettingsUI (3 partials), extended AudioManager with EventBus subscriptions; Settings button in MainMenu + PauseMenu
+- **Phase 7** (dae1e56) Achievements & Statistics — Achievement, AchievementCondition, AchievementSystem, PlayerStats, AchievementProgress, AchievementsPanel, AchievementToast
+- **Phase 8** (046c3e8) Diplomacy System — DiplomacySystem, DiplomaticStatus, DiplomaticAction, AIDiplomacyDecider, DiplomacyPanel
+- **Phase 9** (2899c62) Post-Game Summary & Hall of Fame — MatchResult, MatchHistoryPersistence, ScoreCalculator, PostGameSummaryUI, HallOfFameUI
+- **Phase 10** (6f13dc5) Visual Polish & VFX — ParticleEffectsManager, FloatingTextManager, FloatingTextItem, CameraShake, HighlightOverlay, BootstrapScene.VFX.cs
+- **Step 1** (293fb5e) CI fix — QuestPanel.cs (305 lines) split into QuestPanel.cs + QuestPanel.Factory.cs
+
+**Current state:** 158 scripts, 33 tests. CI green. All files ≤ 300 lines.
+
+---
+
+## Previous Session Summaries
+
 ### 2026-05-15 — Project review & infrastructure fixes
 
 **What was done:**
@@ -71,11 +93,10 @@
 
 ## Current State
 
-### File Counts (2026-05-15)
-- 106 script files in `Assets/Scripts/`
-- 23 test files in `Assets/Tests/Editor/`
-- ~16,063 lines of C# total
-- All files under 300 lines (architecture rule enforced by PostToolUse hook)
+### File Counts (2026-05-16)
+- 158 script files in `Assets/Scripts/`
+- 33 test files in `Assets/Tests/Editor/`
+- All files ≤ 300 lines (PostToolUse hook + CI enforcement)
 
 ### Assembly Definitions
 | Assembly | Location | Rule | References |
@@ -85,37 +106,42 @@
 | Settlers.Editor | `Assets/Scripts/Editor/` | Editor-only | Simulation, Game |
 | Settlers.Tests | `Assets/Tests/Editor/` | Editor-only, NUnit | Simulation, TestRunner |
 
-### Simulation Layer (Pure C# — 48 files)
-All systems implemented and functional in isolation:
-- **Core:** GameState, EventBus (pub/sub with generics), PlayerResources, SaveSystem (text serialization), SimulationRunner, Enums
+### Simulation Layer (Pure C# — 78 files)
+- **Core:** GameState, EventBus, PlayerResources, SaveSystem, SimulationRunner, Enums, TutorialSystem, TutorialStep
 - **Economy:** Building, WorkYard, Storehouse, ProductionSystem, LogisticsSystem, ConstructionSystem, PopulationSystem, FoodBoostCalculator, UpgradeSystem, RecipeDatabase, BuildingCosts
-- **Military:** ArmySystem (generals, training, movement), CombatResolver, ConquestSystem (military/proselytism/bribery), FortificationSystem, General, UnitType
-- **Technology:** TechTree (18 techs, 3 tiers, first-come-first-served), ResearchSystem, TechEffects
-- **Trade:** TradeMap + TestTradeMapFactory, TradeSystem, TavernSystem (beer→coins, coins→tools, hire generals), FourPlayerTradeMapFactory
-- **AI:** AIController + AIController.Strategy (fortify, multi-general, bribery, path switching), AIEconomy (resource-aware decisions + upgrades + quests)
-- **Meta:** PrestigeSystem + PrestigeDatabase, VictorySystem (dynamic+permanent VPs, 3-min countdown), QuestSystem + QuestDatabase + QuestEvents, VictoryEvents
-- **Maps:** MapFactory (7 maps), LargeMapFactory, FourPlayerMapFactory, TestMapFactory, Sector, SectorGraph (BFS pathfinding)
+- **Military:** ArmySystem, CombatResolver, ConquestSystem, FortificationSystem, General, UnitType
+- **Technology:** TechTree (18 techs, 3 tiers), ResearchSystem, TechEffects
+- **Trade:** TradeMap, TradeSystem, TavernSystem, FourPlayerTradeMapFactory
+- **AI:** AIController (+Strategy), AIEconomy, AIPersonality, AIDifficulty, AIBehaviorProfile
+- **Diplomacy:** DiplomacySystem, DiplomaticStatus, DiplomaticAction, AIDiplomacyDecider
+- **Meta:** PrestigeSystem+DB, VictorySystem (+Events, VPThresholds), QuestSystem+DB+Events, CampaignProgress, CampaignSystem, Mission, MissionObjective, GameRules, StartingProfile, VictoryRuleSet, Achievement, AchievementCondition, AchievementSystem, AchievementProgress, PlayerStats, MatchResult, MatchHistoryPersistence, ScoreCalculator
+- **Map:** MapFactory (7), LargeMapFactory, FourPlayerMapFactory, TestMapFactory, TutorialMapFactory, Sector, SectorGraph, MapEditorState, MapValidation, MapSerializer
+- **Settings:** SettingsState, SettingsPersistence
 
-### Presentation Layer (21 files)
-- **GameController** — 4 partials: main, Buildings, Input, SectorVisuals
-- **BootstrapScene** — 2 partials: main, UI (procedural scene creation)
-- **Camera:** SettlerCamera (spherical orbit, zoom-elevation coupling)
+### Presentation Layer (30 files)
+- **GameController** — 4 partials (main, Buildings, Input, SectorVisuals)
+- **BootstrapScene** — 3 partials (main, UI, VFX)
+- **Audio:** AudioManager (wired to EventBus)
+- **Camera:** SettlerCamera
 - **Buildings:** BuildingView, BuildingViewFactory, ConstructionView
-- **Units:** ArmyView + ArmyViewManager, CarrierManager/View, ClericView, WorkerManager/View
+- **Units:** ArmyView, CarrierManager/View, ClericManager/View, WorkerManager/View
 - **Map:** SectorView, RoadView, MinimapController
-- **Audio:** AudioManager (functional but needs real AudioClip assets)
-- **Input:** BuildingPlacer (New Input System)
+- **Input:** BuildingPlacer
+- **VFX:** ParticleEffectsManager, FloatingTextManager, FloatingTextItem, CameraShake, HighlightOverlay
+- **Editor:** MapEditorController
 - **Save/Load:** SaveLoadController
 
-### UI Layer (24 files)
-All programmatically created (no prefabs needed):
-- MainMenuUI, GameSetupUI (+Widgets partial), MapSelectionUI
-- PauseMenuUI, SaveSlotUI (+SlotEntry partial)
-- HUD, SectorPanel (+Actions partial), BuildMenu
-- ArmyPanel, TavernUI, TechTreeUI + TechTreeUIFactory
-- TradeMapUI + TradeMapUIFactory, PrestigeChartUI + PrestigeChartUIFactory
-- VictoryPanel (+Create partial), NotificationUI
-- UIFactory (shared helpers), UIColors (constants)
+### UI Layer (41 files)
+All programmatically created (no prefabs):
+- MainMenuUI, GameSetupUI (+Widgets), MapSelectionUI, PauseMenuUI
+- SaveSlotUI (+SlotEntry), HUD, SectorPanel (+Actions), BuildMenu
+- ArmyPanel (+Factory), TavernUI, TechTreeUI+Factory, TradeMapUI+Factory
+- PrestigeChartUI+Factory, VictoryPanel (+Create), NotificationUI
+- QuestPanel (+Factory), MapEditorUI, SectorPropertyPanel
+- AchievementsPanel, AchievementToast, HallOfFameUI, PostGameSummaryUI
+- DiplomacyPanel, SettingsUI (+Audio, +Graphics partials)
+- CampaignSelectionUI, MissionBriefingUI, MissionCompleteUI, TutorialOverlayUI
+- UIFactory, UIColors
 
 ### Data Layer (7 ScriptableObject definitions)
 BuildingDefinition, GameConstants, MapDefinition, ProductionRecipe, TechDefinition, WorkYardDefinition, PrestigeUnlockDefinition
@@ -123,8 +149,8 @@ BuildingDefinition, GameConstants, MapDefinition, ProductionRecipe, TechDefiniti
 ### Editor Scripts (2 files)
 AssetGenerator, AssetGeneratorMaps — menu items under `Settlers/` to generate .asset files
 
-### Tests (23 files)
-AITests, BuildingAndWorkYardTests, ConquestRewardTests, ConstructionTests, FoodBoostTests, FortificationTests, InputReservationTests, LargeMapTests, LogisticsTests, MapFactoryTests, MilitaryTests, PrestigeTests, ProductionFoodAndReservationTests, ProductionTests, QuestTests, SaveLoadTests, SectorGraphTests, TechEffectsIntegrationTests, TechEffectsTests, TechnologyTests, TradeTests, UpgradeTests, VictoryTests
+### Tests (33 files)
+AITests, AIPersonalityTests, AchievementTests, BuildingAndWorkYardTests, CampaignTests, ConquestRewardTests, ConstructionTests, DiplomacyTests, FoodBoostTests, FortificationTests, GameRulesTests, InputReservationTests, LargeMapTests, LogisticsTests, MapEditorTests, MapFactoryTests, MilitaryTests, PostGameTests, PrestigeTests, ProductionFoodAndReservationTests, ProductionTests, QuestTests, SaveLoadTests, SectorGraphTests, SettingsTests, TechEffectsIntegrationTests, TechEffectsTests, TechnologyTests, TradeTests, TutorialTests, UpgradeTests, VFXTests, VictoryTests
 
 ---
 
@@ -134,17 +160,14 @@ _(none known — verify after Unity reimport)_
 
 ---
 
-## Next Up
+## Next Up (Post-Phase-10 Steps)
 
-1. **Verify Unity compilation** — delete Library/, reopen Unity, check Console for errors
-2. **Run `Settlers > Generate All Assets`** — creates SO .asset files in `Assets/Data/`
-4. **Configure SO assets in Inspector** — wire definitions with actual values
-5. **Import TMP Essential Resources** — `Window > TextMeshPro > Import TMP Essential Resources` (needed for fonts)
-6. **Create prefabs** — replace procedural primitives with 3D models
-7. **Materials + URP polish** — proper terrain/building materials, lighting, post-processing
-8. **Audio import** — real sound effects and music clips for AudioManager
-9. **Playtesting + balance** — economy speeds, AI difficulty, VP thresholds
-10. **Map editor** (stretch goal)
+1. **Step 2 (docs)** — ✓ Completed this session (MEMORY.md, project_status.md, project_folder_structure.md)
+2. **Step 3 — Localization & Accessibility** — LocalizationDatabase, StringTable.en.csv, KeyBindings, SettingsUI Language/Controls tabs, color blind palette (~10 files)
+3. **Step 4 — Replay System** — ActionRecord, ActionRecorder, ReplayController, ReplayUI, timeline scrubber (~8 files)
+4. **Step 5 — Modding & Custom Content** — ModLoader, ModBrowserUI, CustomMapRegistry, ScenarioDefinition (~10 files)
+5. **Unity verification** — open Unity, check Console (no CS errors), run Test Runner, exercise each Phase's features in Play Mode
+6. **Art pass** — import 3D models, materials, AudioClips (out of scope for code-only work)
 
 ---
 
