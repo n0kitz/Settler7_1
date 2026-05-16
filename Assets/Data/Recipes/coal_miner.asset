@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.ProductionRecipe
   recipeId: coal_miner
   displayName: Coal Miner
+  parentBuilding: 2
   inputs: []
   outputs:
   - type: 2

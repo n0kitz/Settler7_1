@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.ProductionRecipe
   recipeId: iron_smelter
   displayName: Iron Smelter
+  parentBuilding: 2
   inputs:
   - type: 3
     amount: 1

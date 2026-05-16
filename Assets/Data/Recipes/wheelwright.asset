@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.ProductionRecipe
   recipeId: wheelwright
   displayName: Wheelwright
+  parentBuilding: 3
   inputs:
   - type: 10
     amount: 1

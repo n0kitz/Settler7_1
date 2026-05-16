@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.ProductionRecipe
   recipeId: quarry
   displayName: Quarry
+  parentBuilding: 2
   inputs: []
   outputs:
   - type: 1

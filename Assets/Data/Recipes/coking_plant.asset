@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.ProductionRecipe
   recipeId: coking_plant
   displayName: Coking Plant
+  parentBuilding: 2
   inputs:
   - type: 0
     amount: 1

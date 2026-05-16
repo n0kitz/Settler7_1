@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.ProductionRecipe
   recipeId: windmill
   displayName: Windmill
+  parentBuilding: 1
   inputs:
   - type: 5
     amount: 1

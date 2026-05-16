@@ -58,5 +58,9 @@ namespace Settlers.Data
         [Header("Construction")]
         public float constructionBaseTime = 10f;
         public int constructorBaseCost = 1;
+
+        [Header("Production Recipes")]
+        [Tooltip("All production recipes. Populated automatically by Settlers > Generate All Assets.")]
+        public ProductionRecipe[] recipes;
     }
 }

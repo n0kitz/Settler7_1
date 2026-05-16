@@ -178,6 +178,44 @@ namespace Settlers.Simulation
             }
         }
 
+        /// <summary>
+        /// Restore a general from save data — skips all prestige/resource checks.
+        /// Updates _nextGeneralId to avoid future collisions.
+        /// </summary>
+        public void RestoreGeneral(int id, int ownerId, int sectorId, bool isMoving,
+            Dictionary<UnitType, int> units)
+        {
+            if (!_generalsByPlayer.TryGetValue(ownerId, out var list))
+            {
+                list = new List<General>();
+                _generalsByPlayer[ownerId] = list;
+            }
+
+            var gen = new General(id, ownerId, sectorId, _maxSoldiersPerGeneral);
+            gen.IsMoving = isMoving;
+            foreach (var kvp in units)
+                for (int i = 0; i < kvp.Value; i++)
+                    gen.AddUnit(kvp.Key);
+
+            list.Add(gen);
+
+            // Ensure future HireGeneral calls don't reuse this ID
+            if (id >= _nextGeneralId)
+                _nextGeneralId = id + 1;
+        }
+
+        /// <summary>
+        /// Restore a training task from save data — bypasses resource cost check.
+        /// </summary>
+        public void RestoreTrainingTask(int playerId, int sectorId, UnitType unitType,
+            float totalTime, float progress)
+        {
+            _trainingQueue.Add(new TrainingTask(playerId, sectorId, unitType, totalTime)
+            {
+                Progress = progress
+            });
+        }
+
         /// <summary>Reset ID counter (for tests).</summary>
         public static void ResetIdCounter() => _nextGeneralId = 0;
     }

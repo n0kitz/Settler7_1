@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlers.Data.ProductionRecipe
   recipeId: grain_barn
   displayName: Grain Barn
+  parentBuilding: 1
   inputs: []
   outputs:
   - type: 5

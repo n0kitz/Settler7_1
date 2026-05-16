@@ -1,0 +1,18 @@
+This is a Siedler 7 (Die Siedler VII) Unity 6 clone. URP, C# 9+, no DOTS/ECS.
+
+Architecture — 3 layers enforced by assembly definitions:
+- Simulation (Assets/Scripts/Simulation/) — pure C#, no UnityEngine, NUnit testable
+- Presentation (Assets/Scripts/Presentation/) — MonoBehaviour, reads GameController.Instance
+- UI (Assets/Scripts/UI/) — procedural Canvas UI, no prefabs
+
+Namespaces: Settlers.Simulation | Settlers.Presentation | Settlers.UI | Settlers.Data
+
+Key rules:
+- Never add UnityEngine using to Simulation layer
+- Input: New Input System only (Keyboard.current, Mouse.current) — no Input.GetKeyDown
+- All goods flow through storehouses, never directly between buildings
+- Sector graph (not hex grid) — discrete nodes with BFS pathfinding
+- ScriptableObjects in Assets/Data/ — no hardcoded values in code
+
+Entry point: BootstrapScene.cs — creates all GameObjects and UI at runtime.
+Game state: GameController.Instance.State (GameState)

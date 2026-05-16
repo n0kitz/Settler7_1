@@ -98,7 +98,7 @@ namespace Settlers.Simulation
             Add("mil_cannon", "Cannon Foundry", "Build cannons (siege, breach fortifications)",
                 PrestigeBranch.Military, 4, "mil_cavalier");
             Add("mil_fortification", "Fortification", "Build fortifications in your sectors",
-                PrestigeBranch.Military, 2, "mil_stronghold");
+                PrestigeBranch.Military, 1);
             Add("mil_second_general", "Second General", "Hire a second general",
                 PrestigeBranch.Military, 3, "mil_fortification");
             Add("mil_standard_bearer", "Standard Bearer", "Train standard bearers (army morale bonus)",

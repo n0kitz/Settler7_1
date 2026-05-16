@@ -13,6 +13,7 @@ namespace Settlers.Data
         [Header("Identity")]
         public string recipeId;
         public string displayName;
+        public Settlers.Simulation.BaseBuildingType parentBuilding;
 
         [Header("Inputs / Outputs")]
         public ResourceAmount[] inputs;
