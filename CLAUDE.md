@@ -92,4 +92,100 @@ Current phase and task queue tracked in MEMORY.md.
 
 ---
 
+Game Design: §14 UI Reference (verified from original screenshots)
+
+All German strings below are verified 1:1 from original Die Siedler 7 screenshots.
+Use these EXACT strings in the German UI. Do not paraphrase or translate.
+
+§14.1 Verified UI Strings (exact German text)
+ContextExact stringCarrier idle — no goodsEinige Güter fehlen. Ich muss warten.Carrier impatientWer trödelt denn da? Ihr verschwendet meine Zeit!Prestige panel titlePRESTIGE-OPTIONEN (+ available points as green number)Reward panel titleBELOHNUNGENBuild menu titleBAUENVP overview titleÜBERSICHTProduction overview labelProduktionsübersicht: <Ware>Stats columnsERFORDERT / PRODUZIERT VON / ERBRINGT / VERBRAUCHT VON
+§14.2 Victory Points — complete German names (14 VPs)
+The VP ring shows all victory points. Player-held VPs are green; others silver/gray.
+These map to the three paths (Military / Technology / Trade) plus economy VPs.
+German VP namePath / CategoryWunderkindTechnology — first to research the Special TechnologyQuelle der WeisheitTechnology — research milestoneBischofssitzTechnology — church/clergyGeneralissimusMilitary — army/generalsSonnenkönigMilitary / PrestigeNebelsumpfSpecial sector (map event location)HandelsaußenpostenTrade — trade outpost (can appear per-player)HandelsgesellschaftTrade — trading companySparfuchsEconomy — coins/savings (Banker equivalent)ImperatorEconomy — sector count (Emperor)MetropoleEconomy — population (Metropolis)Spezieller SektorSpecial sector control (can appear per-player)
+
+NOTE: Handelsaußenposten and Spezieller Sektor can appear twice in the ring —
+once per relevant player/instance. The VP system must support the same VP category
+being contested by multiple players simultaneously.
+
+Wunderkind VP description (exact):
+Seid der Erste, der über die Spezielle Technologie verfügt, um diesen Siegpunkt zu erhalten.
+Dazu müsst Ihr in Eurer Kirche Geistliche anwerben und sie Technologien erforschen lassen.
+VP overview filter categories (sidebar, exact strings):
+Kriegsführung · Arbeitsgebäude · Verpflegung · Geologe · Konstruktion
+§14.3 Conquest Reward Modal (solves reward-package selection)
+After conquering a NEUTRAL sector, a BELOHNUNGEN modal appears with selectable
+reward packages. The player picks exactly ONE. Verified layout:
+BELOHNUNGEN
+├── Bevölkerungsbelohnung      (1× population reward)
+├── Eroberungsbelohnung        (conquest reward variant)
+├── Eroberungsbelohnung        (conquest reward variant)
+└── Eroberungsbelohnung        (conquest reward variant)
+Implementation: 1 population-type package + 3 conquest-type packages, all clickable,
+single-select. This is the reward-choice UI that must replace any auto-grant stub.
+§14.4 Build Menu — three-tab structure (BAUEN)
+The build menu is a small grid modal with THREE tabs:
+TabIconCategoryContents1HouseBase/economy buildingsResidence, Noble Residence, Lodge, Farm, Mountain Shelter + variants (3×3 grid)2Shield/CastleSpecial & prestige-gatedLocked buildings shown as GRAY silhouettes (not hidden)3CrownPrestige objects / militaryStronghold, Church, Export Office + prestige objects; locked = gray silhouette
+
+KEY RULE: Locked buildings render as gray silhouettes, NOT hidden. The player can
+see what they'll unlock. Prestige-level gates which tab-3 buildings are buildable.
+
+§14.5 Prestige Panel (PRESTIGE-OPTIONEN)
+Opens via the crown icon. Title shows PRESTIGE-OPTIONEN + available points (green number).
+Layout: rows, each with a left main option (gold frame = activatable) and a right
+upgrade chain of 2–3 stages (connected by a line; locked stages grayed out).
+Left-column option types observed (by icon):
+
+Hammer icon → Construction upgrades
+Figures icon → Population/Residence upgrades
+Up-arrow icon → Sector/tier upgrades
+
+Right column: staged upgrade chains (e.g. Residence → upgraded → max), each stage
+unlocked individually as prestige level rises.
+§14.6 Technology Tree (Monastery research)
+Dark stone background with candle holders. Each tech is a card showing research cost
+in the format Geistliche / Mönche / Prälaten (clerics / monks / prelates).
+Verified tech costs (clerics/monks/prelates):
+Tech (visual)CostHolzfäller (woodcutter)3/0/0Stiefel (boots)3/0/0Rüstung (armor)3/0/0Fernrohr (telescope)4/1/0Kanone (cannon)4/1/0Fischerei (fishing)4/2/0Alchemist4/2/0Medkit4/2/0Statue5/2/1Stein (stone)5/2/1Schriftrolle (scroll)5/2/1Ritter (knight)5/2/1Star tech (center)9/7/5 (most expensive)
+
+Gold-framed techs = VP techs (Wunderkind mechanic: first to research gets the VP).
+Tier scales with the 3-cleric-type cost. Center star tech (9/7/5) is the apex.
+
+§14.7 Trade Map (Handelskarte)
+Full-screen parchment world map (compass rose, lat/long grid, dashed connection lines).
+Network graph of trade nodes:
+
+Player capital: castle icon, gold frame (center)
+Trade outpost: small card with input→output goods + trader count + coin cost
+Treasure node: chest icon with 2–3 coins
+Empty outpost: gray frame, no trader assigned (claimable)
+Enemy outpost: red frame (claimed by opponent — exclusive)
+
+Node format: [input good] → [output good]  [trader count]
+Example values observed: 4 → 6 [2], 3 → 6 [2], 2 → 4 [2]
+
+Outposts are first-come-first-served (already a locked design rule). The map UI must
+show claimed (red), claimable (gray), and player-owned (gold) states distinctly.
+
+§14.8 HUD layout (top bar)
+Top-center resource bar (left to right): population 34/46, coins, weapons/tools,
+tools, food. Prestige level shown as star with number (bottom center, e.g. star "6").
+Bottom action bar icons (left to right): map/scaffolding, crown (prestige),
+treasure/coins, stats book, star+level, chest/shield (military overview),
+globe (trade map), swords (combat), cross/T (church/tech).
+§14.9 Visual style notes for asset replacement
+
+Sector borders = physical stone walls (3D objects, not abstract lines). The wall
+runs the full perimeter of each owned sector.
+Roads: unpaved dirt by default; paved stone roads only after the prestige unlock.
+Terrain: fertile land (green grass) vs infertile (red/sand) clearly distinct.
+Single trees inside sectors, not just at borders. Rocks as natural borders + decoration.
+Main castle: multi-story, red flags, gold accents — dominates the home sector visually.
+Enemy stronghold: massive fortified structure with red flags + stone walls,
+visible units (soldiers) on paths, cannon emplacements.
+Lighting (original art direction): shadows tend toward cool saturated tones,
+lit areas bathed in warm colors — "dreamy fairy tale look." Aim for this in URP.
+
+---
+
 **The economy is the game. Everything — military, technology, trade, victory — is powered by production chains flowing through storehouses. Get the storehouse relay and food boosting right, and everything else falls into place.**
