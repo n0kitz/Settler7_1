@@ -108,10 +108,10 @@ namespace Settlers.Simulation
         {
             if (!_state.PlayerResources.TryGetValue(fromPlayer, out var fromRes)) return;
             if (!_state.PlayerResources.TryGetValue(toPlayer,   out var toRes))   return;
-            int actual = System.Math.Min(amount, fromRes.Get(ResourceType.Coin));
+            int actual = System.Math.Min(amount, fromRes.Get(ResourceType.Coins));
             if (actual <= 0) return;
-            fromRes.TrySpend(ResourceType.Coin, actual);
-            toRes.Add(ResourceType.Coin, actual);
+            fromRes.TrySpend(ResourceType.Coins, actual);
+            toRes.Add(ResourceType.Coins, actual);
         }
 
         private static (int, int) MakeKey(int a, int b)

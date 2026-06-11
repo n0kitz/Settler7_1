@@ -70,6 +70,8 @@ namespace Settlers.Tests
             var gen2 = _army.HireGeneral(0, 0); // Second without unlock
             Assert.IsNull(gen2);
 
+            // SetUp spent all 6 levels on unit unlocks — fund 2 more levels
+            _prestige.AwardPoints(0, 10);
             _prestige.TryUnlock(0, "mil_fortification"); // Need this to unlock second_general
             _prestige.TryUnlock(0, "mil_second_general");
             gen2 = _army.HireGeneral(0, 0);

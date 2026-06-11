@@ -101,5 +101,32 @@ namespace Settlers.UI
                 System.Reflection.BindingFlags.Instance);
             field?.SetValue(target, value);
         }
+
+        /// <summary>
+        /// Ornate panel: gold border frame with inset olive content area.
+        /// Returns (frame root, content). Caller positions the frame rect
+        /// and adds layout components to the content.
+        /// </summary>
+        public static (GameObject frame, GameObject content) CreateOrnatePanel(
+            Transform parent, string name)
+        {
+            var frameGo = new GameObject(name);
+            frameGo.transform.SetParent(parent, false);
+            frameGo.AddComponent<RectTransform>();
+            var frameBg = frameGo.AddComponent<Image>();
+            frameBg.color = UIColors.BORDER_GOLD;
+
+            var contentGo = new GameObject("Content");
+            contentGo.transform.SetParent(frameGo.transform, false);
+            var contentRect = contentGo.AddComponent<RectTransform>();
+            contentRect.anchorMin = Vector2.zero;
+            contentRect.anchorMax = Vector2.one;
+            contentRect.offsetMin = new Vector2(3f, 3f);
+            contentRect.offsetMax = new Vector2(-3f, -3f);
+            var contentBg = contentGo.AddComponent<Image>();
+            contentBg.color = UIColors.PANEL_OLIVE;
+
+            return (frameGo, contentGo);
+        }
     }
 }

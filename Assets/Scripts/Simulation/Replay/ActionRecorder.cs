@@ -50,7 +50,7 @@ namespace Settlers.Simulation
                     $"general={e.GeneralId};target={e.SectorId}"));
 
             _bus.Subscribe<GeneralHiredEvent>(e =>
-                Record(e.OwnerId, ActionRecord.HIRE_GENERAL,
+                Record(e.PlayerId, ActionRecord.HIRE_GENERAL,
                     $"general={e.GeneralId}"));
 
             _bus.Subscribe<SectorConqueredEvent>(e =>

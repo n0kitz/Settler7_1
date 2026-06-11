@@ -72,6 +72,8 @@ namespace Settlers.Presentation
                 var sector = Graph.GetSector(i);
                 _sectorViews[i].UpdateOwnership(sector.OwnerId);
                 _sectorViews[i].UpdateBorderColor(sector.OwnerId);
+                _sectorViews[i].GetComponent<SectorWallView>()
+                    ?.SetVisible(sector.IsPlayerOwned);
             }
         }
 
@@ -115,6 +117,10 @@ namespace Settlers.Presentation
             SetPrivateField(view, "_borderRenderer", borderLr);
             SetPrivateField(view, "_selectionHighlight", highlightChild);
             view.SetBorderPoints(borderPoints);
+
+            // Stone wall ring (§14.10) — shown only while the sector is owned
+            var wall = go.AddComponent<SectorWallView>();
+            wall.Build(_sectorRadius);
 
             var collider = go.AddComponent<MeshCollider>();
             collider.sharedMesh = terrainChild.GetComponent<MeshFilter>().sharedMesh;

@@ -128,24 +128,27 @@ namespace Settlers.UI
             gc.Events.Subscribe<OutpostClaimedEvent>(e =>
             {
                 if (e.PlayerId == 0)
-                    Show($"Trade outpost claimed: {e.OutpostId}", COLOR_TRADE);
+                    Show(string.Format(L.Get("ui.notify.outpost_claimed"), e.OutpostId),
+                        COLOR_TRADE);
             });
 
             // --- Prestige events (player 0 only) ---
             gc.Events.Subscribe<PrestigeLevelUpEvent>(e =>
             {
                 if (e.PlayerId == 0)
-                    Show($"Prestige level {e.NewLevel}!", COLOR_PRESTIGE);
+                    Show(string.Format(L.Get("ui.notify.prestige_level"), e.NewLevel),
+                        COLOR_PRESTIGE);
             });
             gc.Events.Subscribe<PrestigeUnlockEvent>(e =>
             {
                 if (e.PlayerId == 0)
-                    Show($"Unlocked: {e.UnlockId}", COLOR_PRESTIGE);
+                    Show(string.Format(L.Get("ui.notify.unlocked"), e.UnlockId),
+                        COLOR_PRESTIGE);
             });
 
             // --- Victory countdown events ---
             gc.Events.Subscribe<CountdownStartedEvent>(e =>
-                Show("Victory countdown started! 3 minutes...", COLOR_VICTORY));
+                Show(L.Get("ui.notify.countdown_started"), COLOR_VICTORY));
             gc.Events.Subscribe<CountdownCancelledEvent>(e =>
                 Show("Victory countdown cancelled!", COLOR_VICTORY));
 

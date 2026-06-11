@@ -110,7 +110,9 @@ namespace Settlers.Tests
         [Test]
         public void AIEconomy_ManageQuests_AcceptsAvailableQuest()
         {
-            // Player 1 owns sector 1 — quests with sectorId=-1 are available
+            // Keep stock below quest objectives so the accepted quest stays
+            // active instead of auto-completing within the same call
+            _state.PlayerResources[1].Set(ResourceType.Planks, 5);
             AIEconomy.ManageQuests(_state, 1);
 
             var active = _state.Quests.GetActiveQuests(1);

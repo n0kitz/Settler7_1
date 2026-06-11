@@ -67,23 +67,28 @@ namespace Settlers.UI
             var res = state.PlayerResources.TryGetValue(0, out var r) ? r : null;
             if (res == null) return;
 
-            // Resources with shortage coloring
+            // Resources — §14.8 order first (coins/weapons/tools/food),
+            // production detail on the second line. Names re-resolved each
+            // refresh so a language switch takes effect live.
             if (_resourcesText != null)
             {
+                int food = res.Get(ResourceType.Bread) + res.Get(ResourceType.Fish)
+                    + res.Get(ResourceType.Sausages);
+                string foodPart = food == 0
+                    ? $"<color=#FF6666>{L.Get("ui.hud.food")}:{food}</color>"
+                    : $"{L.Get("ui.hud.food")}:{food}";
+
                 _resourcesText.richText = true;
                 _resourcesText.text =
-                    $"{FR("Wood", res.Get(ResourceType.Wood), 0)}  " +
-                    $"{FR("Planks", res.Get(ResourceType.Planks), 2)}  " +
-                    $"{FR("Stone", res.Get(ResourceType.Stone), 1)}  " +
-                    $"{FR("Iron", res.Get(ResourceType.IronBars), 0)}  " +
-                    $"{FR("Coal", res.Get(ResourceType.Coal), 0)}  " +
-                    $"{FR("Gold", res.Get(ResourceType.GoldOre), 0)}\n" +
-                    $"{FR("Bread", res.Get(ResourceType.Bread), 2)}  " +
-                    $"{FR("Fish", res.Get(ResourceType.Fish), 0)}  " +
-                    $"{FR("Sausages", res.Get(ResourceType.Sausages), 0)}  " +
-                    $"{FR("Tools", res.Get(ResourceType.Tools), 1)}  " +
-                    $"{FR("Coins", res.Get(ResourceType.Coins), 3)}  " +
-                    $"{FR("Weapons", res.Get(ResourceType.Weapons), 2)}";
+                    $"{FR(ResourceType.Coins, res, 3)}   " +
+                    $"{FR(ResourceType.Weapons, res, 2)}   " +
+                    $"{FR(ResourceType.Tools, res, 1)}   " +
+                    $"{foodPart}\n" +
+                    $"{FR(ResourceType.Wood, res, 0)}  " +
+                    $"{FR(ResourceType.Planks, res, 2)}  " +
+                    $"{FR(ResourceType.Stone, res, 1)}  " +
+                    $"{FR(ResourceType.IronBars, res, 0)}  " +
+                    $"{FR(ResourceType.Coal, res, 0)}";
             }
 
             // Population
@@ -92,7 +97,9 @@ namespace Settlers.UI
                 int livingSpace = state.Population.GetLivingSpace(0);
                 int employed = state.Population.GetEmployedCount(0);
                 int available = livingSpace - employed;
-                _populationText.text = $"Pop: {employed}/{livingSpace}  Idle: {available}";
+                _populationText.text =
+                    $"{L.Get("ui.hud.pop")}: {employed}/{livingSpace}  " +
+                    $"{L.Get("ui.hud.idle")}: {available}";
             }
 
             // Construction queue
@@ -101,7 +108,8 @@ namespace Settlers.UI
                 int queued = state.Construction.GetQueuedCount(0);
                 if (queued > 0)
                 {
-                    _constructionText.text = $"Building: {queued} in progress";
+                    _constructionText.text =
+                        string.Format(L.Get("ui.hud.building_progress"), queued);
                     _constructionText.gameObject.SetActive(true);
                 }
                 else
@@ -117,7 +125,8 @@ namespace Settlers.UI
                 int pts = prestige.GetPoints(0);
                 int lvl = prestige.GetLevel(0);
                 int unspent = prestige.GetUnspentLevels(0);
-                _prestigeText.text = $"Prestige: {pts}pts  Lv{lvl}  ({unspent} unspent)  [P]";
+                _prestigeText.text =
+                    string.Format(L.Get("ui.hud.prestige_line"), pts, lvl, unspent);
             }
 
             // Victory Points
@@ -133,7 +142,7 @@ namespace Settlers.UI
             {
                 string speed = Time.timeScale switch
                 {
-                    0f => "PAUSED",
+                    0f => L.Get("ui.hud.paused"),
                     1f => "1x",
                     2f => "2x",
                     4f => "4x",
@@ -149,16 +158,19 @@ namespace Settlers.UI
                 if (remaining < 0f) remaining = 0f;
                 int mins = (int)remaining / 60;
                 int secs = (int)remaining % 60;
-                _countdownText.text = $"VICTORY IN: {mins}:{secs:D2}";
+                _countdownText.text =
+                    $"{L.Get("ui.hud.victory_in")}: {mins}:{secs:D2}";
                 _countdownText.color = remaining < 30f
                     ? UIColors.TEXT_RED_BRIGHT
                     : UIColors.HIGHLIGHT_GOLD;
             }
         }
 
-        /// <summary>Format a resource with shortage coloring.</summary>
-        private static string FR(string name, int amount, int threshold)
+        /// <summary>Format a resource with localized name and shortage coloring.</summary>
+        private static string FR(ResourceType type, PlayerResources res, int threshold)
         {
+            string name = LocalizedNames.Resource(type);
+            int amount = res.Get(type);
             if (amount == 0)
                 return $"<color=#FF6666>{name}:{amount}</color>";
             if (amount <= threshold)
@@ -171,35 +183,34 @@ namespace Settlers.UI
         /// </summary>
         public static HUD Create(Transform canvasTransform, TMP_FontAsset font)
         {
-            // HUD root (top bar)
-            var hudGo = new GameObject("HUD");
-            hudGo.transform.SetParent(canvasTransform, false);
+            // HUD root — compact centered top bar in the S7 style (§14.8)
+            var (frameGo, contentGo) = UIFactory.CreateOrnatePanel(canvasTransform, "HUD");
+            var hudGo = contentGo;
 
-            var hudRect = hudGo.AddComponent<RectTransform>();
-            hudRect.anchorMin = new Vector2(0f, 1f);
-            hudRect.anchorMax = new Vector2(1f, 1f);
+            var hudRect = frameGo.GetComponent<RectTransform>();
+            hudRect.anchorMin = new Vector2(0.5f, 1f);
+            hudRect.anchorMax = new Vector2(0.5f, 1f);
             hudRect.pivot = new Vector2(0.5f, 1f);
-            hudRect.anchoredPosition = Vector2.zero;
-            hudRect.sizeDelta = new Vector2(0f, 160f);
-
-            var bg = hudGo.AddComponent<Image>();
-            bg.color = UIColors.PANEL_DARK;
+            hudRect.anchoredPosition = new Vector2(0f, -4f);
+            hudRect.sizeDelta = new Vector2(680f, 150f);
 
             var layout = hudGo.AddComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(10, 10, 4, 4);
+            layout.padding = new RectOffset(12, 12, 4, 4);
             layout.spacing = 2f;
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
-            layout.childAlignment = TextAnchor.UpperLeft;
+            layout.childAlignment = TextAnchor.UpperCenter;
 
             // Resource line
             var resourcesText = UIFactory.CreateLabel(hudGo.transform, "ResourcesText", "", 13, font);
             resourcesText.color = UIColors.TEXT_GOLD;
             resourcesText.richText = true;
+            resourcesText.alignment = TextAlignmentOptions.Center;
 
             // Population line
             var popText = UIFactory.CreateLabel(hudGo.transform, "PopulationText", "", 13, font);
             popText.color = UIColors.TEXT_GREEN_LIGHT;
+            popText.alignment = TextAlignmentOptions.Center;
 
             // Construction line
             var constText = UIFactory.CreateLabel(hudGo.transform, "ConstructionText", "", 12, font);

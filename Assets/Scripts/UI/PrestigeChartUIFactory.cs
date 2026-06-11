@@ -28,7 +28,7 @@ namespace Settlers.UI
 
             // Title
             var titleText = UIFactory.CreateLabel(panelGo.transform, "Title",
-                "Prestige Unlocks", 22, FontStyles.Bold, font);
+                L.Get("ui.prestige.title"), 22, FontStyles.Bold, font);
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);

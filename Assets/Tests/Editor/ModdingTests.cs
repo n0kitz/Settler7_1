@@ -111,8 +111,8 @@ namespace Settlers.Tests
             var sc = new ScenarioDefinition { StartingProfile = "Rich" };
             var rules = sc.ToGameRules();
             Assert.IsNotNull(rules);
-            Assert.Greater(rules.StartingProfile.StartingPlanks,
-                StartingProfile.Get(StartingProfileType.Default).StartingPlanks);
+            Assert.Greater(rules.StartingResources.Resources[ResourceType.Planks],
+                StartingProfile.Get(StartingProfileType.Default).Resources[ResourceType.Planks]);
         }
 
         [Test]
@@ -124,8 +124,8 @@ namespace Settlers.Tests
                 AIDifficulty  = "Hard",
             };
             var profile = sc.ToAIProfile();
-            Assert.AreEqual(AIPersonalityType.Warrior, profile.PersonalityType);
-            Assert.AreEqual(AIDifficultyLevel.Hard,    profile.DifficultyLevel);
+            Assert.AreEqual(AIPersonalityType.Warrior, profile.Personality.Type);
+            Assert.AreEqual(AIDifficultyLevel.Hard,    profile.Difficulty.Level);
         }
 
         [Test]

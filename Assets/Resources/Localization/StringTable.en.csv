@@ -88,3 +88,102 @@ ui.general.close,Close
 ui.general.back,Back
 ui.general.confirm,Confirm
 ui.general.cancel,Cancel
+
+# Build Menu (in-game)
+ui.build.menu_title,Build Menu
+ui.build.select_prompt,Select a building to place
+ui.build.cost.lodge,Cost: 3 Planks | Pop: +1
+ui.build.cost.farm,Cost: 3 Planks | Pop: +1
+ui.build.cost.mountain_shelter,Cost: 2 Planks, 1 Stone | Pop: +1
+ui.build.cost.residence,Cost: 2 Planks, 1 Stone | Pop: +4
+ui.build.cost.noble_residence,Cost: 3 Planks, 2 Stone | Pop: +5
+
+# Prestige Panel
+ui.prestige.title,Prestige Options
+ui.prestige.already_unlocked,Already unlocked.
+ui.prestige.no_levels,No unspent prestige levels!
+ui.prestige.unlocked,Unlocked: {0}!
+ui.prestige.cannot_unlock,Cannot unlock — prerequisites not met or level too low.
+
+# Notifications
+ui.notify.outpost_claimed,Trade outpost claimed: {0}
+ui.notify.prestige_level,Prestige level {0}!
+ui.notify.unlocked,Unlocked: {0}
+ui.notify.countdown_started,Victory countdown started! 3 minutes...
+
+# Build Menu — tabs & gating (S7 three-tab structure)
+ui.build.tab.economy,Economy
+ui.build.tab.specials,Specials
+ui.build.tab.empire,Empire
+ui.build.btn.lodge,Lodge (3 Planks)
+ui.build.btn.farm,Farm (3 Planks)
+ui.build.btn.mountain_shelter,Mountain Shelter (2P+1S)
+ui.build.btn.residence,Residence (2P+1S)
+ui.build.btn.noble_residence,Noble Residence (3P+2S)
+ui.build.locked_feedback,Requires Prestige unlock: {0}
+ui.build.no_resources,Not enough resources! Need {0} Planks, {1} Stone
+ui.build.empire.locked_hint,Locked — unlock via the Prestige panel (P)
+ui.build.empire.stronghold_active,Stronghold active — train units in the Army panel
+ui.build.empire.church_active,Church active — research in the Tech Tree
+ui.build.empire.export_active,Export Office active — trade on the Trade Map
+
+# Victory Point ring (§14.2)
+ui.vp.vp_genius,Prodigy
+ui.vp.vp_fountain,Fount of Wisdom
+ui.vp.vp_generalissimo,Generalissimo
+ui.vp.vp_sun_king,Sun King
+ui.vp.vp_trading_company,Trading Company
+ui.vp.vp_banker,Banker
+ui.vp.vp_emperor,Emperor
+ui.vp.vp_metropolis,Metropolis
+ui.vp.vp_field_marshal,Field Marshal
+ui.vp.vp_pacifist,Pacifist
+ui.vp.vp_economist,Economist
+ui.vp.special_outpost,Trade Outpost
+ui.vp.special_sector,Special Sector
+
+# Carrier speech (§14.1)
+ui.carrier.waiting,Some goods are missing. I must wait.
+ui.carrier.impatient,Who is dawdling there? You are wasting my time!
+
+# Conquest reward modal (§14.3)
+ui.reward.title,REWARDS
+ui.reward.population,Population Reward
+ui.reward.conquest,Conquest Reward
+ui.reward.choose_hint,Choose exactly one reward package
+
+# Resource names (§14.9)
+ui.res.wood,Wood
+ui.res.stone,Stone
+ui.res.coal,Coal
+ui.res.ironore,Iron Ore
+ui.res.goldore,Gold Ore
+ui.res.grain,Grain
+ui.res.fish,Fish
+ui.res.animal,Livestock
+ui.res.water,Water
+ui.res.wool,Wool
+ui.res.planks,Planks
+ui.res.ironbars,Iron Bars
+ui.res.flour,Flour
+ui.res.bread,Bread
+ui.res.sausages,Sausages
+ui.res.beer,Beer
+ui.res.paper,Paper
+ui.res.books,Books
+ui.res.cloth,Cloth
+ui.res.garments,Garments
+ui.res.coins,Coins
+ui.res.weapons,Weapons
+ui.res.tools,Tools
+ui.res.wheels,Wheels
+ui.res.horses,Horses
+ui.res.jewelry,Jewelry
+
+# HUD lines
+ui.hud.pop,Pop
+ui.hud.idle,Idle
+ui.hud.building_progress,Building: {0} in progress
+ui.hud.prestige_line,Prestige: {0}pts  Lv{1}  ({2} unspent)  [P]
+ui.hud.victory_in,VICTORY IN
+ui.hud.paused,PAUSED

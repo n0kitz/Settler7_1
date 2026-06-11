@@ -46,6 +46,7 @@ namespace Settlers.Simulation
         // --- Victory + AI + Quests ---
         public VictorySystem Victory { get; }
         public QuestSystem Quests { get; }
+        public ConquestRewardSystem ConquestRewards { get; }
         public List<AIController> AIPlayers { get; }
 
         /// <summary>Number of players in this game.</summary>
@@ -132,6 +133,9 @@ namespace Settlers.Simulation
             Quests = new QuestSystem(this);
             foreach (var quest in QuestDatabase.GetQuestsForMap(mapId))
                 Quests.AddQuest(quest);
+
+            // Conquest reward choice (§14.3, Critical Rule #10)
+            ConquestRewards = new ConquestRewardSystem(PlayerResources, Events);
 
             // AI players (all non-zero players are AI)
             AIPlayers = new List<AIController>();

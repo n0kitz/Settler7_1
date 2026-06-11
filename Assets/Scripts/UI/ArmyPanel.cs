@@ -176,7 +176,7 @@ namespace Settlers.UI
 
         private static int FindOwnedSectorId(GameState state, int playerId)
         {
-            foreach (var sector in state.Graph.AllSectors)
+            foreach (var sector in state.Graph.GetAllSectors())
                 if (sector.OwnerId == playerId) return sector.Id;
             return -1;
         }

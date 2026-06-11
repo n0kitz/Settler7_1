@@ -50,7 +50,7 @@ namespace Settlers.Presentation
                 // Show near a player-owned sector
                 var sectors = gc.State.Graph.GetSectorsOwnedBy(e.PlayerId);
                 if (sectors.Count > 0)
-                    Spawn(gc.GetSectorPosition(sectors[0].Id), "+1 VP", COLOR_VP);
+                    Spawn(gc.GetSectorPosition(sectors[0]), "+1 VP", COLOR_VP);
             });
         }
 

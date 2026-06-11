@@ -42,7 +42,21 @@ namespace Settlers.Presentation
 
             // Show highlight on sector selection
             bus.Subscribe<Simulation.SectorConqueredEvent>(_ => _highlight.Hide());
+
+            // Carrier speech bubble (§14.1) when player production stalls on
+            // missing goods — throttled so simultaneous stalls don't spam
+            bus.Subscribe<Simulation.ProductionStalledEvent>(e =>
+            {
+                if (e.OwnerId != 0) return;
+                if (Time.time - _lastStallBubbleTime < 4f) return;
+                _lastStallBubbleTime = Time.time;
+                _floatText.Spawn(gc.GetSectorPosition(e.SectorId),
+                    Simulation.L.Get("ui.carrier.waiting"),
+                    new Color(0.95f, 0.9f, 0.7f));
+            });
         }
+
+        private float _lastStallBubbleTime = -10f;
 
         /// <summary>Show pulsing highlight ring at the given world position.</summary>
         public void ShowSectorHighlight(Vector3 worldPos) =>

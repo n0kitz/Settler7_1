@@ -1,0 +1,190 @@
+# Siedler 7 — Deutsche Stringtabelle
+# Format: key,value   (# = Kommentar, \n = Zeilenumbruch im Wert)
+# Verifizierte Original-Strings aus CLAUDE.md §14 sind 1:1 übernommen.
+
+# Main Menu
+ui.main_menu.title,Die Siedler VII
+ui.main_menu.subtitle,Links eines Königreichs
+ui.main_menu.new_game,Neues Spiel
+ui.main_menu.campaign,Kampagne
+ui.main_menu.tutorial,Tutorial
+ui.main_menu.load_game,Spiel laden
+ui.main_menu.map_editor,Karteneditor
+ui.main_menu.settings,Einstellungen
+ui.main_menu.quit,Beenden
+
+# Pause Menu
+ui.pause_menu.title,Pausiert
+ui.pause_menu.resume,Fortsetzen
+ui.pause_menu.save_game,Spiel speichern
+ui.pause_menu.load_game,Spiel laden
+ui.pause_menu.settings,Einstellungen
+ui.pause_menu.quit_to_menu,Zum Hauptmenü
+
+# Settings
+ui.settings.title,Einstellungen
+ui.settings.audio,Audio
+ui.settings.graphics,Grafik
+ui.settings.language,Sprache
+ui.settings.controls,Steuerung
+ui.settings.music_volume,Musiklautstärke
+ui.settings.sfx_volume,Effektlautstärke
+ui.settings.mute_all,Alles stummschalten
+ui.settings.quality,Qualität
+ui.settings.fullscreen,Vollbild
+ui.settings.color_blind,Farbenblind-Modus
+ui.settings.apply_close,Übernehmen & Schließen
+ui.settings.cancel,Abbrechen
+ui.settings.reset_defaults,Standardwerte
+
+# Settings — Quality levels
+ui.settings.quality.low,Niedrig
+ui.settings.quality.medium,Mittel
+ui.settings.quality.high,Hoch
+ui.settings.quality.ultra,Ultra
+
+# Settings — Languages
+ui.settings.language.en,English
+ui.settings.language.de,Deutsch
+ui.settings.language.fr,Français
+
+# Settings — Controls
+ui.settings.controls.action,Aktion
+ui.settings.controls.binding,Taste
+ui.settings.controls.rebind,Neu belegen
+ui.settings.controls.reset,Zurücksetzen
+ui.settings.controls.press_key,Taste drücken...
+ui.settings.controls.toggle_quest,Aufträge
+ui.settings.controls.toggle_tech,Technologie
+ui.settings.controls.toggle_trade,Handelskarte
+ui.settings.controls.toggle_army,Armee
+ui.settings.controls.toggle_tavern,Taverne
+ui.settings.controls.toggle_prestige,Prestige
+ui.settings.controls.toggle_diplomacy,Diplomatie
+ui.settings.controls.toggle_achievements,Erfolge
+ui.settings.controls.toggle_pause,Pause
+
+# HUD
+ui.hud.turn,Runde
+ui.hud.vp,SP
+ui.hud.coins,Münzen
+ui.hud.food,Nahrung
+
+# Build Menu
+ui.build.title,BAUEN
+ui.build.cost,Kosten
+ui.build.time,Zeit
+
+# Victory
+ui.victory.winner,Sieger!
+ui.victory.defeat,Besiegt
+ui.victory.countdown,Countdown
+
+# General
+ui.general.on,AN
+ui.general.off,AUS
+ui.general.yes,Ja
+ui.general.no,Nein
+ui.general.close,Schließen
+ui.general.back,Zurück
+ui.general.confirm,Bestätigen
+ui.general.cancel,Abbrechen
+
+# Build Menu (in-game) — Titel verifiziert §14.1
+ui.build.menu_title,BAUEN
+ui.build.select_prompt,Wählt ein Gebäude zum Platzieren
+ui.build.cost.lodge,Kosten: 3 Planken | Bev.: +1
+ui.build.cost.farm,Kosten: 3 Planken | Bev.: +1
+ui.build.cost.mountain_shelter,Kosten: 2 Planken, 1 Stein | Bev.: +1
+ui.build.cost.residence,Kosten: 2 Planken, 1 Stein | Bev.: +4
+ui.build.cost.noble_residence,Kosten: 3 Planken, 2 Steine | Bev.: +5
+
+# Prestige Panel — Titel verifiziert §14.1
+ui.prestige.title,PRESTIGE-OPTIONEN
+ui.prestige.already_unlocked,Bereits freigeschaltet.
+ui.prestige.no_levels,Keine freien Prestigestufen!
+ui.prestige.unlocked,Freigeschaltet: {0}!
+ui.prestige.cannot_unlock,Freischalten nicht möglich — Voraussetzungen fehlen oder Stufe zu niedrig.
+
+# Notifications
+ui.notify.outpost_claimed,Handelsaußenposten beansprucht: {0}
+ui.notify.prestige_level,Prestigestufe {0}!
+ui.notify.unlocked,Freigeschaltet: {0}
+ui.notify.countdown_started,Sieg-Countdown gestartet! 3 Minuten...
+
+# Build Menu — Tabs & Sperren (S7-Drei-Tab-Struktur §14.4)
+ui.build.tab.economy,Wirtschaft
+ui.build.tab.specials,Spezial
+ui.build.tab.empire,Reich
+ui.build.btn.lodge,Forsthütte (3 Planken)
+ui.build.btn.farm,Bauernhof (3 Planken)
+ui.build.btn.mountain_shelter,Bergstollen (2P+1S)
+ui.build.btn.residence,Wohnhaus (2P+1S)
+ui.build.btn.noble_residence,Adelsresidenz (3P+2S)
+ui.build.locked_feedback,Erfordert Prestige-Freischaltung: {0}
+ui.build.no_resources,Nicht genug Rohstoffe! Benötigt: {0} Planken, {1} Stein
+ui.build.empire.locked_hint,Gesperrt — über das Prestige-Menü freischalten (P)
+ui.build.empire.stronghold_active,Festung aktiv — Einheiten im Armee-Menü ausbilden
+ui.build.empire.church_active,Kirche aktiv — Forschung im Technologiebaum
+ui.build.empire.export_active,Exportkontor aktiv — Handel auf der Handelskarte
+
+# Siegpunkt-Ring (§14.2 — verifizierte Namen)
+ui.vp.vp_genius,Wunderkind
+ui.vp.vp_fountain,Quelle der Weisheit
+ui.vp.vp_generalissimo,Generalissimus
+ui.vp.vp_sun_king,Sonnenkönig
+ui.vp.vp_trading_company,Handelsgesellschaft
+ui.vp.vp_banker,Sparfuchs
+ui.vp.vp_emperor,Imperator
+ui.vp.vp_metropolis,Metropole
+ui.vp.vp_field_marshal,Feldmarschall
+ui.vp.vp_pacifist,Pazifist
+ui.vp.vp_economist,Ökonom
+ui.vp.special_outpost,Handelsaußenposten
+ui.vp.special_sector,Spezieller Sektor
+
+# Träger-Sprüche (§14.1 — verifiziert)
+ui.carrier.waiting,Einige Güter fehlen. Ich muss warten.
+ui.carrier.impatient,Wer trödelt denn da? Ihr verschwendet meine Zeit!
+
+# Belohnungs-Modal (§14.3 — Titel verifiziert)
+ui.reward.title,BELOHNUNGEN
+ui.reward.population,Bevölkerungsbelohnung
+ui.reward.conquest,Eroberungsbelohnung
+ui.reward.choose_hint,Wählt genau ein Belohnungspaket
+
+# Rohstoffnamen (§14.9 — verifizierte Warenliste)
+ui.res.wood,Holz
+ui.res.stone,Stein
+ui.res.coal,Kohle
+ui.res.ironore,Eisenerz
+ui.res.goldore,Golderz
+ui.res.grain,Getreide
+ui.res.fish,Fisch
+ui.res.animal,Vieh
+ui.res.water,Wasser
+ui.res.wool,Wolle
+ui.res.planks,Planken
+ui.res.ironbars,Eisenbarren
+ui.res.flour,Mehl
+ui.res.bread,Brot
+ui.res.sausages,Würste
+ui.res.beer,Bier
+ui.res.paper,Papier
+ui.res.books,Bücher
+ui.res.cloth,Stoff
+ui.res.garments,Kleidung
+ui.res.coins,Münzen
+ui.res.weapons,Waffen
+ui.res.tools,Werkzeug
+ui.res.wheels,Räder
+ui.res.horses,Pferde
+ui.res.jewelry,Schmuck
+
+# HUD-Zeilen
+ui.hud.pop,Bev.
+ui.hud.idle,Frei
+ui.hud.building_progress,Im Bau: {0}
+ui.hud.prestige_line,Prestige: {0}P  St{1}  ({2} frei)  [P]
+ui.hud.victory_in,SIEG IN
+ui.hud.paused,PAUSIERT

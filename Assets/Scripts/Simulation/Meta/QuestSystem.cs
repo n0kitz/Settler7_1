@@ -37,6 +37,38 @@ namespace Settlers.Simulation
         /// <summary>Check if a quest is completed.</summary>
         public bool IsCompleted(string questId) => _completedQuests.Contains(questId);
 
+        /// <summary>All completed quest IDs (for save serialization).</summary>
+        public IReadOnlyCollection<string> CompletedQuestIds => _completedQuests;
+
+        /// <summary>Mark a quest as completed without awarding rewards (save-game restore).</summary>
+        public void RestoreCompletedQuest(string questId)
+        {
+            _availableQuests.RemoveAll(q => q.Id == questId);
+            _activeQuests.Remove(questId);
+            _completedQuests.Add(questId);
+        }
+
+        /// <summary>Re-activate a quest without ownership checks or events (save-game restore).</summary>
+        public bool RestoreActiveQuest(int playerId, string questId)
+        {
+            Quest quest = null;
+            for (int i = 0; i < _availableQuests.Count; i++)
+            {
+                if (_availableQuests[i].Id == questId)
+                {
+                    quest = _availableQuests[i];
+                    break;
+                }
+            }
+            if (quest == null) return false;
+            if (_completedQuests.Contains(questId)) return false;
+
+            quest.AcceptedBy = playerId;
+            _availableQuests.Remove(quest);
+            _activeQuests[questId] = quest;
+            return true;
+        }
+
         /// <summary>Register a quest as available.</summary>
         public void AddQuest(Quest quest)
         {

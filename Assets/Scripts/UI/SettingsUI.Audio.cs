@@ -90,7 +90,7 @@ namespace Settlers.UI
         private static void CreateSectionHeader(Transform parent, string title, TMP_FontAsset font)
         {
             var hdr = UIFactory.CreateLabel(parent, $"Hdr_{title}", title, 15f,
-                UnityEngine.FontStyles.Bold, font);
+                TMPro.FontStyles.Bold, font);
             hdr.color = UIColors.TEXT_HEADER_GOLD;
             var le = hdr.gameObject.AddComponent<LayoutElement>();
             le.preferredHeight = 28f;

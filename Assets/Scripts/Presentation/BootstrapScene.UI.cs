@@ -30,10 +30,19 @@ namespace Settlers.Presentation
             CreateSectorPanel(canvasGo.transform);
 
             // Build Menu (bottom-left)
-            BuildMenu.Create(canvasGo.transform, _defaultFont);
+            BuildMenuFactory.Create(canvasGo.transform, _defaultFont);
 
             // HUD (top bar)
             HUD.Create(canvasGo.transform, _defaultFont);
+
+            // VP badge strip (below HUD)
+            VPRingUI.Create(canvasGo.transform, _defaultFont);
+
+            // Conquest reward modal (§14.3, Critical Rule #10)
+            RewardModalUI.Create(canvasGo.transform, _defaultFont);
+
+            // Bottom action bar (§14.8)
+            ActionBarUI.Create(canvasGo.transform, _defaultFont);
 
             // Prestige Chart (toggle with P key)
             PrestigeChartUI.Create(canvasGo.transform, _defaultFont);

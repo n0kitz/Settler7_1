@@ -114,22 +114,31 @@ namespace Settlers.Simulation
         private static string Esc(string s) => s?.Replace("\"", "\\\"") ?? "";
         private static string B(bool v) => v ? "true" : "false";
 
+        /// <summary>Index of the value after "key": with optional whitespace, or -1.</summary>
+        private static int FindValueStart(string json, string key)
+        {
+            string search = $"\"{key}\":";
+            int start = json.IndexOf(search, StringComparison.Ordinal);
+            if (start < 0) return -1;
+            start += search.Length;
+            while (start < json.Length && (json[start] == ' ' || json[start] == '\t'))
+                start++;
+            return start;
+        }
+
         private static string ExtractString(string json, string key)
         {
-            string search = $"\"{key}\":\"";
-            int start = json.IndexOf(search, StringComparison.Ordinal);
-            if (start < 0) return null;
-            start += search.Length;
+            int start = FindValueStart(json, key);
+            if (start < 0 || start >= json.Length || json[start] != '"') return null;
+            start++;
             int end = json.IndexOf('"', start);
             return end < 0 ? null : json.Substring(start, end - start);
         }
 
         private static int ExtractInt(string json, string key, int def)
         {
-            string search = $"\"{key}\":";
-            int start = json.IndexOf(search, StringComparison.Ordinal);
+            int start = FindValueStart(json, key);
             if (start < 0) return def;
-            start += search.Length;
             int end = start;
             while (end < json.Length && (char.IsDigit(json[end]) || json[end] == '-')) end++;
             return int.TryParse(json.Substring(start, end - start), out int v) ? v : def;
@@ -137,10 +146,8 @@ namespace Settlers.Simulation
 
         private static float ExtractFloat(string json, string key, float def)
         {
-            string search = $"\"{key}\":";
-            int start = json.IndexOf(search, StringComparison.Ordinal);
+            int start = FindValueStart(json, key);
             if (start < 0) return def;
-            start += search.Length;
             int end = start;
             while (end < json.Length && (char.IsDigit(json[end]) || json[end] == '-'
                 || json[end] == '.')) end++;
@@ -151,10 +158,8 @@ namespace Settlers.Simulation
 
         private static bool ExtractBool(string json, string key)
         {
-            string search = $"\"{key}\":";
-            int start = json.IndexOf(search, StringComparison.Ordinal);
+            int start = FindValueStart(json, key);
             if (start < 0) return false;
-            start += search.Length;
             return json.Length > start + 3 && json.Substring(start, 4) == "true";
         }
 
@@ -171,15 +176,17 @@ namespace Settlers.Simulation
 
         private static IEnumerable<string> SplitArrayPairs(string block)
         {
+            // Track the innermost '[' so the outer array bracket never
+            // swallows the first [a,b] pair
             int start = -1;
             for (int i = 0; i < block.Length; i++)
             {
-                if (block[i] == '[' && start < 0) start = i;
+                if (block[i] == '[') start = i;
                 else if (block[i] == ']' && start >= 0)
                 {
                     string sub = block.Substring(start, i - start + 1);
-                    if (sub.Contains(",")) { yield return sub; start = -1; }
-                    else start = -1;
+                    if (sub.Contains(",")) yield return sub;
+                    start = -1;
                 }
             }
         }

@@ -102,12 +102,12 @@ namespace Settlers.Simulation
                 new (ResourceType, int)[] { },
                 new[] { (ResourceType.Animal, 1) }, 12f);
 
-            Add("well", "Well", BaseBuildingType.Lodge,
+            // ---- FARM (3 Planks) ----
+            Add("well", "Well", BaseBuildingType.Farm,
                 ResourceNodeType.WaterSource,
                 new (ResourceType, int)[] { },
                 new[] { (ResourceType.Water, 1) }, 6f);
 
-            // ---- FARM (3 Planks) ----
             Add("grain_barn", "Grain Barn", BaseBuildingType.Farm,
                 ResourceNodeType.FertileLand,
                 new (ResourceType, int)[] { },
@@ -163,6 +163,11 @@ namespace Settlers.Simulation
                 ResourceNodeType.None,
                 new[] { (ResourceType.Wood, 1) },
                 new[] { (ResourceType.Coal, 1) }, 8f);
+
+            Add("charcoal_kiln", "Charcoal Kiln", BaseBuildingType.MountainShelter,
+                ResourceNodeType.Forest,
+                new[] { (ResourceType.Wood, 1) },
+                new[] { (ResourceType.Coal, 1) }, 12f);
 
             // ---- RESIDENCE (2P+1S, 4 pop) ----
             Add("bakery", "Bakery", BaseBuildingType.Residence,

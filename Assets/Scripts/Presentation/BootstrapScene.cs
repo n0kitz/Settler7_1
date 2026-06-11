@@ -36,6 +36,10 @@ namespace Settlers.Presentation
 
         private void Awake()
         {
+            // Keep simulating when the editor/window loses focus
+            Application.runInBackground = true;
+            // Load the string table before any UI is built so L.Get resolves
+            Simulation.L.SetLocale(Simulation.SettingsPersistence.Load().Language);
             _defaultFont = LoadDefaultTMPFont();
             CreateLight();
             CreateCamera();

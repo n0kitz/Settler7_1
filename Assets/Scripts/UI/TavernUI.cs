@@ -230,7 +230,7 @@ namespace Settlers.UI
                 new Vector2(0.5f, 1f), new Vector2(0f, yOffset), new Vector2(0f, 18f));
         }
 
-        private void AddBtn(Transform parent, string label, System.Action action)
+        private void AddBtn(Transform parent, string label, UnityEngine.Events.UnityAction action)
         {
             var btn = UIFactory.CreateButton(parent, label, _font,
                 UIColors.BUTTON_BLUE, action, new Vector2(0f, 30f), 12f);
@@ -272,7 +272,7 @@ namespace Settlers.UI
 
         private static int FindOwnedSector(GameState state)
         {
-            foreach (var s in state.Graph.AllSectors)
+            foreach (var s in state.Graph.GetAllSectors())
                 if (s.OwnerId == 0) return s.Id;
             return -1;
         }

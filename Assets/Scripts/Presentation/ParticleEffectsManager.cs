@@ -53,7 +53,7 @@ namespace Settlers.Presentation
                 if (!e.Gained) return;
                 var sectors = gc.State.Graph.GetSectorsOwnedBy(e.PlayerId);
                 if (sectors.Count > 0)
-                    Burst(gc.GetSectorPosition(sectors[0].Id), COLOR_VP);
+                    Burst(gc.GetSectorPosition(sectors[0]), COLOR_VP);
             });
         }
 

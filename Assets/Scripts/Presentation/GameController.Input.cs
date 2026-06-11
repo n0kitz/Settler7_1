@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using Settlers.UI;
 
 namespace Settlers.Presentation
 {
@@ -38,6 +39,8 @@ namespace Settlers.Presentation
 
             if (_sectorPanel != null)
                 _sectorPanel.ShowSector(view.SectorId);
+
+            _bootstrap?.ShowSectorHighlight(GetSectorPosition(view.SectorId));
         }
 
         private void HandleKeyboardToggles()
@@ -64,7 +67,12 @@ namespace Settlers.Presentation
                 if (_buildMenu != null && _buildMenu.IsVisible)
                     { _buildMenu.Hide(); EscConsumedThisFrame = true; return; }
                 if (_sectorPanel != null && _sectorPanel.IsVisible)
-                    { _sectorPanel.Hide(); EscConsumedThisFrame = true; return; }
+                {
+                    _sectorPanel.Hide();
+                    _bootstrap?.HideSectorHighlight();
+                    EscConsumedThisFrame = true;
+                    return;
+                }
             }
 
             if (Keyboard.current.bKey.wasPressedThisFrame && _buildMenu != null)
@@ -73,42 +81,42 @@ namespace Settlers.Presentation
             if (Keyboard.current.pKey.wasPressedThisFrame)
             {
                 if (_prestigeChart == null)
-                    _prestigeChart = FindAnyObjectByType<PrestigeChartUI>();
+                    _prestigeChart = FindAnyObjectByType<PrestigeChartUI>(FindObjectsInactive.Include);
                 _prestigeChart?.Toggle();
             }
 
             if (Keyboard.current.tKey.wasPressedThisFrame)
             {
                 if (_techTreeUI == null)
-                    _techTreeUI = FindAnyObjectByType<TechTreeUI>();
+                    _techTreeUI = FindAnyObjectByType<TechTreeUI>(FindObjectsInactive.Include);
                 _techTreeUI?.Toggle();
             }
 
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 if (_tradeMapUI == null)
-                    _tradeMapUI = FindAnyObjectByType<TradeMapUI>();
+                    _tradeMapUI = FindAnyObjectByType<TradeMapUI>(FindObjectsInactive.Include);
                 _tradeMapUI?.Toggle();
             }
 
             if (Keyboard.current.mKey.wasPressedThisFrame)
             {
                 if (_armyPanel == null)
-                    _armyPanel = FindAnyObjectByType<ArmyPanel>();
+                    _armyPanel = FindAnyObjectByType<ArmyPanel>(FindObjectsInactive.Include);
                 _armyPanel?.Toggle();
             }
 
             if (Keyboard.current.vKey.wasPressedThisFrame)
             {
                 if (_tavernUI == null)
-                    _tavernUI = FindAnyObjectByType<TavernUI>();
+                    _tavernUI = FindAnyObjectByType<TavernUI>(FindObjectsInactive.Include);
                 _tavernUI?.Toggle();
             }
 
             if (Keyboard.current.qKey.wasPressedThisFrame)
             {
                 if (_questPanel == null)
-                    _questPanel = FindAnyObjectByType<UI.QuestPanel>();
+                    _questPanel = FindAnyObjectByType<UI.QuestPanel>(FindObjectsInactive.Include);
                 _questPanel?.Toggle();
             }
 

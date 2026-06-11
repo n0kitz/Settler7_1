@@ -52,13 +52,13 @@ namespace Settlers.UI
 
             if (prestige.HasUnlock(playerId, id))
             {
-                UpdateStatus("Already unlocked.", UIColors.TEXT_GOLD);
+                UpdateStatus(L.Get("ui.prestige.already_unlocked"), UIColors.TEXT_GOLD);
                 return;
             }
 
             if (prestige.GetUnspentLevels(playerId) <= 0)
             {
-                UpdateStatus("No unspent prestige levels!", UIColors.TEXT_RED_BRIGHT);
+                UpdateStatus(L.Get("ui.prestige.no_levels"), UIColors.TEXT_RED_BRIGHT);
                 return;
             }
 
@@ -67,11 +67,12 @@ namespace Settlers.UI
             {
                 var def = PrestigeDatabase.Get(id);
                 string name = def != null ? def.DisplayName : id;
-                UpdateStatus($"Unlocked: {name}!", UIColors.TEXT_GREEN_LIGHT);
+                UpdateStatus(string.Format(L.Get("ui.prestige.unlocked"), name),
+                    UIColors.TEXT_GREEN_LIGHT);
             }
             else
             {
-                UpdateStatus("Cannot unlock — prerequisites not met or level too low.", UIColors.TEXT_RED_BRIGHT);
+                UpdateStatus(L.Get("ui.prestige.cannot_unlock"), UIColors.TEXT_RED_BRIGHT);
             }
 
             RefreshNodes();

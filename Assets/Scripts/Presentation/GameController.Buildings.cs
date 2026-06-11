@@ -21,11 +21,13 @@ namespace Settlers.Presentation
             int playerId = sector.OwnerId;
             var resources = GetPlayerResources(playerId);
 
-            if (type == BaseBuildingType.NobleResidence &&
-                !State.Prestige.HasUnlock(playerId, "eco_noble_residence"))
+            if (!BuildingPrestigeGate.IsUnlocked(State.Prestige, playerId, type))
             {
+                var def = PrestigeDatabase.Get(BuildingPrestigeGate.RequiredUnlock(type));
                 if (_buildMenu != null)
-                    _buildMenu.ShowFeedback("Need 'Noble Residence' prestige unlock!");
+                    _buildMenu.ShowFeedback(string.Format(
+                        L.Get("ui.build.locked_feedback"),
+                        def?.DisplayName ?? type.ToString()));
                 return;
             }
 
@@ -35,7 +37,8 @@ namespace Settlers.Presentation
                 Debug.LogWarning($"Cannot afford {type}: need {plankCost}P+{stoneCost}S, " +
                     $"have {resources.Get(ResourceType.Planks)}P+{resources.Get(ResourceType.Stone)}S");
                 if (_buildMenu != null)
-                    _buildMenu.ShowFeedback($"Not enough resources! Need {plankCost} Planks, {stoneCost} Stone");
+                    _buildMenu.ShowFeedback(string.Format(
+                        L.Get("ui.build.no_resources"), plankCost, stoneCost));
                 return;
             }
 

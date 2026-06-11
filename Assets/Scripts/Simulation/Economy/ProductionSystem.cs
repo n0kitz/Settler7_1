@@ -13,6 +13,7 @@ namespace Settlers.Simulation
         private readonly Dictionary<int, PlayerResources> _playerResources;
         private readonly ConstructionSystem _construction;
         private readonly EventBus _eventBus;
+        private readonly HashSet<int> _stalledYards = new();
         private TechEffects _techEffects;
         private PrestigeSystem _prestige;
 
@@ -84,8 +85,15 @@ namespace Settlers.Simulation
                 if (!wy.InputsReserved)
                 {
                     if (!ConsumeInputs(wy.OwnerId, recipe))
-                        continue; // Can't start — inputs unavailable
+                    {
+                        // Fire once per transition into the stalled state
+                        if (_stalledYards.Add(wy.Id))
+                            _eventBus.Publish(new ProductionStalledEvent(
+                                wy.Id, wy.SectorId, wy.OwnerId));
+                        continue;
+                    }
                     wy.InputsReserved = true;
+                    _stalledYards.Remove(wy.Id);
                 }
 
                 // Apply tech bonus to production speed
@@ -207,6 +215,25 @@ namespace Settlers.Simulation
             PlayerId = playerId;
             WorkYardId = workYardId;
             Outputs = outputs;
+        }
+    }
+
+    /// <summary>
+    /// Fired once when a work yard cannot start a cycle because inputs are
+    /// missing ("Einige Güter fehlen"). Re-fires only after the yard recovers
+    /// and stalls again.
+    /// </summary>
+    public readonly struct ProductionStalledEvent
+    {
+        public readonly int WorkYardId;
+        public readonly int SectorId;
+        public readonly int OwnerId;
+
+        public ProductionStalledEvent(int workYardId, int sectorId, int ownerId)
+        {
+            WorkYardId = workYardId;
+            SectorId = sectorId;
+            OwnerId = ownerId;
         }
     }
 }

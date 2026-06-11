@@ -92,6 +92,7 @@ namespace Settlers.Presentation
         private ArmyPanel _armyPanel;
         private TavernUI _tavernUI;
         private UI.QuestPanel _questPanel;
+        private BootstrapScene _bootstrap;
         private Camera _mainCamera;
         private Material _buildingMaterial;
         private WorkerManager _workerManager;
@@ -107,14 +108,16 @@ namespace Settlers.Presentation
         {
             Instance = this;
             _mainCamera = Camera.main;
-            _sectorPanel = FindAnyObjectByType<SectorPanel>();
-            _buildMenu = FindAnyObjectByType<BuildMenu>();
-            _prestigeChart = FindAnyObjectByType<PrestigeChartUI>();
-            _techTreeUI = FindAnyObjectByType<TechTreeUI>();
-            _tradeMapUI = FindAnyObjectByType<TradeMapUI>();
-            _armyPanel = FindAnyObjectByType<ArmyPanel>();
-            _tavernUI = FindAnyObjectByType<TavernUI>();
-            _questPanel = FindAnyObjectByType<UI.QuestPanel>();
+            // Include inactive — panels deactivate their own GameObject when hidden
+            _sectorPanel = FindAnyObjectByType<SectorPanel>(FindObjectsInactive.Include);
+            _buildMenu = FindAnyObjectByType<BuildMenu>(FindObjectsInactive.Include);
+            _prestigeChart = FindAnyObjectByType<PrestigeChartUI>(FindObjectsInactive.Include);
+            _techTreeUI = FindAnyObjectByType<TechTreeUI>(FindObjectsInactive.Include);
+            _tradeMapUI = FindAnyObjectByType<TradeMapUI>(FindObjectsInactive.Include);
+            _armyPanel = FindAnyObjectByType<ArmyPanel>(FindObjectsInactive.Include);
+            _tavernUI = FindAnyObjectByType<TavernUI>(FindObjectsInactive.Include);
+            _questPanel = FindAnyObjectByType<UI.QuestPanel>(FindObjectsInactive.Include);
+            _bootstrap = FindAnyObjectByType<BootstrapScene>();
 
             _buildingPlacer = GetComponent<BuildingPlacer>();
             if (_buildingPlacer == null)
@@ -129,9 +132,14 @@ namespace Settlers.Presentation
 
         private void Start()
         {
-            // Don't auto-initialize — wait for MapSelectionUI to call SetMapId().
-            // If no MapSelectionUI exists (e.g., testing), init with default map.
-            if (FindAnyObjectByType<MapSelectionUI>() == null)
+            // Don't auto-initialize when any menu flow exists — otherwise a
+            // default game silently starts under the main menu and blocks the
+            // player's actual map choice (StartGame is _gameRunning-guarded).
+            // Auto-init only in bare test scenes with no menu UI at all.
+            bool hasMenuFlow = FindAnyObjectByType<MapSelectionUI>() != null
+                || FindAnyObjectByType<UI.GameSetupUI>() != null
+                || FindAnyObjectByType<UI.MainMenuUI>() != null;
+            if (!hasMenuFlow)
                 InitializeGame();
         }
 

@@ -72,7 +72,8 @@ namespace Settlers.Simulation
                 new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
                         ResourceNodeType.FertileLand, ResourceNodeType.WaterSource }, 10));
             g.AddSector(S(1, "Western Farmlands", 0, 0, false,
-                new[] { ResourceNodeType.FertileLand, ResourceNodeType.FishingGround }, 8));
+                new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
+                        ResourceNodeType.FertileLand, ResourceNodeType.FishingGround }, 8));
             g.AddSector(S(2, "Western Quarry", Sector.NEUTRAL, 3, false,
                 new[] { ResourceNodeType.Stone, ResourceNodeType.Forest }, 6));
 
@@ -81,7 +82,8 @@ namespace Settlers.Simulation
                 new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
                         ResourceNodeType.FertileLand, ResourceNodeType.WaterSource }, 10));
             g.AddSector(S(4, "Eastern Farmlands", 1, 0, false,
-                new[] { ResourceNodeType.FertileLand, ResourceNodeType.FishingGround }, 8));
+                new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
+                        ResourceNodeType.FertileLand, ResourceNodeType.FishingGround }, 8));
             g.AddSector(S(5, "Eastern Quarry", Sector.NEUTRAL, 3, false,
                 new[] { ResourceNodeType.Stone, ResourceNodeType.Forest }, 6));
 
@@ -127,21 +129,24 @@ namespace Settlers.Simulation
                 new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
                         ResourceNodeType.FertileLand, ResourceNodeType.WaterSource }, 10));
             g.AddSector(S(1, "Northern Fields", 0, 0, false,
-                new[] { ResourceNodeType.FertileLand, ResourceNodeType.FishingGround }, 7));
+                new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
+                        ResourceNodeType.FertileLand, ResourceNodeType.FishingGround }, 7));
 
             // Player 1 (northeast)
             g.AddSector(S(2, "Eastern Fortress", 1, 0, false,
                 new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
                         ResourceNodeType.FertileLand, ResourceNodeType.WaterSource }, 10));
             g.AddSector(S(3, "Eastern Pastures", 1, 0, false,
-                new[] { ResourceNodeType.FertileLand, ResourceNodeType.Forest }, 7));
+                new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
+                        ResourceNodeType.FertileLand }, 7));
 
             // Player 2 (south)
             g.AddSector(S(4, "Southern Citadel", 2, 0, false,
                 new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
                         ResourceNodeType.FertileLand, ResourceNodeType.WaterSource }, 10));
             g.AddSector(S(5, "Southern Mines", 2, 0, false,
-                new[] { ResourceNodeType.Stone, ResourceNodeType.Iron }, 7));
+                new[] { ResourceNodeType.Forest, ResourceNodeType.Stone,
+                        ResourceNodeType.FertileLand, ResourceNodeType.Iron }, 7));
 
             // Neutral contested zones
             g.AddSector(S(6, "North Pass", Sector.NEUTRAL, 4, false,

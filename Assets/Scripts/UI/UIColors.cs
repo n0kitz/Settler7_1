@@ -28,6 +28,13 @@ namespace Settlers.UI
         // Column header accent
         public static Color ACCENT_ORANGE     = new(0.9f,  0.8f,  0.4f);
 
+        // S7 look: warm dark-olive panels with brass/gold trim
+        public static Color PANEL_OLIVE       = new(0.24f, 0.23f, 0.17f, 0.97f);
+        public static Color PANEL_OLIVE_LIGHT = new(0.31f, 0.30f, 0.22f, 0.97f);
+        public static Color BORDER_GOLD       = new(0.58f, 0.47f, 0.26f);
+        public static Color TILE_BG           = new(0.20f, 0.19f, 0.14f, 0.95f);
+        public static Color PARCHMENT         = new(0.78f, 0.70f, 0.53f);
+
         /// <summary>
         /// Swap to color-blind-safe palette (high-contrast, no red/green reliance).
         /// Call on Settings Apply when ColorBlindMode changes.

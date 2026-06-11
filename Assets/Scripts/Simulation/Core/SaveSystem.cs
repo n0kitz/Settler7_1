@@ -96,6 +96,43 @@ namespace Settlers.Simulation
                     sb.AppendLine($"vp.{p}.permanent={string.Join(",", allVPs)}");
             }
 
+            // Generals (with army composition)
+            for (int p = 0; p < state.PlayerCount; p++)
+            {
+                foreach (var gen in state.Army.GetGenerals(p))
+                {
+                    var units = new List<string>();
+                    foreach (UnitType ut in Enum.GetValues(typeof(UnitType)))
+                    {
+                        int count = gen.GetUnitCount(ut);
+                        if (count > 0) units.Add($"{ut}:{count}");
+                    }
+                    sb.AppendLine($"general.{gen.Id}={gen.OwnerId}|{gen.SectorId}|" +
+                        $"{gen.IsMoving}|{string.Join(",", units)}");
+                }
+            }
+
+            // Training queue
+            for (int i = 0; i < state.Army.TrainingQueue.Count; i++)
+            {
+                var t = state.Army.TrainingQueue[i];
+                sb.AppendLine($"training.{i}={t.PlayerId}|{t.SectorId}|{t.UnitType}|" +
+                    $"{t.TotalTime:F2}|{t.Progress:F4}");
+            }
+
+            // Quests — available quests are re-seeded from QuestDatabase on load
+            for (int p = 0; p < state.PlayerCount; p++)
+            {
+                foreach (var quest in state.Quests.GetActiveQuests(p))
+                    sb.AppendLine($"quest.active.{quest.Id}={p}");
+            }
+            if (state.Quests.CompletedQuestIds.Count > 0)
+                sb.AppendLine($"quest.completed={string.Join(",", state.Quests.CompletedQuestIds)}");
+
+            // Unresolved conquest reward choices
+            foreach (var pending in state.ConquestRewards.Pending)
+                sb.AppendLine($"reward.pending.{pending.SectorId}={pending.PlayerId}");
+
             return sb.ToString();
         }
 
@@ -256,6 +293,65 @@ namespace Settlers.Simulation
                     if (!string.IsNullOrEmpty(vpId))
                         state.Victory.AwardPermanentVP(p, vpId.Trim());
                 }
+            }
+
+            // Generals — restore with army composition
+            foreach (var kvp in data)
+            {
+                if (!kvp.Key.StartsWith("general.")) continue;
+                int genId = int.Parse(kvp.Key.Substring("general.".Length));
+                var parts = kvp.Value.Split('|');
+                if (parts.Length < 4) continue;
+
+                int ownerId   = int.Parse(parts[0]);
+                int sectorId  = int.Parse(parts[1]);
+                bool isMoving = bool.Parse(parts[2]);
+                var units = new Dictionary<UnitType, int>();
+                if (parts[3].Length > 0)
+                {
+                    foreach (var entry in parts[3].Split(','))
+                    {
+                        var pair = entry.Split(':');
+                        units[(UnitType)Enum.Parse(typeof(UnitType), pair[0])] =
+                            int.Parse(pair[1]);
+                    }
+                }
+                state.Army.RestoreGeneral(genId, ownerId, sectorId, isMoving, units);
+            }
+
+            // Training queue
+            for (int i = 0; data.TryGetValue($"training.{i}", out var tStr); i++)
+            {
+                var parts = tStr.Split('|');
+                if (parts.Length < 5) continue;
+                state.Army.RestoreTrainingTask(
+                    int.Parse(parts[0]), int.Parse(parts[1]),
+                    (UnitType)Enum.Parse(typeof(UnitType), parts[2]),
+                    float.Parse(parts[3], inv), float.Parse(parts[4], inv));
+            }
+
+            // Quests — completed first so active restores can't resurrect them
+            if (data.TryGetValue("quest.completed", out var cqStr))
+            {
+                foreach (var id in cqStr.Split(','))
+                {
+                    if (!string.IsNullOrEmpty(id))
+                        state.Quests.RestoreCompletedQuest(id.Trim());
+                }
+            }
+            foreach (var kvp in data)
+            {
+                if (!kvp.Key.StartsWith("quest.active.")) continue;
+                string questId = kvp.Key.Substring("quest.active.".Length);
+                state.Quests.RestoreActiveQuest(int.Parse(kvp.Value), questId);
+            }
+
+            // Unresolved conquest reward choices
+            foreach (var kvp in data)
+            {
+                if (!kvp.Key.StartsWith("reward.pending.")) continue;
+                int sectorId = int.Parse(kvp.Key.Substring("reward.pending.".Length));
+                state.ConquestRewards.RestorePending(int.Parse(kvp.Value), sectorId);
             }
 
             // Simulation time (apply last — doesn't affect anything above)
