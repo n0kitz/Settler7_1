@@ -30,9 +30,15 @@ namespace Settlers.Presentation
         [SerializeField] private GameObject _selectionHighlight;
         [SerializeField] private Color _highlightColor = new Color(1f, 1f, 1f, 0.3f);
 
+        [Header("Terrain Tinting")]
+        [SerializeField] private float _ownerTintStrength = 0.16f;
+        [SerializeField] private float _unownedDesaturation = 0.20f;
+
         private MaterialPropertyBlock _propertyBlock;
         private bool _isSelected;
         private static readonly int ColorProperty = Shader.PropertyToID("_BaseColor");
+        private static readonly int BaseMapProperty = Shader.PropertyToID("_BaseMap");
+        private static readonly int BaseMapStProperty = Shader.PropertyToID("_BaseMap_ST");
 
         /// <summary>The simulation sector ID this view represents.</summary>
         public int SectorId => _sectorId;
@@ -59,13 +65,43 @@ namespace Settlers.Presentation
         }
 
         /// <summary>
+        /// Set the sector's ground look (§14.10): a procedural terrain texture,
+        /// tiled with a per-sector UV offset so neighbors don't repeat.
+        /// </summary>
+        public void SetTerrain(Texture2D groundTexture, Vector4 uvTilingOffset)
+        {
+            if (_terrainRenderer == null) return;
+            _propertyBlock ??= new MaterialPropertyBlock();
+            _terrainRenderer.GetPropertyBlock(_propertyBlock);
+            if (groundTexture != null)
+                _propertyBlock.SetTexture(BaseMapProperty, groundTexture);
+            _propertyBlock.SetVector(BaseMapStProperty, uvTilingOffset);
+            _propertyBlock.SetColor(ColorProperty, Color.white);
+            _terrainRenderer.SetPropertyBlock(_propertyBlock);
+        }
+
+        /// <summary>
         /// Update the visual state based on the current simulation owner.
-        /// Call this from a presentation manager each frame or on ownership change.
+        /// The ground keeps its terrain look; ownership shows as a subtle tint
+        /// (walls and the border ring carry the strong player color).
         /// </summary>
         public void UpdateOwnership(int ownerId)
         {
-            Color color = GetOwnerColor(ownerId);
-            ApplyTerrainColor(color);
+            Color tint;
+            if (ownerId >= 0)
+                tint = Color.Lerp(Color.white, GetOwnerColor(ownerId), _ownerTintStrength);
+            else if (ownerId == Simulation.Sector.NEUTRAL)
+                tint = Color.white;
+            else
+                tint = Desaturated(Color.white, _unownedDesaturation);
+            ApplyTerrainColor(tint);
+        }
+
+        private static Color Desaturated(Color c, float amount)
+        {
+            // Fade toward gray and darken slightly — unclaimed land reads muted
+            var gray = new Color(0.75f, 0.75f, 0.75f);
+            return Color.Lerp(c, gray, amount);
         }
 
         /// <summary>Set this sector as selected and show highlight.</summary>

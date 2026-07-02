@@ -105,8 +105,9 @@ namespace Settlers.Presentation
                 _isDragging = false;
             }
 
-            // Edge scrolling
-            if (_enableEdgeScroll)
+            // Edge scrolling — only while the window has focus, otherwise the
+            // camera drifts into the map-bounds corner whenever focus is lost
+            if (_enableEdgeScroll && Application.isFocused)
             {
                 Vector2 mousePos = _mouse.position.ReadValue();
                 float screenW = Screen.width;

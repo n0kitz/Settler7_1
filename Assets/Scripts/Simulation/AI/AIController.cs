@@ -15,6 +15,8 @@ namespace Settlers.Simulation
         private int _lastVPCount;
         private AIPhase _phase;
         private AIPath _chosenPath;
+        private int _vpLeaderId = -1;
+        private bool _leaderNearWin;
 
         public AIController(GameState state, int playerId,
             AIBehaviorProfile profile = null)
@@ -31,6 +33,11 @@ namespace Settlers.Simulation
         public AIPath ChosenPath => _chosenPath;
         public int PlayerId => _playerId;
         public AIBehaviorProfile Profile => _profile;
+
+        /// <summary>Opponent with the most VPs (victory race tracking).</summary>
+        internal int VPLeaderId => _vpLeaderId;
+        /// <summary>True when an opponent is within 1 VP of winning or counting down.</summary>
+        internal bool LeaderNearWin => _leaderNearWin;
 
         public void Tick(float deltaTime)
         {
@@ -83,6 +90,8 @@ namespace Settlers.Simulation
 
         private void TickExecution()
         {
+            AssessVictoryRace();
+
             // Core economy — always runs
             AIEconomy.BuildEconomy(_state, _playerId);
             AIEconomy.AttachWorkYards(_state, _playerId);
@@ -102,12 +111,39 @@ namespace Settlers.Simulation
                 case AIPath.Trade: TickTrade(); break;
             }
 
+            // Victory race: an opponent is about to win — contest militarily
+            // even off the Military path (attacking their sectors can strip
+            // dynamic VPs like sector-count and break their countdown)
+            if (_leaderNearWin && _chosenPath != AIPath.Military)
+                TickMilitary();
+
             // Consider switching path if stalled
             ConsiderPathSwitch();
 
             // Opportunistic: try proselytism or bribery on adjacent neutral sectors
             TryProselytism();
             TryBribery();
+        }
+
+        /// <summary>
+        /// Track the strongest opponent by VP count. "Near win" = within 1 VP
+        /// of the requirement or already running the victory countdown.
+        /// </summary>
+        internal void AssessVictoryRace()
+        {
+            var victory = _state.Victory;
+            int leaderId = -1;
+            int leaderVPs = -1;
+            for (int p = 0; p < _state.PlayerCount; p++)
+            {
+                if (p == _playerId) continue;
+                int vps = victory.GetVPCount(p);
+                if (vps > leaderVPs) { leaderVPs = vps; leaderId = p; }
+            }
+
+            _vpLeaderId = leaderId;
+            _leaderNearWin = leaderVPs >= victory.VPRequired - 1
+                || (victory.IsCountdownActive && victory.CountdownPlayerId != _playerId);
         }
 
         private void SpendPrestigeUnlocks()

@@ -78,7 +78,8 @@ namespace Settlers.Presentation
                 b - perp, b + perp
             };
 
-            var tris = new int[] { 0, 2, 1, 1, 2, 3 };
+            // Clockwise seen from above so the quad faces up (+Y) and isn't backface-culled
+            var tris = new int[] { 0, 1, 2, 2, 1, 3 };
 
             float len = (b - a).magnitude;
             var uvs = new Vector2[]

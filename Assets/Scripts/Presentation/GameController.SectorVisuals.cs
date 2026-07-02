@@ -81,6 +81,7 @@ namespace Settlers.Presentation
         {
             var mapRoot = new GameObject("MapRoot");
             mapRoot.transform.SetParent(transform);
+            CreateWorldGround(mapRoot.transform);
             int count = Graph.SectorCount;
             _sectorViews = new SectorView[count];
             for (int i = 0; i < count; i++)
@@ -91,6 +92,25 @@ namespace Settlers.Presentation
                 view.Initialize(i, GetSectorPosition(i));
                 _sectorViews[i] = view;
             }
+        }
+
+        /// <summary>Muted ground plane under the whole map so sectors don't
+        /// float as islands over the sky background (§14.10).</summary>
+        private void CreateWorldGround(Transform parent)
+        {
+            var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            ground.name = "WorldGround";
+            ground.transform.SetParent(parent, false);
+            ground.transform.localPosition = new Vector3(0f, -0.08f, 0f);
+            ground.transform.localScale = new Vector3(60f, 1f, 60f);
+            // No collider — clicks must reach the sector hexes only
+            Destroy(ground.GetComponent<Collider>());
+            var mat = new Material(Shader.Find("Universal Render Pipeline/Lit"))
+            {
+                name = "WorldGround",
+                color = new Color(0.45f, 0.46f, 0.30f),
+            };
+            ground.GetComponent<MeshRenderer>().sharedMaterial = mat;
         }
 
         private GameObject CreateSectorGameObject(Sector sector, Transform parent)
@@ -118,6 +138,14 @@ namespace Settlers.Presentation
             SetPrivateField(view, "_selectionHighlight", highlightChild);
             view.SetBorderPoints(borderPoints);
 
+            // Ground reflects terrain (§14.10) — ownership shown via walls + border ring
+            var groundKind = TerrainStyle.Classify(sector);
+            view.SetTerrain(TerrainStyle.GetGroundTexture(groundKind),
+                TerrainStyle.UvTilingOffset(sector.Id));
+
+            var decor = go.AddComponent<SectorDecorView>();
+            decor.Build(_sectorRadius, sector);
+
             // Stone wall ring (§14.10) — shown only while the sector is owned
             var wall = go.AddComponent<SectorWallView>();
             wall.Build(_sectorRadius);
@@ -142,15 +170,20 @@ namespace Settlers.Presentation
             var verts = new Vector3[S + 1];
             var tris = new int[S * 3];
             var norms = new Vector3[S + 1];
+            var uvs = new Vector2[S + 1];
             verts[0] = Vector3.zero; norms[0] = Vector3.up;
+            uvs[0] = new Vector2(0.5f, 0.5f);
             for (int i = 0; i < S; i++)
             {
                 float a = Mathf.Deg2Rad * (60f * i - 30f);
                 verts[i + 1] = new Vector3(Mathf.Cos(a) * radius, 0f, Mathf.Sin(a) * radius);
                 norms[i + 1] = Vector3.up;
-                tris[i * 3] = 0; tris[i * 3 + 1] = i + 1; tris[i * 3 + 2] = (i + 1) % S + 1;
+                // Planar map: hex spans [0,1] UV so the ground texture tiles via _BaseMap_ST
+                uvs[i + 1] = new Vector2(Mathf.Cos(a) * 0.5f + 0.5f, Mathf.Sin(a) * 0.5f + 0.5f);
+                // Clockwise seen from above so the face points up (+Y) and isn't backface-culled
+                tris[i * 3] = 0; tris[i * 3 + 1] = (i + 1) % S + 1; tris[i * 3 + 2] = i + 1;
             }
-            var m = new Mesh { name = $"Hex_{radius:F1}", vertices = verts, triangles = tris, normals = norms };
+            var m = new Mesh { name = $"Hex_{radius:F1}", vertices = verts, triangles = tris, normals = norms, uv = uvs };
             m.RecalculateBounds();
             return m;
         }
@@ -183,7 +216,8 @@ namespace Settlers.Presentation
             _roadViews = new List<RoadView>();
             var root = new GameObject("Roads");
             root.transform.SetParent(transform);
-            var roadMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            // Lit so roads receive sun shadows and fog like the terrain
+            var roadMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             roadMaterial.name = "RoadDefault";
 
             var drawn = new HashSet<long>();

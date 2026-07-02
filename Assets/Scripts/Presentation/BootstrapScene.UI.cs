@@ -112,7 +112,7 @@ namespace Settlers.Presentation
             // Post-game summary (shown on game over)
             _postGameSummary = UI.PostGameSummaryUI.Create(canvasGo.transform, _defaultFont);
             _postGameSummary.OnReturnToMenu += OnQuitToMenu;
-            _postGameSummary.OnPlayAgain    += () => { /* TODO: restart same map */ };
+            _postGameSummary.OnPlayAgain    += OnPlayAgainClicked;
 
             // Hall of Fame (shown from main menu)
             _hallOfFame = UI.HallOfFameUI.Create(canvasGo.transform, _defaultFont);

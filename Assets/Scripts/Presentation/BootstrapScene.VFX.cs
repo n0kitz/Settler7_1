@@ -14,19 +14,23 @@ namespace Settlers.Presentation
         private ParticleEffectsManager _particles;
         private CameraShake        _cameraShake;
 
-        /// <summary>Create VFX managers and wire them to EventBus events.</summary>
+        /// <summary>Create VFX managers (once) and wire them to the current
+        /// game's EventBus. Called again after every StartGame — each game has
+        /// a fresh bus, so only the subscriptions are renewed.</summary>
         private void WireVFX()
         {
             var bus = GameController.Instance?.Events;
             var gc  = GameController.Instance;
             if (bus == null || gc == null) return;
 
-            // Scene root for VFX GameObjects
-            var vfxRoot = new GameObject("VFXRoot").transform;
-
-            _floatText  = FloatingTextManager.Create(vfxRoot);
-            _particles  = ParticleEffectsManager.Create(vfxRoot);
-            _highlight  = HighlightOverlay.Create(vfxRoot);
+            if (_floatText == null)
+            {
+                // Scene root for VFX GameObjects — created once, reused per game
+                var vfxRoot = new GameObject("VFXRoot").transform;
+                _floatText  = FloatingTextManager.Create(vfxRoot);
+                _particles  = ParticleEffectsManager.Create(vfxRoot);
+                _highlight  = HighlightOverlay.Create(vfxRoot);
+            }
 
             _floatText.Initialize(bus, gc);
             _particles.Initialize(bus, gc);

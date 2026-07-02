@@ -46,6 +46,10 @@ namespace Settlers.Presentation
             AIPersonalityType personality = AIPersonalityType.Builder,
             Simulation.GameRules rules = null)
         {
+            // A finished (or abandoned) game must be torn down first —
+            // InitializeGame is _gameRunning-guarded and would silently no-op,
+            // leaving the player in the OLD game (broke Play Again / re-New Game)
+            if (_gameRunning) TeardownGame();
             _mapId = mapId;
             _playerCountOverride = playerCount;
             _vpRequiredOverride = vpRequired;
@@ -153,6 +157,47 @@ namespace Settlers.Presentation
             _initialized = true;
             State = state;
             _runner = runner;
+        }
+
+        /// <summary>
+        /// Tear down the running game (simulation + spawned visuals) so a new
+        /// StartGame can boot cleanly. Persistent UI panels survive — they read
+        /// GameController.Instance.State and re-resolve on the next game.
+        /// </summary>
+        private void TeardownGame()
+        {
+            if (!_gameRunning) return;
+            _gameRunning = false;
+
+            if (_buildMenu != null)
+                _buildMenu.OnBuildingSelected -= HandleBuildMenuSelection;
+
+            if (_workerManager != null) Destroy(_workerManager);
+            if (_carrierManager != null) Destroy(_carrierManager);
+            if (_armyViewManager != null) Destroy(_armyViewManager);
+            if (_clericManager != null) Destroy(_clericManager);
+            _workerManager = null;
+            _carrierManager = null;
+            _armyViewManager = null;
+            _clericManager = null;
+
+            DestroyChildByName("MapRoot");
+            DestroyChildByName("Roads");
+            DestroyChildByName("Buildings");
+            DestroyChildByName("Units");
+            _buildingsRoot = null;
+            _buildingViews.Clear();
+            _sectorViews = null;
+            _selectedSector = null;
+
+            _runner = null;
+            State = null;
+        }
+
+        private void DestroyChildByName(string name)
+        {
+            var child = transform.Find(name);
+            if (child != null) Destroy(child.gameObject);
         }
 
         private void InitializeGame()

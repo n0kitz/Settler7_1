@@ -34,6 +34,45 @@ namespace Settlers.Presentation
         private Simulation.Mission _pendingMission;
         private MapEditorController _mapEditorController;
 
+        // Last started game — replayed by the post-game "Play Again" button
+        private string _lastMapId;
+        private int _lastPlayerCount;
+        private int _lastVPRequired;
+        private Simulation.AIDifficultyLevel _lastDifficulty;
+        private Simulation.AIPersonalityType _lastPersonality;
+        private Simulation.GameRules _lastRules;
+
+        /// <summary>Start a game and remember its settings for Play Again.</summary>
+        private void StartTrackedGame(string mapId, int playerCount, int vpRequired,
+            Simulation.AIDifficultyLevel difficulty = Simulation.AIDifficultyLevel.Normal,
+            Simulation.AIPersonalityType personality = Simulation.AIPersonalityType.Builder,
+            Simulation.GameRules rules = null)
+        {
+            if (GameController.Instance == null) return;
+            _lastMapId = mapId;
+            _lastPlayerCount = playerCount;
+            _lastVPRequired = vpRequired;
+            _lastDifficulty = difficulty;
+            _lastPersonality = personality;
+            _lastRules = rules;
+            _gameStartTime = Time.realtimeSinceStartup;
+            GameController.Instance.StartGame(mapId, playerCount, vpRequired,
+                difficulty, personality, rules);
+            // Every StartGame creates a fresh EventBus — subscriptions made at
+            // bootstrap (or for the previous match) die with the old bus, so
+            // re-wire or the post-game summary/toasts/VFX never fire again
+            WireAchievements();
+            WireDiplomacy();
+            WireVFX();
+        }
+
+        private void OnPlayAgainClicked()
+        {
+            if (string.IsNullOrEmpty(_lastMapId)) { OnQuitToMenu(); return; }
+            StartTrackedGame(_lastMapId, _lastPlayerCount, _lastVPRequired,
+                _lastDifficulty, _lastPersonality, _lastRules);
+        }
+
         private void Awake()
         {
             // Keep simulating when the editor/window loses focus
@@ -43,6 +82,7 @@ namespace Settlers.Presentation
             _defaultFont = LoadDefaultTMPFont();
             CreateLight();
             CreateCamera();
+            SetupAtmosphere();
             var canvas = CreateUI();
             CreateGameController();
         }
@@ -90,7 +130,9 @@ namespace Settlers.Presentation
             var light = lightGo.AddComponent<Light>();
             light.type = LightType.Directional;
             light.color = new Color(1f, 0.96f, 0.88f);
-            light.intensity = 1.2f;
+            light.intensity = 1.15f;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.75f;
             lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
         }
 
@@ -149,8 +191,7 @@ namespace Settlers.Presentation
         {
             _mainMenu.Hide();
             // Start tutorial map directly — no map/setup screens
-            if (GameController.Instance != null)
-                GameController.Instance.StartGame("tutorial", playerCount: 1, vpRequired: 3);
+            StartTrackedGame("tutorial", playerCount: 1, vpRequired: 3);
         }
 
         private void OnCampaignClicked()
@@ -169,8 +210,7 @@ namespace Settlers.Presentation
 
         private void OnMissionStart(Simulation.Mission mission)
         {
-            if (GameController.Instance != null)
-                GameController.Instance.StartGame(mission.MapId, mission.PlayerCount, mission.VPRequired);
+            StartTrackedGame(mission.MapId, mission.PlayerCount, mission.VPRequired);
         }
 
         private void OnMissionBriefingBack()
@@ -273,11 +313,10 @@ namespace Settlers.Presentation
             Simulation.AIDifficultyLevel difficulty, Simulation.AIPersonalityType personality,
             Simulation.StartingProfileType startingProfile, Simulation.VictoryRuleSetType victoryRules)
         {
-            if (GameController.Instance == null) return;
             var rules = new Simulation.GameRules(
                 Simulation.StartingProfile.Get(startingProfile),
                 Simulation.VictoryRuleSet.Get(victoryRules));
-            GameController.Instance.StartGame(mapId, playerCount, vpRequired,
+            StartTrackedGame(mapId, playerCount, vpRequired,
                 difficulty, personality, rules);
         }
 

@@ -261,7 +261,12 @@ Player VP badges: floating portrait + colored circle + VP count. Red = enemy, gr
 
 ## Project State
 
-All 15 simulation systems complete. 158 script files + 33 test files. All 10 roadmap phases committed. CI green.
+14 simulation subsystems complete (incl. Diplomacy, Replay, Modding, Localization, Settings,
+ConquestRewards). 186 script files + 42 test files, **483/483 NUnit tests green**.
+Bilingual (EN/DE) via `L.Get` + StringTable.{en,de}.csv — key parity test-enforced.
+Play-mode validated: menu → map choice → simulation → conquest → BELOHNUNGEN choice → save/load.
+S7 visual pass done: olive/gold ornate UI, BAUEN icon-grid (3 icon tabs), stacked-stone walls,
+VP badge strip, action bar with prestige level. Biggest visual gap: terrain/lighting (§14.10).
 Current phase and open tasks tracked in MEMORY.md.
 
 ---

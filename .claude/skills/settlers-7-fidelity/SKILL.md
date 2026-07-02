@@ -46,13 +46,14 @@ description: "1:1 fidelity tracker for Die Siedler 7 — Paths to a Kingdom. One
 | Military conquest | [Conquest](https://settlers7.fandom.com/wiki/Conquest) | Army moves to enemy/neutral sector → auto-combat resolves. Winner gets sector, buildings destroyed. | `ConquestSystem.cs` (OnArmyArrived) | **1:1** | 2026-05-12 |
 | Proselytism conquest | [Proselytism](https://settlers7.fandom.com/wiki/Proselytism) | 6 clerics (unfortified) or 12 (fortified). 30s conversion. Neutral sectors only. | `ConquestSystem.cs` (Tick) | **1:1** | 2026-05-12 |
 | Bribery conquest | [Bribery](https://settlers7.fandom.com/wiki/Bribery) | Coins + Garments + Jewelry. Cost scales with garrison strength. Neutral sectors only. | `ConquestSystem.cs` (TryBribe) | **1:1** | 2026-05-12 |
-| Fortification | [Fortification](https://settlers7.fandom.com/wiki/Fortification) | Requires `mil_fortification` prestige unlock + 10 Stone. 30s build time. `tech_fortification_tech` = ×2 speed. | `FortificationSystem.cs` | **bug** | 2026-05-12 |
-| Conquest rewards | [Rewards](https://settlers7.fandom.com/wiki/Conquest) | +1 prestige on conquest. Buildings destroyed. Storehouse replaced. Special sector grants VP. | `GameState.cs` (OnSectorConquered) | **1:1** | 2026-05-12 |
+| Fortification | [Fortification](https://settlers7.fandom.com/wiki/Fortification) | Requires `mil_fortification` prestige unlock + 10 Stone. 30s build time. `tech_fortification_tech` = ×2 speed. | `FortificationSystem.cs` | **1:1** | 2026-06-11 |
+| Conquest side effects | [Conquest](https://settlers7.fandom.com/wiki/Conquest) | +1 prestige on conquest. Buildings destroyed. Storehouse replaced. Special sector grants VP. | `GameState.cs` (OnSectorConquered) | **1:1** | 2026-06-11 |
+| Conquest reward choice (§14.3) | [Rewards](https://settlers7.fandom.com/wiki/Conquest) | Neutral conquest → BELOHNUNGEN modal: 4 packages (1 population + 3 conquest), player picks exactly one, never auto-granted (Critical Rule #10). AI auto-picks. Pending choices survive save/load. | `ConquestRewardSystem.cs`, `RewardModalUI.cs` | **1:1** | 2026-06-11 |
 
 **Notes — Military:**
 - Map: 7 maps exist (TestMap, 4-player, Large, 5 others in MapFactory) but not verified 1:1 against original S7 map layouts
-- Fortification bug: `TryUnlock("mil_fortification")` fails in tests despite awarding 5 points (Level 1). Root cause: likely PrestigeDatabase has wrong prerequisites for `mil_fortification`. FortificationSystem code itself is correct.
-- **Fix needed:** Check `PrestigeDatabase.cs` — does `mil_fortification` require a different branch or higher level than the test provides?
+- Fortification: the old `mil_fortification` prerequisite bug is FIXED (PrestigeDatabase row has no prereq, MinLevel 1) — all FortificationTests green since 2026-06-11
+- Reward packages are resource bundles (population variant = bread+tools) because the MVP population model derives pop from residences (no settler mutator)
 
 ---
 
@@ -107,41 +108,63 @@ description: "1:1 fidelity tracker for Die Siedler 7 — Paths to a Kingdom. One
 |---|---|---|---|---|---|
 | AI economy | (S7 internal) | AI builds production chains, upgrades, manages resources, accepts quests. | `AIEconomy.cs` | **partial** | 2026-05-12 |
 | AI strategy | (S7 internal) | AI attacks when strong, fortifies, bribes, switches path (mil/tech/trade) based on situation. | `AIController.cs`, `AIController.Strategy.cs` | **partial** | 2026-05-12 |
-| Save / Load | (S7 internal) | Full game state round-trip: sectors, resources, prestige, buildings, work yards, techs, outposts, VPs, generals, training queue, quests, simulation time. | `SaveSystem.cs` | **1:1** | 2026-05-12 |
+| Save / Load | (S7 internal) | Full game state round-trip: sectors, resources, prestige, buildings, work yards, techs, outposts, VPs, generals, training queue, quests, pending conquest rewards, simulation time. | `SaveSystem.cs` | **1:1** | 2026-06-11 |
 
 **Notes — AI:**
-- `AIEconomy_ManageQuests_AcceptsAvailableQuest` test FAILS — AI quest acceptance logic broken
+- AI quest acceptance works — the old failing test was a TEST bug (player 1 had 50 planks, so
+  the accepted quest auto-completed within the same ManageQuests call). Fixed 2026-06-11.
 - Strategy: multi-path switching exists, but fidelity to S7 AI difficulty levels not verified
 - AI does not use proselytism or bribery reliably (only military conquest)
+- GameFlowSmokeTests: all 7 maps boot + tick all 12 systems for simulated minutes with AI
+
+---
+
+## UI & Presentation (§14, verified vs original screenshots 2026-06-11)
+
+| Mechanic | §14 Ref | Expected Behaviour | Our File | Status | Last Verified |
+|---|---|---|---|---|---|
+| BAUEN menu | §14.4 | 3 icon tabs (house/shield/crown), icon-tile grid, locked = gray silhouette never hidden (Rule #9), title + X close | `BuildMenuFactory.cs`, `BuildMenu.cs`, `BuildingPrestigeGate.cs` | **1:1** (layout) | 2026-06-11 |
+| BELOHNUNGEN modal | §14.3 | 4 packages, single-select, never auto-grant (Rule #10) | `RewardModalUI.cs` | **1:1** | 2026-06-11 |
+| VP badge strip | §14.2 | All VPs visible: green = own, red = enemy, gray = unheld; per-instance special VPs | `VPRingUI.cs` | **partial** (strip, not ring) | 2026-06-11 |
+| Carrier speech | §14.1 | "Einige Güter fehlen…" on goods shortage (verified DE strings) | `ProductionStalledEvent`, `BootstrapScene.VFX.cs` | **1:1** | 2026-06-11 |
+| Stone-wall borders | §14.10 | Physical stacked-stone walls around owned sectors | `SectorWallView.cs` | **1:1** (style approx.) | 2026-06-11 |
+| HUD top bar | §14.8 | Centered: pop, coins, weapons, tools, food | `HUD.cs` | **1:1** (order) | 2026-06-11 |
+| Action bar | §14.8 | Bottom bar, prestige star/level center, panel toggles | `ActionBarUI.cs` | **partial** (icons are text) | 2026-06-11 |
+| Localization | §14.1–14.9 | EN/DE tables, verified German strings 1:1, key parity enforced | `L`, `StringTable.{en,de}.csv`, `LocalizedNamesTests.cs` | **1:1** | 2026-06-11 |
+| Trade map UI | §14.7 | Parchment world map, outpost cards [in→out], claim states | `TradeMapUI.cs` | **missing** (functional, not styled) | 2026-06-11 |
+| Tech tree UI | §14.6 | Card network, cost triplets G/M/P, gold VP frames | `TechTreeUI.cs` | **missing** (functional, not styled) | 2026-06-11 |
+| Terrain & lighting | §14.10 | Warm sun, green/sandy terrain, fog, "dreamy fairy tale" grading | — | **missing** | 2026-06-11 |
 
 ---
 
 ## Known Bugs Blocking 1:1 (Prioritised)
 
-| Priority | System | Bug | File | Fix Hint |
+**None open.** All five bugs from the 2026-05-12 audit were fixed on 2026-06-11
+(fortification prereqs, AI quest test, twin_rivers Forest node, 2nd-general test funding,
+plus the silent-auto-start flow bug found in play-mode validation).
+
+| Priority | System | Item | File | Hint |
 |---|---|---|---|---|
-| 🔴 High | Fortification | `TryUnlock("mil_fortification")` returns false — 5 failing tests | `PrestigeDatabase.cs` | Check if `mil_fortification` has unmet prerequisites (wrong branch/level requirement?) |
-| 🟡 Med | AI | Quest acceptance returns 0 accepted quests | `AIEconomy.cs` | `ManageQuests()` likely has wrong sector ownership check or wrong quest availability filter |
-| 🟡 Med | Map | `twin_rivers` map: Western Farmlands sector missing Forest node | `MapFactory.cs` (twin_rivers builder) | Add `ResourceNodeType.Forest` to that sector |
-| 🟡 Med | Military | `HireGeneral` returns null when 2nd general prestige check fails | `ArmySystem.cs` | Test setup doesn't award `mil_second_general` — verify test intent vs code correctness |
-| 🟢 Low | Recipe balance | Cycle times are approximate, not 1:1 with original S7 timings | `Assets/Data/Recipes/*.asset` | Step 6 balance pass — tune each recipe SO against wiki |
+| 🟢 Low | Recipe balance | Cycle times approximate, not 1:1 with original timings | `Assets/Data/Recipes/*.asset` | Balance pass against wiki |
+| 🟢 Low | UI | Factory-built panel titles don't live-switch language | factories | L.LocaleChanged event |
 
 ---
 
-## Completion Summary
+## Completion Summary (2026-06-11, 483/483 tests green)
 
 ```
-1:1     : 14 mechanics  (production, storehouse, food boost, construction,
-                          army, unit types, combat, military/proselytism/bribery conquest,
-                          conquest rewards, tech tree+effects, tavern, all VP types, save/load)
+1:1     : 18 mechanics  (production, storehouse, food boost, construction, fortification,
+                          army, unit types, combat, all 3 conquest methods, conquest side
+                          effects + reward choice, tech tree+effects, tavern, all VP types,
+                          save/load incl. generals/training/quests/pending rewards)
 partial : 6 mechanics   (population, upgrades, recipe balance, map content,
-                          clerics/traders, trade, quests, AI — some overlap)
-bug     : 1 mechanic    (fortification — code correct, PrestigeDatabase data wrong)
-missing : 0 mechanics   (all systems present)
+                          clerics/traders, trade routes, quests, AI — some overlap)
+bug     : 0 mechanics
+missing : 0 simulation systems (UI styling gaps: trade map, tech tree, terrain/lighting)
 ```
 
 **Victory paths covered:**
-- Military (army + conquest) — **1:1**
+- Military (army + conquest + reward choice) — **1:1**
 - Technology (tech tree + research) — **1:1**
 - Trade (outposts + trade routes) — **partial**
 
@@ -149,8 +172,12 @@ missing : 0 mechanics   (all systems present)
 
 ## Next Session Picks (by value/effort)
 
-1. **Fix Fortification bug** — check `PrestigeDatabase.cs` for `mil_fortification` prerequisites. 1 file, ~30 min, unblocks 5 tests.
-2. **Fix `twin_rivers` map Forest node** — 1 line in MapFactory.cs, unblocks 1 test.
-3. **Fix AI quest acceptance** — AIEconomy.cs ManageQuests(), ~1 hour.
-4. **Step 5: Visual feedback** — BuildingPlacer ghost, CombatViz, NotificationUI quest popup.
+1. **Terrain & lighting pass (§14.10)** — warm sun, grass/sand terrain colors, fog, URP color
+   grading. Biggest remaining visual delta to the original. Presentation-only.
+2. **Trade map parchment restyle (§14.7)** — PARCHMENT palette exists; outpost cards [in→out]
+   + claim-state frames on `TradeMapUI`.
+3. **Tech tree card layout (§14.6)** — card network with G/M/P cost triplets, gold frames for
+   VP techs (`TechTreeUI`).
+4. **Recipe balance pass** — tune cycle times in Recipe SOs against the wiki.
+5. **L.LocaleChanged event** — live language switch for factory-built panels.
 5. **Step 6: Recipe balance pass** — tune SO assets against settlers7.fandom.com timings.

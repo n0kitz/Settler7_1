@@ -22,6 +22,8 @@ namespace Settlers.UI
         private const float REFRESH_INTERVAL = 0.5f;
         private bool _gameOverShown;
         private TMP_FontAsset _font;
+        // Dynamically built game-over widgets — destroyed on restart (Play Again)
+        private readonly List<GameObject> _overlayItems = new();
 
         /// <summary>Fired when the player clicks "Return to Menu" on the game over screen.</summary>
         public event System.Action OnReturnToMenu;
@@ -87,6 +89,20 @@ namespace Settlers.UI
                 _gameOverShown = true;
                 ShowGameOver(gc.State, victory.WinnerId);
             }
+            else if (!victory.IsGameOver && _gameOverShown)
+            {
+                // A new game started (Play Again / new match) — reset overlay
+                ResetGameOver();
+            }
+        }
+
+        private void ResetGameOver()
+        {
+            _gameOverShown = false;
+            foreach (var item in _overlayItems)
+                if (item != null) Destroy(item);
+            _overlayItems.Clear();
+            if (_gameOverOverlay != null) _gameOverOverlay.SetActive(false);
         }
 
         private void ShowGameOver(GameState state, int winnerId)
@@ -117,6 +133,7 @@ namespace Settlers.UI
             durRect.anchorMax = new Vector2(0.7f, 0.67f);
             durRect.offsetMin = Vector2.zero;
             durRect.offsetMax = Vector2.zero;
+            _overlayItems.Add(durationLabel.gameObject);
 
             // Gather standings
             var standings = BuildStandings(state);
@@ -132,6 +149,7 @@ namespace Settlers.UI
             hdrRect.anchorMax = new Vector2(0.85f, 0.60f);
             hdrRect.offsetMin = Vector2.zero;
             hdrRect.offsetMax = Vector2.zero;
+            _overlayItems.Add(headerLabel.gameObject);
 
             // Player rows
             float rowTop = 0.54f;
@@ -162,6 +180,7 @@ namespace Settlers.UI
                 rowRect.anchorMax = new Vector2(0.85f, y);
                 rowRect.offsetMin = Vector2.zero;
                 rowRect.offsetMax = Vector2.zero;
+                _overlayItems.Add(rowLabel.gameObject);
             }
 
             // Player stats summary
@@ -178,6 +197,7 @@ namespace Settlers.UI
             statsRect.anchorMax = new Vector2(0.9f, statsY);
             statsRect.offsetMin = Vector2.zero;
             statsRect.offsetMax = Vector2.zero;
+            _overlayItems.Add(statsLabel.gameObject);
 
             // Return to Menu button
             float btnY = statsY - 0.06f;
@@ -195,6 +215,7 @@ namespace Settlers.UI
             rect.anchorMax = new Vector2(0.65f, yCenter + 0.025f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+            _overlayItems.Add(btn.gameObject);
         }
 
         private List<PlayerStanding> BuildStandings(GameState state)

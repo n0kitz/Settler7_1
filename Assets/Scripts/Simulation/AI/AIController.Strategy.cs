@@ -62,6 +62,11 @@ namespace Settlers.Simulation
                 else
                 {
                     score = gen.TotalAttack - sector.GarrisonStrength * 10 - 20;
+                    // Victory race: taking sectors from the player who is about
+                    // to win strips dynamic VPs and can break their countdown
+                    if (_leaderNearWin && sector.OwnerId == _vpLeaderId)
+                        score += 80;
+                    if (sector.VPRewardId != null) score += 40;
                 }
 
                 if (score > bestScore)
