@@ -5,15 +5,16 @@ description: "Cost saving rules, session protocol, golden rules, and learned mis
 # Settlers Clone — Cost Saving Rules
 
 ## Mandatory Session Order (every session, no exceptions)
-1. Read CLAUDE.md          → architecture, conventions, game design
-2. Read MEMORY.md          → current state, open bugs, queued tasks
-3. Read this skill         → cost rules before writing any code
-4. State understanding     → one sentence: current state + what changes
-5. Run /session-start      → enforces the above automatically
+1. Read CLAUDE.md          → architecture, conventions, game design spec
+2. Read VISION.md          → the goal + Definition of Done (tie-breaker for decisions)
+3. Read project_status.md  → current state, known issues, next roadmap phase
+4. Read this skill         → cost rules before writing any code
+5. State understanding     → one sentence: current state + what changes
+6. Run /session-start      → enforces the above automatically
 
 At session end:
-- Run /session-end         → updates MEMORY.md before closing
-- Never close without updating MEMORY.md
+- Run /session-end         → updates project_status.md before closing
+- Never close without updating project_status.md
 
 ## Golden Rules
 
@@ -56,7 +57,7 @@ All tech definitions in one session.
 | Refactoring working code for style     | Only if blocking new features    |
 | MonoBehaviour for pure logic           | Keep in Simulation (Layer 2)     |
 | Multiple systems in one session        | One system per session           |
-| Forgetting to update MEMORY.md         | Run /session-end every time      |
+| Forgetting to update project_status.md | Run /session-end every time      |
 | Creating classes without stub first    | Stubs before any reference       |
 
 ## What NOT To Do (Learned The Hard Way)
@@ -64,7 +65,7 @@ All tech definitions in one session.
 - Do NOT reference UnityEngine in Layer 2 — breaks NUnit tests
 - Do NOT implement multiple systems in one session — causes 529 errors
 - Do NOT wire up class references before the stub file exists
-- Do NOT skip MEMORY.md at session start — you will repeat solved problems
+- Do NOT skip project_status.md at session start — you will repeat solved problems
 - Do NOT end a session without running /session-end
 
 ## Cost Estimates

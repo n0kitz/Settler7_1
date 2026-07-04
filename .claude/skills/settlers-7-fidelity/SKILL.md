@@ -12,7 +12,7 @@ description: "1:1 fidelity tracker for Die Siedler 7 — Paths to a Kingdom. One
 - `bug` = implemented but test failures prove incorrect behaviour
 
 **Reference wiki:** https://settlers7.fandom.com/wiki/The_Settlers_7:_Paths_to_a_Kingdom
-**Session start protocol:** Read MEMORY.md → read cost-saving skill → read the relevant section below.
+**Session start protocol:** Read VISION.md + project_status.md → read cost-saving skill → read the relevant section below.
 
 ---
 
