@@ -12,6 +12,21 @@ A faithful recreation of Die Siedler 7's gameplay systems in Unity 6. Local only
 - **Target:** 60 FPS, single-player + AI opponents, PC/Mac standalone
 - **No DOTS/ECS** — 200-500 entities don't benefit; use MonoBehaviour + SO + pure C#
 
+## Commands
+
+Unity project — no CLI build. Drive everything through the Unity Editor or the Unity MCP
+tools (both act on the same live Editor instance).
+
+| Task | How |
+|------|-----|
+| Run tests (487 EditMode) | Editor: `Window > General > Test Runner` → EditMode → Run All · MCP: `run_tests` (mode `EditMode`) |
+| Check compile errors | MCP: `read_console` (types `error`) — do this after **every** script change |
+| Generate SO `.asset` files | Editor menu `Settlers > Generate All` |
+| Play-mode validate | MCP: `manage_editor` play → `execute_code` `GameController.Instance.StartGame("twin_rivers", 2, 4)` → `ScreenCapture.CaptureScreenshot` |
+
+Never trust "should compile": after editing scripts, `read_console` for errors, then confirm
+tests are green before moving on. Simulation changes must ship with tests.
+
 ## Three-Layer Architecture
 
 | Layer | Location | Rule |
@@ -91,9 +106,23 @@ Maps are predefined, divided into sectors connected via a graph (18-43+ sectors)
 9. **Locked buildings show as gray silhouettes** — never hidden from the build menu
 10. **Reward modal is player-choice** — never auto-grant; always show BELOHNUNGEN modal after neutral conquest
 
-> **Engine gotcha:** every `StartGame` builds a fresh `EventBus` (new `GameState`). Anything
-> that subscribed to the old bus (bootstrap wiring, audio, VFX) must re-subscribe after a
-> restart or its handlers go silent. See `project_status.md` for the fresh-EventBus pattern.
+---
+
+## Engine Gotchas (code traps, not game rules)
+
+These have each cost a debugging session. They are permanent — do not let them get lost.
+
+1. **Fresh EventBus per game** — every `StartGame` builds a new `GameState` → new `EventBus`.
+   Long-lived subscribers (bootstrap wiring, `AudioManager`, VFX) must re-subscribe after a
+   restart or their handlers go silent (`AudioManager` compares `Events != _subscribedBus`;
+   `BootstrapScene.StartTrackedGame` re-calls the `Wire*` methods).
+2. **Tear down before restart** — `GameController.TeardownGame()` destroys spawned roots
+   (MapRoot/Roads/Buildings/Units) and nulls `State`/runner. Without it `InitializeGame` no-ops
+   and you stay in the old game.
+3. **Mesh winding** — procedural flat meshes must wind clockwise-seen-from-above, or they face
+   down and get backface-culled (this once hid the entire ground). Debug with `_Cull=0`.
+4. **Victory countdown needs two ticks** — the first `VictorySystem.Tick` starts the countdown,
+   the second decrements it.
 
 ---
 

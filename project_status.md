@@ -77,15 +77,10 @@ SaveSystem, SimulationRunner, Tutorial) · Localization · Settings · Replay ·
 
 ## Key Patterns (bite-you-if-forgotten)
 
-- **Fresh EventBus per game:** every `StartGame` builds a new `GameState` → new `EventBus`.
-  Long-lived subscribers (bootstrap wiring, AudioManager, VFX) must re-subscribe after a
-  restart, or their handlers go silent. `AudioManager` compares `Events != _subscribedBus`
-  in `Update`; `BootstrapScene.StartTrackedGame` re-calls the Wire* methods.
-- **Clean teardown before restart:** `GameController.TeardownGame()` destroys spawned roots
-  (MapRoot/Roads/Buildings/Units) and nulls State/runner; without it `InitializeGame` no-ops.
-- **Mesh winding:** procedural flat meshes must wind clockwise-from-above or they face down and
-  get backface-culled (this once hid the entire ground). Verify with `_Cull=0` when debugging.
-- **Victory countdown needs two ticks:** first starts it, second decrements.
+The durable engine traps now live in **[CLAUDE.md → Engine Gotchas](CLAUDE.md)** (fresh EventBus
+per game, tear down before restart, mesh winding, victory countdown needs two ticks). Record
+*new* traps here as you hit them, then promote the lasting ones to CLAUDE.md so they survive the
+next status rewrite.
 
 ## Recent Sessions
 
