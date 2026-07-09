@@ -1,47 +1,35 @@
 using UnityEngine;
-using Settlers.Simulation;
 
 namespace Settlers.Presentation
 {
     /// <summary>
     /// Visual representation of clerics performing proselytism on a sector.
-    /// Shows a group of small spheres circling the target sector.
+    /// A hooded, robed figure in cream-white circles the target sector,
+    /// facing its direction of travel.
     /// </summary>
     public class ClericView : MonoBehaviour
     {
+        private static readonly Color ROBE_COLOR = new(0.93f, 0.89f, 0.72f);
+
         private int _sectorId;
         private int _ownerId;
         private float _angle;
-        private MeshRenderer _renderer;
-        private MaterialPropertyBlock _propBlock;
-
-        private static readonly int ColorProp = Shader.PropertyToID("_BaseColor");
 
         public int SectorId => _sectorId;
 
         public static ClericView Create(Transform parent, int sectorId, int ownerId,
             Material material)
         {
-            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.name = $"Cleric_{ownerId}_s{sectorId}";
+            var go = new GameObject($"Cleric_{ownerId}_s{sectorId}");
             go.transform.SetParent(parent, false);
-            go.transform.localScale = new Vector3(0.4f, 0.6f, 0.4f);
 
-            var collider = go.GetComponent<Collider>();
-            if (collider != null) Object.Destroy(collider);
+            UnitFigureFactory.CreateFigure(go.transform,
+                UnitFigureFactory.Role.Cleric, ROBE_COLOR, material);
 
             var view = go.AddComponent<ClericView>();
             view._sectorId = sectorId;
             view._ownerId = ownerId;
             view._angle = Random.Range(0f, Mathf.PI * 2f);
-
-            view._renderer = go.GetComponent<MeshRenderer>();
-            if (material != null)
-                view._renderer.sharedMaterial = material;
-            view._propBlock = new MaterialPropertyBlock();
-
-            // White/gold color for clerics
-            view.SetColor(new Color(0.95f, 0.9f, 0.6f));
 
             return view;
         }
@@ -58,17 +46,13 @@ namespace Settlers.Presentation
             float radius = 2f;
             float x = center.x + Mathf.Cos(_angle) * radius;
             float z = center.z + Mathf.Sin(_angle) * radius;
-            float y = 0.3f + Mathf.Sin(Time.time * 2f + _angle) * 0.1f;
+            float y = 0.02f + Mathf.Abs(Mathf.Sin(Time.time * 5f + _angle)) * 0.04f;
 
             transform.position = new Vector3(x, y, z);
-        }
 
-        private void SetColor(Color color)
-        {
-            if (_renderer == null) return;
-            _renderer.GetPropertyBlock(_propBlock);
-            _propBlock.SetColor(ColorProp, color);
-            _renderer.SetPropertyBlock(_propBlock);
+            // Face the orbit tangent (counter-clockwise travel direction)
+            var tangent = new Vector3(-Mathf.Sin(_angle), 0f, Mathf.Cos(_angle));
+            transform.rotation = Quaternion.LookRotation(tangent);
         }
     }
 }

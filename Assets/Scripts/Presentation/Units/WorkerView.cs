@@ -5,20 +5,22 @@ namespace Settlers.Presentation
 {
     /// <summary>
     /// Visual representation of a worker at a work yard.
-    /// Shows a small capsule walking between the work yard and a nearby point,
-    /// simulating the worker's production cycle.
+    /// A small humanoid figure (straw hat, brown tunic) walks between the work
+    /// yard and a nearby point, simulating the worker's production cycle.
+    /// The tunic grays out while the yard is idle.
     /// </summary>
     public class WorkerView : MonoBehaviour
     {
         private int _workYardId;
         private Vector3 _homePos;
         private Vector3 _workPos;
-        private MeshRenderer _renderer;
+        private MeshRenderer _torso;
         private MaterialPropertyBlock _propBlock;
+        private Vector3 _lastPos;
 
         private static readonly int ColorProp = Shader.PropertyToID("_BaseColor");
-        private static readonly Color IDLE_COLOR = new Color(0.5f, 0.5f, 0.5f);
-        private static readonly Color ACTIVE_COLOR = new Color(0.2f, 0.7f, 0.3f);
+        private static readonly Color IDLE_TUNIC = new(0.5f, 0.5f, 0.5f);
+        private static readonly Color ACTIVE_TUNIC = new(0.55f, 0.38f, 0.20f);
 
         public int WorkYardId => _workYardId;
 
@@ -28,26 +30,22 @@ namespace Settlers.Presentation
         public static WorkerView Create(Transform parent, int workYardId,
             Vector3 workYardWorldPos, Material material)
         {
-            var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            go.name = $"Worker_{workYardId}";
+            var go = new GameObject($"Worker_{workYardId}");
             go.transform.SetParent(parent, false);
-            go.transform.localScale = new Vector3(0.3f, 0.5f, 0.3f);
 
-            // Remove default collider (workers aren't clickable)
-            var collider = go.GetComponent<Collider>();
-            if (collider != null) Object.Destroy(collider);
+            var figure = UnitFigureFactory.CreateFigure(go.transform,
+                UnitFigureFactory.Role.Worker, ACTIVE_TUNIC, material);
 
             var view = go.AddComponent<WorkerView>();
             view._workYardId = workYardId;
-            view._homePos = workYardWorldPos + new Vector3(0.8f, 0.25f, 0f);
-            view._workPos = workYardWorldPos + new Vector3(-0.8f, 0.25f, 0f);
-            view._renderer = go.GetComponent<MeshRenderer>();
-            if (material != null)
-                view._renderer.sharedMaterial = material;
+            view._homePos = workYardWorldPos + new Vector3(0.8f, 0.02f, 0f);
+            view._workPos = workYardWorldPos + new Vector3(-0.8f, 0.02f, 0f);
+            view._torso = UnitFigureFactory.GetTorsoRenderer(figure);
             view._propBlock = new MaterialPropertyBlock();
-            view.SetColor(IDLE_COLOR);
+            view.SetTunicColor(IDLE_TUNIC);
 
             go.transform.position = view._homePos;
+            view._lastPos = view._homePos;
             return view;
         }
 
@@ -58,33 +56,38 @@ namespace Settlers.Presentation
         {
             if (wy == null || !wy.IsOperational)
             {
-                SetColor(IDLE_COLOR);
+                SetTunicColor(IDLE_TUNIC);
                 transform.position = _homePos;
+                _lastPos = _homePos;
                 return;
             }
 
-            SetColor(ACTIVE_COLOR);
+            SetTunicColor(ACTIVE_TUNIC);
 
-            // Animate back and forth based on cycle progress
+            // Walk back and forth based on cycle progress
             float cyclePhase = wy.CycleProgress * 2f; // 0→2 over full cycle
-            if (cyclePhase <= 1f)
-            {
-                // Walking to work position
-                transform.position = Vector3.Lerp(_homePos, _workPos, cyclePhase);
-            }
-            else
-            {
-                // Walking back
-                transform.position = Vector3.Lerp(_workPos, _homePos, cyclePhase - 1f);
-            }
+            Vector3 pos = cyclePhase <= 1f
+                ? Vector3.Lerp(_homePos, _workPos, cyclePhase)
+                : Vector3.Lerp(_workPos, _homePos, cyclePhase - 1f);
+
+            // Face the walking direction
+            var delta = pos - _lastPos;
+            delta.y = 0f;
+            if (delta.sqrMagnitude > 0.000001f)
+                transform.rotation = Quaternion.LookRotation(delta);
+            _lastPos = pos;
+
+            // Walk bob
+            pos.y += Mathf.Abs(Mathf.Sin(Time.time * 6f)) * 0.03f;
+            transform.position = pos;
         }
 
-        private void SetColor(Color color)
+        private void SetTunicColor(Color color)
         {
-            if (_renderer == null) return;
-            _renderer.GetPropertyBlock(_propBlock);
+            if (_torso == null) return;
+            _torso.GetPropertyBlock(_propBlock);
             _propBlock.SetColor(ColorProp, color);
-            _renderer.SetPropertyBlock(_propBlock);
+            _torso.SetPropertyBlock(_propBlock);
         }
     }
 }

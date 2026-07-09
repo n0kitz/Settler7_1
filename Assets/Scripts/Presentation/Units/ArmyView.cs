@@ -6,18 +6,24 @@ namespace Settlers.Presentation
 {
     /// <summary>
     /// Visual representation of a general and their army.
-    /// Shows a flag-like marker at the general's sector position,
-    /// with size proportional to army size. Moves between sectors
-    /// when the army is in transit.
+    /// Shows the player banner with a plumed general figure beside it and a
+    /// squad of spear-carrying soldiers whose count grows with army size.
+    /// Moves between sectors when the army is in transit.
     /// </summary>
     public class ArmyView : MonoBehaviour
     {
+        private const int MAX_SQUAD_FIGURES = 6;
+
         private int _generalId;
         private int _ownerId;
         private MeshRenderer _flagRenderer;
         private MeshRenderer _baseRenderer;
         private MaterialPropertyBlock _propBlock;
         private TextMesh _countLabel;
+        private Material _material;
+        private Color _playerColor;
+        private Transform _squadRoot;
+        private int _squadSize = -1;
 
         private static readonly int ColorProp = Shader.PropertyToID("_BaseColor");
         private static readonly Color[] PLAYER_COLORS = {
@@ -91,8 +97,42 @@ namespace Settlers.Presentation
             Color playerColor = general.OwnerId < PLAYER_COLORS.Length
                 ? PLAYER_COLORS[general.OwnerId] : Color.white;
             view.SetBannerColor(playerColor);
+            view._material = material;
+            view._playerColor = playerColor;
+
+            // General figure beside the banner
+            var figure = UnitFigureFactory.CreateFigure(go.transform,
+                UnitFigureFactory.Role.General, playerColor, material);
+            figure.transform.localPosition = new Vector3(0.45f, 0f, 0.35f);
+            figure.transform.localScale = Vector3.one * 1.15f;
+
+            // Squad root — soldier figures are rebuilt as the army grows
+            var squadGo = new GameObject("Squad");
+            squadGo.transform.SetParent(go.transform, false);
+            view._squadRoot = squadGo.transform;
 
             return view;
+        }
+
+        private void SyncSquad(int totalSoldiers)
+        {
+            int desired = totalSoldiers <= 0 ? 0
+                : Mathf.Clamp(1 + totalSoldiers / 10, 1, MAX_SQUAD_FIGURES);
+            if (desired == _squadSize) return;
+            _squadSize = desired;
+
+            for (int i = _squadRoot.childCount - 1; i >= 0; i--)
+                Destroy(_squadRoot.GetChild(i).gameObject);
+
+            for (int i = 0; i < desired; i++)
+            {
+                var soldier = UnitFigureFactory.CreateFigure(_squadRoot,
+                    UnitFigureFactory.Role.Soldier, _playerColor, _material);
+                float angle = Mathf.PI * 2f * i / MAX_SQUAD_FIGURES;
+                soldier.transform.localPosition = new Vector3(
+                    Mathf.Cos(angle) * 0.9f, 0f, Mathf.Sin(angle) * 0.9f - 0.5f);
+                soldier.transform.localScale = Vector3.one * 0.85f;
+            }
         }
 
         /// <summary>Update position and label from general state.</summary>
@@ -110,6 +150,8 @@ namespace Settlers.Presentation
             // Update count label
             if (_countLabel != null)
                 _countLabel.text = general.TotalSoldiers.ToString();
+
+            SyncSquad(general.TotalSoldiers);
 
             // Make label face camera
             if (Camera.main != null && _countLabel != null)
