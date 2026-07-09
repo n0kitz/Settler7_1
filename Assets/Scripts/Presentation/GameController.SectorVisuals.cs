@@ -84,6 +84,7 @@ namespace Settlers.Presentation
             CreateWorldGround(mapRoot.transform);
             int count = Graph.SectorCount;
             _sectorViews = new SectorView[count];
+            var homeSectors = ComputeHomeSectors(count);
             for (int i = 0; i < count; i++)
             {
                 var sector = Graph.GetSector(i);
@@ -91,6 +92,45 @@ namespace Settlers.Presentation
                 var view = go.GetComponent<SectorView>();
                 view.Initialize(i, GetSectorPosition(i));
                 _sectorViews[i] = view;
+                AttachLandmark(go, sector, homeSectors.Contains(i));
+            }
+        }
+
+        /// <summary>Each player's home sector is the lowest-id sector they own at
+        /// spawn — that sector gets the dominating home castle (§14.10).</summary>
+        private HashSet<int> ComputeHomeSectors(int count)
+        {
+            var seen = new HashSet<int>();
+            var homes = new HashSet<int>();
+            for (int i = 0; i < count; i++)
+            {
+                int owner = Graph.GetSector(i).OwnerId;
+                if (owner >= 0 && seen.Add(owner)) homes.Add(i);
+            }
+            return homes;
+        }
+
+        // Matches SectorView's ownership palette (Blue/Red/Green/Yellow)
+        private static readonly Color[] LandmarkPlayerColors =
+        {
+            new(0.2f, 0.5f, 0.9f), new(0.9f, 0.2f, 0.2f),
+            new(0.2f, 0.8f, 0.3f), new(0.9f, 0.8f, 0.1f),
+        };
+
+        /// <summary>Give home sectors a player castle and guarded neutral
+        /// sectors a fortified stronghold (§14.10). Built once at spawn.</summary>
+        private void AttachLandmark(GameObject go, Sector sector, bool isHome)
+        {
+            if (isHome && sector.OwnerId >= 0)
+            {
+                var color = sector.OwnerId < LandmarkPlayerColors.Length
+                    ? LandmarkPlayerColors[sector.OwnerId]
+                    : Color.white;
+                go.AddComponent<SectorLandmarkView>().BuildHomeCastle(_sectorRadius, color);
+            }
+            else if (sector.IsNeutral && sector.IsFortified)
+            {
+                go.AddComponent<SectorLandmarkView>().BuildStronghold(_sectorRadius);
             }
         }
 
