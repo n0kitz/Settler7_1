@@ -35,6 +35,7 @@ namespace Settlers.Simulation
         public FortificationSystem Fortification { get; }
 
         // --- Technology Systems ---
+        public ClericSystem Clerics { get; }
         public ResearchSystem Research { get; }
         public TechEffects TechEffects { get; }
 
@@ -99,7 +100,8 @@ namespace Settlers.Simulation
             Fortification = new FortificationSystem(graph, Prestige, PlayerResources, Events);
 
             // Technology systems
-            Research = new ResearchSystem(Events);
+            Clerics = new ClericSystem(PlayerResources, Events);
+            Research = new ResearchSystem(Events, Clerics);
             TechEffects = new TechEffects(Research);
             Production.SetTechEffects(TechEffects);
             Production.SetPrestige(Prestige);

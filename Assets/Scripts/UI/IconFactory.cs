@@ -39,6 +39,12 @@ namespace Settlers.UI
                 _ => DrawHouse(Color.gray, Color.gray)
             });
 
+        /// <summary>Castle icon for the trade map capital node (§14.7).</summary>
+        public static Sprite Castle() => Cached("map_castle", DrawCastle);
+
+        /// <summary>Treasure chest icon for special trade outposts (§14.7).</summary>
+        public static Sprite Chest() => Cached("map_chest", DrawChest);
+
         // --- Drawing ---
 
         private static Sprite Cached(string key, System.Func<Sprite> draw)
@@ -103,6 +109,53 @@ namespace Settlers.UI
                     tex.SetPixel(x, y, edge ? trim : steel);
                 }
             }
+            return Finish(tex);
+        }
+
+        /// <summary>Keep with two flanking towers and battlements.</summary>
+        private static Sprite DrawCastle()
+        {
+            var tex = NewTex();
+            var stone = new Color(0.55f, 0.52f, 0.48f);
+            var dark  = new Color(0.35f, 0.32f, 0.30f);
+            for (int y = 2; y <= 14; y++)              // towers
+                for (int x = 3; x <= 7; x++)
+                { tex.SetPixel(x, y, stone); tex.SetPixel(x + 13, y, stone); }
+            for (int y = 2; y <= 10; y++)              // keep between towers
+                for (int x = 8; x <= 15; x++)
+                    tex.SetPixel(x, y, stone);
+            for (int x = 3; x <= 20; x += 2)           // battlement merlons
+            { tex.SetPixel(x, 15, stone); tex.SetPixel(x, 16, stone); }
+            for (int y = 2; y <= 6; y++)               // gate
+                for (int x = 10; x <= 13; x++)
+                    tex.SetPixel(x, y, dark);
+            var flag = new Color(0.75f, 0.20f, 0.18f); // red flag on left tower
+            tex.SetPixel(5, 17, stone); tex.SetPixel(5, 18, stone);
+            for (int y = 18; y <= 20; y++)
+                for (int x = 6; x <= 9; x++)
+                    tex.SetPixel(x, y, flag);
+            return Finish(tex);
+        }
+
+        /// <summary>Chest with gold coins spilling over (§14.7 treasure node).</summary>
+        private static Sprite DrawChest()
+        {
+            var tex = NewTex();
+            var wood = new Color(0.48f, 0.32f, 0.16f);
+            var band = new Color(0.30f, 0.28f, 0.26f);
+            var gold = new Color(0.92f, 0.76f, 0.25f);
+            for (int y = 3; y <= 10; y++)              // body
+                for (int x = 4; x <= 19; x++)
+                    tex.SetPixel(x, y, x == 11 || x == 12 ? band : wood);
+            for (int y = 11; y <= 13; y++)             // curved lid
+                for (int x = 5; x <= 18; x++)
+                    tex.SetPixel(x, y, wood);
+            int[,] coins = { { 8, 15 }, { 12, 16 }, { 16, 15 }, { 10, 18 }, { 14, 18 } };
+            for (int i = 0; i < coins.GetLength(0); i++)
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++)
+                        if (Mathf.Abs(dx) + Mathf.Abs(dy) <= 1)
+                            tex.SetPixel(coins[i, 0] + dx, coins[i, 1] + dy, gold);
             return Finish(tex);
         }
 

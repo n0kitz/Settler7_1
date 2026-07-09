@@ -187,3 +187,31 @@ ui.hud.building_progress,Building: {0} in progress
 ui.hud.prestige_line,Prestige: {0}pts  Lv{1}  ({2} unspent)  [P]
 ui.hud.victory_in,VICTORY IN
 ui.hud.paused,PAUSED
+ui.trade.title,Trade Map
+ui.trade.capital,Capital
+ui.trade.status,Outposts: {0}/{1}  |  Traders en route: {2}
+ui.trade.legend.yours,Yours
+ui.trade.legend.other,Other player
+ui.trade.legend.unclaimed,Unclaimed
+ui.tech.title,Technology
+ui.tech.status,Technologies: {0}/18  |  Researching: {1}
+ui.tech.tier1,Tier I
+ui.tech.tier2,Tier II
+ui.tech.tier3,Tier III
+ui.tech.legend.available,Available
+ui.tech.legend.owned,Researched
+ui.tech.legend.taken,Taken
+ui.tech.legend.researching,In progress
+ui.tech.legend.locked,Locked
+ui.stats.title,OVERVIEW
+ui.stats.production,Production overview: {0}
+ui.stats.col.requires,REQUIRES
+ui.stats.col.produced_by,PRODUCED BY
+ui.stats.col.yields,YIELDS
+ui.stats.col.consumed_by,CONSUMED BY
+ui.settings.controls.toggle_stats,Overview
+ui.tech.clerics.novices,Novices
+ui.tech.clerics.brothers,Brothers
+ui.tech.clerics.fathers,Fathers
+ui.tech.recruit.failed,Cannot recruit — missing goods
+ui.tech.research.no_clerics,Not enough clerics — recruit more first

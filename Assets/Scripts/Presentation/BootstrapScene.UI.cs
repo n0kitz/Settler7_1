@@ -53,6 +53,9 @@ namespace Settlers.Presentation
             // Trade Map (toggle with R key)
             TradeMapUI.Create(canvasGo.transform, _defaultFont);
 
+            // ÜBERSICHT production stats (toggle with O key)
+            StatsOverviewUI.Create(canvasGo.transform, _defaultFont);
+
             // Army Panel (toggle with M key)
             ArmyPanel.Create(canvasGo.transform, _defaultFont);
 

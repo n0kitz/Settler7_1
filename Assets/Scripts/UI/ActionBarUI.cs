@@ -80,6 +80,8 @@ namespace Settlers.UI
 
             AddButton(bar, contentGo.transform, "ui.settings.controls.toggle_trade", "R", font,
                 () => Toggle<TradeMapUI>());
+            AddButton(bar, contentGo.transform, "ui.settings.controls.toggle_stats", "O", font,
+                () => Toggle<StatsOverviewUI>());
             AddButton(bar, contentGo.transform, "ui.settings.controls.toggle_army", "M", font,
                 () => Toggle<ArmyPanel>());
             AddButton(bar, contentGo.transform, "ui.settings.controls.toggle_tavern", "V", font,

@@ -6,21 +6,29 @@ using Settlers.Simulation;
 
 namespace Settlers.UI
 {
+    /// <summary>
+    /// Parchment trade map panel (§14.7). Outpost card frames follow claim
+    /// state: gold = yours, red = other player, gray = unclaimed. Nodes are
+    /// rebuilt from the live trade map whenever the panel opens.
+    /// </summary>
     public class TradeMapUI : MonoBehaviour
     {
         [SerializeField] private GameObject _panelRoot;
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _statusText;
-        [SerializeField] private Transform _outpostsContainer;
-        [SerializeField] private Transform _activeTradesContainer;
 
-        internal static readonly Color SPECIAL_COLOR = new Color(0.6f, 0.5f, 0.2f, 0.9f);
-        internal static readonly Color UNCLAIMED_COLOR = new Color(0.33f, 0.38f, 0.44f, 0.9f);
-        private static readonly Color OWNED_COLOR = new Color(0.15f, 0.35f, 0.55f, 0.9f);
-        private static readonly Color OTHER_COLOR = new Color(0.5f, 0.15f, 0.15f, 0.9f);
+        internal static readonly Color SPECIAL_COLOR = new Color(0.62f, 0.50f, 0.18f);
+        internal static readonly Color UNCLAIMED_COLOR = new Color(0.48f, 0.45f, 0.40f);
+        internal static readonly Color OWNED_COLOR = new Color(0.82f, 0.64f, 0.20f);
+        private static readonly Color OTHER_COLOR = new Color(0.62f, 0.16f, 0.12f);
 
         internal readonly Dictionary<string, Image> _outpostImages = new();
         internal readonly Dictionary<string, TextMeshProUGUI> _outpostLabels = new();
+
+        /// <summary>Set by the factory; used when rebuilding nodes on Show.</summary>
+        internal TMP_FontAsset MapFont;
+        internal Transform RoutesRoot;
+        internal Transform NodesRoot;
 
         private float _refreshTimer;
         private const float REFRESH_INTERVAL = 0.5f;
@@ -30,11 +38,21 @@ namespace Settlers.UI
         public void Show()
         {
             if (_panelRoot != null) _panelRoot.SetActive(true);
+            if (_titleText != null) _titleText.text = L.Get("ui.trade.title");
+            TradeMapUIFactory.RebuildNodes(this);
             RefreshNodes();
         }
 
         public void Hide() { if (_panelRoot != null) _panelRoot.SetActive(false); }
         public void Toggle() { if (IsVisible) Hide(); else Show(); }
+
+        /// <summary>Node card exchange line: "3 Fisch → 6 Münzen  [2]".</summary>
+        internal static string ExchangeText(TradeOutpost outpost, int traders)
+        {
+            return $"{outpost.InputAmount} {LocalizedNames.Resource(outpost.InputResource)}" +
+                $" → {outpost.OutputAmount} {LocalizedNames.Resource(outpost.OutputResource)}" +
+                $"  [{traders}]";
+        }
 
         public void OnOutpostClicked(string outpostId)
         {
@@ -109,8 +127,8 @@ namespace Settlers.UI
                 int active = 0;
                 foreach (var task in trade.ActiveTasks)
                     if (task.PlayerId == playerId) active++;
-                _statusText.text = $"Outposts: {claimed}/{total}  |  Traders en route: {active}";
-                _statusText.color = UIColors.TEXT_GOLD;
+                _statusText.text = string.Format(L.Get("ui.trade.status"),
+                    claimed, total, active);
             }
 
             foreach (var kvp in _outpostImages)
@@ -123,16 +141,19 @@ namespace Settlers.UI
                 if (outpost == null) continue;
 
                 if (!outpost.IsClaimed)
-                {
                     img.color = outpost.IsSpecial ? SPECIAL_COLOR : UNCLAIMED_COLOR;
-                }
                 else if (outpost.ClaimedBy == playerId)
-                {
                     img.color = OWNED_COLOR;
-                }
                 else
-                {
                     img.color = OTHER_COLOR;
+
+                // Keep the exchange line's trader count current
+                if (_outpostLabels.TryGetValue(opId, out var label) && label != null)
+                {
+                    int enRoute = 0;
+                    foreach (var task in trade.ActiveTasks)
+                        if (task.OutpostId == opId) enRoute++;
+                    label.text = ExchangeText(outpost, enRoute);
                 }
             }
         }

@@ -91,17 +91,17 @@ every box in it is true. Current position: **Tier 1 in progress.**
 - [x] AI actively contests the leader when someone nears victory (Sprint 2)
 - [x] Audio framework wired to events; drops in CC0 clips with zero code (Sprint 2)
 - [ ] Music + a full set of SFX actually present and audible *(needs CC0 files)*
-- [ ] Buildings read as *buildings* — roofs, doors, windows; not toy blocks (Sprint 3)
-- [ ] Units read as settlers / carriers / soldiers; not colored capsules (Sprint 4)
+- [x] Buildings read as *buildings* — roofs, doors, windows; not toy blocks (Sprint 3)
+- [x] Units read as settlers / carriers / soldiers; not colored capsules (Sprint 4)
 - [ ] Every player action has clear, immediate visual **and** audio feedback
 
 ### Tier 2 — Unmistakably Die Siedler 7
 - [ ] The fairy-tale art direction is obvious at a glance, no explanation needed
 - [ ] Home castle dominates its sector; enemy strongholds are imposing; walls ring owned land
 - [ ] Every UI string verified 1:1 against the original (BAUEN, PRESTIGE-OPTIONEN, BELOHNUNGEN, VP names) — see CLAUDE.md §14
-- [ ] Tech tree as stone-and-candlelight cards with Geistliche/Mönche/Prälaten costs (§14.6)
-- [ ] Trade map as a parchment world map with compass and dashed routes (§14.7)
-- [ ] Stats ÜBERSICHT with the four verified columns (§14.1)
+- [x] Tech tree as stone-and-candlelight cards with Geistliche/Mönche/Prälaten costs (§14.6)
+- [x] Trade map as a parchment world map with compass and dashed routes (§14.7)
+- [x] Stats ÜBERSICHT with the four verified columns (§14.1)
 - [ ] The economy delivers the original's depth and the satisfaction of a settlement humming along
 
 ### Tier 3 — Finished & Proud
@@ -153,10 +153,10 @@ screenshot. (Detailed status lives in `project_status.md`; the active plan in `.
 |---|-------|----------|--------|
 | 1 | Terrain & Lighting | Land that reads as land; the fairy-tale look | ✅ done |
 | 2 | Playability Quick Wins | Clean restart, AI victory-racing, audio wiring | ✅ done |
-| 3 | Building Overhaul | Procedural multi-part buildings; a dominant home castle | ▶ next |
-| 4 | Unit Overhaul | Recognizable settlers, carriers with goods, generals & armies | ○ |
-| 5 | UI Fidelity | Parchment trade map, stone tech tree, ÜBERSICHT columns | ○ |
-| 6 | Polish & Balance | Content, tuning, edge-cases, the 60 fps bar | ○ |
+| 3 | Building Overhaul | Procedural multi-part buildings; a dominant home castle | ✅ done |
+| 4 | Unit Overhaul | Recognizable settlers, carriers with goods, generals & armies | ✅ done |
+| 5 | UI Fidelity | Parchment trade map, stone tech tree, ÜBERSICHT columns | ✅ done |
+| 6 | Polish & Balance | Content, tuning, edge-cases, the 60 fps bar | ▶ next |
 
 ---
 

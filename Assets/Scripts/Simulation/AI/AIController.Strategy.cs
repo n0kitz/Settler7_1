@@ -90,9 +90,22 @@ namespace Settlers.Simulation
                 foreach (var tech in TechTree.All)
                 {
                     if (_state.Research.HasTech(_playerId, tech.Id)) continue;
+                    RecruitClericsFor(tech);
                     if (_state.Research.StartResearch(_playerId, tech.Id)) break;
                 }
             }
+        }
+
+        /// <summary>Recruit clerics until the tech's §14.6 cost is available (or goods run out).</summary>
+        private void RecruitClericsFor(TechTree.TechDef tech)
+        {
+            var clerics = _state.Clerics;
+            while (clerics.GetAvailable(_playerId, ClericRank.Novice) < tech.CostNovices)
+                if (!clerics.Recruit(_playerId, ClericRank.Novice)) break;
+            while (clerics.GetAvailable(_playerId, ClericRank.Brother) < tech.CostBrothers)
+                if (!clerics.Recruit(_playerId, ClericRank.Brother)) break;
+            while (clerics.GetAvailable(_playerId, ClericRank.Father) < tech.CostFathers)
+                if (!clerics.Recruit(_playerId, ClericRank.Father)) break;
         }
 
         private void TickTrade()

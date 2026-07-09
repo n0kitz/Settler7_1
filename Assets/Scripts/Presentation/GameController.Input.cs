@@ -10,6 +10,8 @@ namespace Settlers.Presentation
         /// <summary>True if ESC was consumed this frame (prevents PauseMenuUI from double-firing).</summary>
         public static bool EscConsumedThisFrame { get; private set; }
 
+        private StatsOverviewUI _statsOverview;
+
         private void HandleClick()
         {
             if (_buildingPlacer != null && _buildingPlacer.IsPlacing) return;
@@ -58,6 +60,8 @@ namespace Settlers.Presentation
                     { _techTreeUI.Hide(); EscConsumedThisFrame = true; return; }
                 if (_tradeMapUI != null && _tradeMapUI.IsVisible)
                     { _tradeMapUI.Hide(); EscConsumedThisFrame = true; return; }
+                if (_statsOverview != null && _statsOverview.IsVisible)
+                    { _statsOverview.Hide(); EscConsumedThisFrame = true; return; }
                 if (_armyPanel != null && _armyPanel.IsVisible)
                     { _armyPanel.Hide(); EscConsumedThisFrame = true; return; }
                 if (_prestigeChart != null && _prestigeChart.IsVisible)
@@ -97,6 +101,13 @@ namespace Settlers.Presentation
                 if (_tradeMapUI == null)
                     _tradeMapUI = FindAnyObjectByType<TradeMapUI>(FindObjectsInactive.Include);
                 _tradeMapUI?.Toggle();
+            }
+
+            if (Keyboard.current.oKey.wasPressedThisFrame)
+            {
+                if (_statsOverview == null)
+                    _statsOverview = FindAnyObjectByType<StatsOverviewUI>(FindObjectsInactive.Include);
+                _statsOverview?.Toggle();
             }
 
             if (Keyboard.current.mKey.wasPressedThisFrame)

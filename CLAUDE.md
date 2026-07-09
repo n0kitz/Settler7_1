@@ -300,10 +300,10 @@ Player VP badges: floating portrait + colored circle + VP count. Red = enemy, gr
 
 Foundation complete: 20 simulation subsystems, ~190 script files, **487/487 NUnit tests green**,
 bilingual EN/DE (test-enforced key parity), playable end-to-end and play-mode validated.
-Visual roadmap Phases 1–2 done (terrain & lighting; playability quick wins). **Next: Phase 3,
-building visual overhaul.** Full, current detail — file counts, systems, per-session changes,
-open tasks — lives in **[project_status.md](project_status.md)**. The finish line is defined in
-**[VISION.md](VISION.md)**.
+Visual roadmap Phases 1–3 done (terrain & lighting; playability quick wins; building overhaul —
+procedural home castles + strongholds and detailed base buildings). **Next: Phase 4, unit
+overhaul.** Full, current detail — file counts, systems, per-session changes, open tasks — lives
+in **[project_status.md](project_status.md)**. The finish line is defined in **[VISION.md](VISION.md)**.
 
 ---
 

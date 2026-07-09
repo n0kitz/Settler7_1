@@ -21,6 +21,11 @@ namespace Settlers.Simulation
             public string PrerequisiteId; // null = no prereq
             public float ResearchTime;    // seconds
 
+            // §14.6 research cost: clerics assigned for the duration
+            public int CostNovices;   // Geistliche
+            public int CostBrothers;  // Mönche
+            public int CostFathers;   // Prälaten
+
             public TechDef(string id, string name, string desc,
                 TechTier tier, float researchTime, string prereq = null)
             {
@@ -30,6 +35,17 @@ namespace Settlers.Simulation
                 Tier = tier;
                 ResearchTime = researchTime;
                 PrerequisiteId = prereq;
+
+                // Cost scales with tier (§14.6 pattern: 3/0/0 → 4/2/0 → 5/2/1)
+                switch (tier)
+                {
+                    case TechTier.Tier1:
+                        CostNovices = 3; CostBrothers = 0; CostFathers = 0; break;
+                    case TechTier.Tier2:
+                        CostNovices = 4; CostBrothers = 2; CostFathers = 0; break;
+                    default:
+                        CostNovices = 5; CostBrothers = 2; CostFathers = 1; break;
+                }
             }
         }
 

@@ -188,3 +188,31 @@ ui.hud.building_progress,Im Bau: {0}
 ui.hud.prestige_line,Prestige: {0}P  St{1}  ({2} frei)  [P]
 ui.hud.victory_in,SIEG IN
 ui.hud.paused,PAUSIERT
+ui.trade.title,Handelskarte
+ui.trade.capital,Hauptstadt
+ui.trade.status,Außenposten: {0}/{1}  |  Händler unterwegs: {2}
+ui.trade.legend.yours,Eure
+ui.trade.legend.other,Anderer Spieler
+ui.trade.legend.unclaimed,Unbeansprucht
+ui.tech.title,Technologie
+ui.tech.status,Technologien: {0}/18  |  In Forschung: {1}
+ui.tech.tier1,Stufe I
+ui.tech.tier2,Stufe II
+ui.tech.tier3,Stufe III
+ui.tech.legend.available,Verfügbar
+ui.tech.legend.owned,Erforscht
+ui.tech.legend.taken,Vergeben
+ui.tech.legend.researching,In Arbeit
+ui.tech.legend.locked,Gesperrt
+ui.stats.title,ÜBERSICHT
+ui.stats.production,Produktionsübersicht: {0}
+ui.stats.col.requires,ERFORDERT
+ui.stats.col.produced_by,PRODUZIERT VON
+ui.stats.col.yields,ERBRINGT
+ui.stats.col.consumed_by,VERBRAUCHT VON
+ui.settings.controls.toggle_stats,Übersicht
+ui.tech.clerics.novices,Geistliche
+ui.tech.clerics.brothers,Mönche
+ui.tech.clerics.fathers,Prälaten
+ui.tech.recruit.failed,Anwerben nicht möglich — Waren fehlen
+ui.tech.research.no_clerics,Nicht genug Geistliche — erst mehr anwerben

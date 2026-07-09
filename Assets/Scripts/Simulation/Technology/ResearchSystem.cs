@@ -16,11 +16,23 @@ namespace Settlers.Simulation
         private readonly List<ResearchTask> _activeTasks = new();
         private readonly Dictionary<string, int> _blockedTechs = new(); // techId → playerId blocking it
         private readonly EventBus _eventBus;
+        private readonly ClericSystem _clerics;
 
-        public ResearchSystem(EventBus eventBus)
+        /// <summary>
+        /// Without a ClericSystem, research is ungated (test convenience).
+        /// With one, StartResearch occupies the tech's cleric cost (§14.6)
+        /// and releases it on completion or cancel.
+        /// </summary>
+        public ResearchSystem(EventBus eventBus, ClericSystem clerics = null)
         {
             _eventBus = eventBus;
+            _clerics = clerics;
         }
+
+        /// <summary>True when the player has enough free clerics for a tech.</summary>
+        public bool HasClericsFor(int playerId, TechTree.TechDef techDef) =>
+            _clerics == null || _clerics.HasAvailable(playerId,
+                techDef.CostNovices, techDef.CostBrothers, techDef.CostFathers);
 
         /// <summary>Active research tasks.</summary>
         public IReadOnlyList<ResearchTask> ActiveTasks => _activeTasks;
@@ -87,6 +99,11 @@ namespace Settlers.Simulation
             if (HasTech(playerId, techId))
                 return false;
 
+            // Occupy the cleric cost for the duration (§14.6)
+            if (_clerics != null && !_clerics.TryOccupy(playerId,
+                    techDef.CostNovices, techDef.CostBrothers, techDef.CostFathers))
+                return false;
+
             _blockedTechs[techId] = playerId;
             _activeTasks.Add(new ResearchTask(playerId, techId, techDef.ResearchTime));
             _eventBus.Publish(new ResearchStartedEvent(playerId, techId));
@@ -103,7 +120,16 @@ namespace Settlers.Simulation
 
             _blockedTechs.Remove(techId);
             _activeTasks.RemoveAll(t => t.PlayerId == playerId && t.TechId == techId);
+            ReleaseClerics(playerId, techId);
             return true;
+        }
+
+        private void ReleaseClerics(int playerId, string techId)
+        {
+            if (_clerics == null) return;
+            var def = TechTree.Get(techId);
+            if (def == null) return;
+            _clerics.Release(playerId, def.CostNovices, def.CostBrothers, def.CostFathers);
         }
 
         /// <summary>Tick all active research tasks.</summary>
@@ -127,6 +153,7 @@ namespace Settlers.Simulation
                 _activeTasks.Remove(task);
                 _blockedTechs.Remove(task.TechId);
                 _globallyResearched.Add(task.TechId);
+                ReleaseClerics(task.PlayerId, task.TechId);
 
                 if (!_playerTechs.TryGetValue(task.PlayerId, out var set))
                 {

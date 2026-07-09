@@ -70,6 +70,16 @@ namespace Settlers.Simulation
                     sb.AppendLine($"techs.{p}={string.Join(",", techs)}");
             }
 
+            // Clerics (recruited counts; occupation resets with active tasks)
+            for (int p = 0; p < state.PlayerCount; p++)
+            {
+                int n = state.Clerics.GetCount(p, ClericRank.Novice);
+                int b = state.Clerics.GetCount(p, ClericRank.Brother);
+                int f = state.Clerics.GetCount(p, ClericRank.Father);
+                if (n + b + f > 0)
+                    sb.AppendLine($"clerics.{p}={n},{b},{f}");
+            }
+
             // Trade outposts claimed
             foreach (var op in state.TradeMapData.AllOutposts)
             {
@@ -270,6 +280,20 @@ namespace Settlers.Simulation
                     if (!string.IsNullOrEmpty(techId))
                         state.Research.RestoreTech(p, techId.Trim());
                 }
+            }
+
+            // Clerics
+            for (int p = 0; p < state.PlayerCount; p++)
+            {
+                if (!data.TryGetValue($"clerics.{p}", out var clericStr)) continue;
+                var parts = clericStr.Split(',');
+                if (parts.Length != 3) continue;
+                if (int.TryParse(parts[0], out int n))
+                    state.Clerics.RestoreCount(p, ClericRank.Novice, n);
+                if (int.TryParse(parts[1], out int b))
+                    state.Clerics.RestoreCount(p, ClericRank.Brother, b);
+                if (int.TryParse(parts[2], out int f))
+                    state.Clerics.RestoreCount(p, ClericRank.Father, f);
             }
 
             // Trade outpost claims

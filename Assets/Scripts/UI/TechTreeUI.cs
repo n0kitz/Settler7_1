@@ -15,14 +15,23 @@ namespace Settlers.UI
         [SerializeField] private Transform _tier2Container;
         [SerializeField] private Transform _tier3Container;
 
-        internal static readonly Color LOCKED_COLOR = new Color(0.25f, 0.25f, 0.25f, 0.9f);
-        private static readonly Color AVAILABLE_COLOR = new Color(0.2f, 0.45f, 0.25f, 0.9f);
-        private static readonly Color OWNED_COLOR = new Color(0.15f, 0.35f, 0.55f, 0.9f);
-        private static readonly Color TAKEN_COLOR = new Color(0.5f, 0.15f, 0.15f, 0.9f);
-        private static readonly Color RESEARCHING_COLOR = new Color(0.5f, 0.45f, 0.1f, 0.9f);
+        // Status gem colors (§14.6 cards carry a colored seal, not a tinted body)
+        internal static readonly Color LOCKED_COLOR = new Color(0.45f, 0.45f, 0.45f);
+        private static readonly Color AVAILABLE_COLOR = new Color(0.35f, 0.75f, 0.40f);
+        private static readonly Color OWNED_COLOR = new Color(0.95f, 0.80f, 0.30f);
+        private static readonly Color TAKEN_COLOR = new Color(0.80f, 0.20f, 0.15f);
+        private static readonly Color RESEARCHING_COLOR = new Color(0.40f, 0.60f, 0.90f);
 
         internal readonly Dictionary<string, Image> _nodeImages = new();
         internal readonly Dictionary<string, TextMeshProUGUI> _nodeLabels = new();
+        internal readonly TextMeshProUGUI[] _clericLabels = new TextMeshProUGUI[3];
+
+        private static readonly string[] CLERIC_KEYS =
+        {
+            "ui.tech.clerics.novices",
+            "ui.tech.clerics.brothers",
+            "ui.tech.clerics.fathers"
+        };
 
         private float _refreshTimer;
         private const float REFRESH_INTERVAL = 0.5f;
@@ -32,11 +41,23 @@ namespace Settlers.UI
         public void Show()
         {
             if (_panelRoot != null) _panelRoot.SetActive(true);
+            if (_titleText != null) _titleText.text = L.Get("ui.tech.title");
             RefreshNodes();
         }
 
         public void Hide() { if (_panelRoot != null) _panelRoot.SetActive(false); }
         public void Toggle() { if (IsVisible) Hide(); else Show(); }
+
+        /// <summary>Recruit one cleric of the given rank for the human player.</summary>
+        public void OnRecruitClicked(int rank)
+        {
+            var gc = Presentation.GameController.Instance;
+            if (gc == null || gc.State == null) return;
+
+            if (!gc.State.Clerics.Recruit(0, (ClericRank)rank))
+                UpdateStatus(L.Get("ui.tech.recruit.failed"), UIColors.TEXT_RED_BRIGHT);
+            RefreshNodes();
+        }
 
         public void OnTechClicked(string techId)
         {
@@ -61,6 +82,13 @@ namespace Settlers.UI
             if (research.IsBlocked(techId))
             {
                 UpdateStatus("Currently being researched by another player!", UIColors.TEXT_RED_BRIGHT);
+                return;
+            }
+
+            var clickedDef = TechTree.Get(techId);
+            if (clickedDef != null && !research.HasClericsFor(playerId, clickedDef))
+            {
+                UpdateStatus(L.Get("ui.tech.research.no_clerics"), UIColors.TEXT_RED_BRIGHT);
                 return;
             }
 
@@ -104,8 +132,17 @@ namespace Settlers.UI
                 int active = 0;
                 foreach (var task in research.ActiveTasks)
                     if (task.PlayerId == playerId) active++;
-                _statusText.text = $"Techs: {count}/18  |  Researching: {active}";
+                _statusText.text = string.Format(L.Get("ui.tech.status"), count, active);
                 _statusText.color = UIColors.TEXT_GOLD;
+            }
+
+            for (int rank = 0; rank < 3; rank++)
+            {
+                if (_clericLabels[rank] == null) continue;
+                int available = gc.State.Clerics.GetAvailable(playerId, (ClericRank)rank);
+                int total = gc.State.Clerics.GetCount(playerId, (ClericRank)rank);
+                _clericLabels[rank].text =
+                    $"{L.Get(CLERIC_KEYS[rank])}: {available}/{total}";
             }
 
             foreach (var kvp in _nodeImages)
