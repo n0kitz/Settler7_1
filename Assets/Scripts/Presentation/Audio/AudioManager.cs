@@ -99,6 +99,7 @@ namespace Settlers.Presentation
             if (gc?.Events == null) return;
             _subscribedBus = gc.Events;
 
+            gc.Events.Subscribe<BuildingPlacedEvent>(e => PlaySFX(_buildingPlaced));
             gc.Events.Subscribe<BuildingCompletedEvent>(e => PlaySFX(_buildingComplete));
             gc.Events.Subscribe<ProductionCompleteEvent>(e => PlaySFX(_productionComplete));
             gc.Events.Subscribe<SectorConqueredEvent>(e => PlaySFX(_sectorConquered));

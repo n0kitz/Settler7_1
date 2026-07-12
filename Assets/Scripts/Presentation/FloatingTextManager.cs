@@ -33,15 +33,24 @@ namespace Settlers.Presentation
         /// <summary>Subscribe to EventBus events after the game state is ready.</summary>
         public void Initialize(EventBus bus, GameController gc)
         {
+            // Immediate placement feedback for the human player (Tier-1:
+            // every action acknowledges instantly, not just on completion)
+            bus.Subscribe<BuildingPlacedEvent>(e =>
+            {
+                if (gc.State.Graph.GetSector(e.SectorId).OwnerId != 0) return;
+                Spawn(gc.GetSectorPosition(e.SectorId),
+                    L.Get("ui.float.placed"), COLOR_BUILD);
+            });
             bus.Subscribe<BuildingCompletedEvent>(e =>
             {
                 var pos = gc.GetSectorPosition(gc.State.Construction.GetBuilding(e.BuildingId)?.SectorId ?? 0);
-                Spawn(pos, "Built!", COLOR_BUILD);
+                Spawn(pos, L.Get("ui.float.built"), COLOR_BUILD);
             });
             bus.Subscribe<SectorConqueredEvent>(e =>
             {
                 var pos = gc.GetSectorPosition(e.SectorId);
-                string text = e.NewOwnerId == 0 ? "Conquered!" : "Lost!";
+                string text = e.NewOwnerId == 0
+                    ? L.Get("ui.float.conquered") : L.Get("ui.float.lost");
                 Spawn(pos, text, COLOR_CONQUER);
             });
             bus.Subscribe<VPChangedEvent>(e =>
@@ -50,7 +59,7 @@ namespace Settlers.Presentation
                 // Show near a player-owned sector
                 var sectors = gc.State.Graph.GetSectorsOwnedBy(e.PlayerId);
                 if (sectors.Count > 0)
-                    Spawn(gc.GetSectorPosition(sectors[0]), "+1 VP", COLOR_VP);
+                    Spawn(gc.GetSectorPosition(sectors[0]), L.Get("ui.float.vp"), COLOR_VP);
             });
         }
 
