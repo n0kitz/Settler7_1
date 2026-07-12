@@ -19,6 +19,9 @@ namespace Settlers.UI
         public event System.Action OnReturnToMenu;
         public event System.Action OnPlayAgain;
 
+        /// <summary>Whether the summary is currently on screen.</summary>
+        public bool IsVisible => _panelRoot != null && _panelRoot.activeSelf;
+
         public void Show(MatchResult result)
         {
             if (_panelRoot == null) return;
@@ -34,32 +37,34 @@ namespace Settlers.UI
         private void Populate(MatchResult r)
         {
             bool playerWon = r.WinnerId == 0;
-            string outcome = playerWon ? "VICTORY!" : "DEFEAT";
             string minutes = FormatDuration(r.DurationSeconds);
 
             if (_headerText != null)
             {
-                _headerText.text  = outcome;
+                _headerText.text = playerWon
+                    ? L.Get("ui.endscreen.victory") : L.Get("ui.endscreen.defeat");
                 _headerText.color = playerWon
                     ? new Color(0.3f, 0.9f, 0.4f)
                     : new Color(0.9f, 0.3f, 0.3f);
             }
 
             if (_statsText != null)
-            {
-                _statsText.text =
-                    $"Map: {r.MapId}\n" +
-                    $"Duration: {minutes}\n" +
-                    $"Players: {r.PlayerCount}  •  VP to win: {r.VPRequired}\n\n" +
-                    $"Buildings completed: {r.BuildingsBuilt}\n" +
-                    $"Sectors conquered:   {r.SectorsConquered}\n" +
-                    $"Technologies:        {r.TechsResearched}\n" +
-                    $"Trades completed:    {r.TradesCompleted}";
-            }
+                _statsText.text = string.Format(L.Get("ui.endscreen.stats"),
+                    r.MapId, minutes, r.PlayerCount, r.VPRequired,
+                    r.BuildingsBuilt, r.SectorsConquered,
+                    r.TechsResearched, r.TradesCompleted);
 
             if (_scoreText != null)
-                _scoreText.text = $"Score: {r.Score:N0}";
+                _scoreText.text = $"{L.Get("ui.endscreen.score")}: {r.Score:N0}";
+
+            if (_playAgainLabel != null)
+                _playAgainLabel.text = L.Get("ui.endscreen.play_again");
+            if (_returnLabel != null)
+                _returnLabel.text = L.Get("ui.endscreen.return_menu");
         }
+
+        private TextMeshProUGUI _playAgainLabel;
+        private TextMeshProUGUI _returnLabel;
 
         private void OnReturnToMenuClicked() { Hide(); OnReturnToMenu?.Invoke(); }
         private void OnPlayAgainClicked()    { Hide(); OnPlayAgain?.Invoke(); }
@@ -132,10 +137,12 @@ namespace Settlers.UI
             var btnLe = btnRow.AddComponent<LayoutElement>();
             btnLe.preferredHeight = 46f;
 
-            UIFactory.CreateButton(btnRow.transform, "Play Again", font,
+            var playAgainBtn = UIFactory.CreateButton(btnRow.transform, "Play Again", font,
                 UIColors.BUTTON_GREEN, ui.OnPlayAgainClicked, null, 20f);
-            UIFactory.CreateButton(btnRow.transform, "Return to Menu", font,
+            var returnBtn = UIFactory.CreateButton(btnRow.transform, "Return to Menu", font,
                 UIColors.BUTTON_BLUE, ui.OnReturnToMenuClicked, null, 20f);
+            ui._playAgainLabel = playAgainBtn.GetComponentInChildren<TextMeshProUGUI>();
+            ui._returnLabel = returnBtn.GetComponentInChildren<TextMeshProUGUI>();
 
             panelGo.SetActive(false);
             return ui;

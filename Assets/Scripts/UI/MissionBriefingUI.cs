@@ -30,22 +30,37 @@ namespace Settlers.UI
             _mission = mission;
             _panelRoot?.SetActive(true);
 
-            if (_titleText != null) _titleText.text = mission.Title;
-            if (_briefingText != null) _briefingText.text = mission.Briefing;
+            if (_titleText != null) _titleText.text = LocalizedNames.MissionTitle(mission);
+            if (_briefingText != null)
+                _briefingText.text = LocalizedNames.MissionBriefing(mission);
+            RefreshChrome();
 
             // Populate objectives
             if (_objectivesContainer != null)
             {
                 foreach (Transform child in _objectivesContainer) Destroy(child.gameObject);
-                foreach (var obj in mission.Objectives)
+                for (int i = 0; i < mission.Objectives.Length; i++)
                 {
                     var lbl = UIFactory.CreateLabel(_objectivesContainer, "Obj",
-                        "• " + obj.Description, 14f, FontStyles.Normal, _font);
+                        "• " + LocalizedNames.MissionObjective(mission, i),
+                        14f, FontStyles.Normal, _font);
                     lbl.color = new Color(0.8f, 0.9f, 0.7f);
                     lbl.gameObject.AddComponent<LayoutElement>().preferredHeight = 22f;
                 }
             }
         }
+
+        /// <summary>Re-resolve creation-time baked labels (locale can change).</summary>
+        private void RefreshChrome()
+        {
+            if (_objHeader != null) _objHeader.text = L.Get("ui.mission.objectives");
+            if (_backLabel != null) _backLabel.text = L.Get("ui.mission.back");
+            if (_startLabel != null) _startLabel.text = L.Get("ui.mission.start");
+        }
+
+        private TextMeshProUGUI _objHeader;
+        private TextMeshProUGUI _backLabel;
+        private TextMeshProUGUI _startLabel;
 
         public void Hide() => _panelRoot?.SetActive(false);
 
@@ -119,6 +134,10 @@ namespace Settlers.UI
             var btns = root.GetComponentsInChildren<Button>();
             btns[0].onClick.AddListener(ui.OnBackClicked);
             btns[1].onClick.AddListener(ui.OnStartClicked);
+
+            ui._objHeader = objHeader;
+            ui._backLabel = btns[0].GetComponentInChildren<TextMeshProUGUI>();
+            ui._startLabel = btns[1].GetComponentInChildren<TextMeshProUGUI>();
 
             root.SetActive(false);
             return ui;

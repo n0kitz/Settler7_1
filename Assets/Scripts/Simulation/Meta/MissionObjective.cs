@@ -46,7 +46,11 @@ namespace Settlers.Simulation
             TargetParam = targetParam;
         }
 
-        /// <summary>Mark this objective as complete (irreversible).</summary>
+        /// <summary>Mark this objective as complete.</summary>
         internal void Complete() => IsComplete = true;
+
+        /// <summary>Clear completion — the static catalogue is shared, so a
+        /// replayed mission must start with fresh objectives.</summary>
+        internal void Reset() => IsComplete = false;
     }
 }

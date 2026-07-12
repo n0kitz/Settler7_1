@@ -31,29 +31,48 @@ namespace Settlers.UI
             _panelRoot?.SetActive(true);
 
             if (_headlineText != null)
-                _headlineText.text = victory ? "Mission Complete!" : "Mission Failed";
+                _headlineText.text = victory
+                    ? L.Get("ui.mission.complete") : L.Get("ui.mission.failed");
             if (_headlineText != null)
                 _headlineText.color = victory ? UIColors.BUTTON_GREEN : UIColors.BUTTON_RED;
 
             int minutes = (int)(elapsedSeconds / 60);
             int seconds = (int)(elapsedSeconds % 60);
             if (_summaryText != null)
-                _summaryText.text = $"{mission.Title}\nTime: {minutes}:{seconds:D2}";
+                _summaryText.text = $"{LocalizedNames.MissionTitle(mission)}\n" +
+                    $"{L.Get("ui.mission.time")}: {minutes}:{seconds:D2}";
+            RefreshChrome();
 
             if (_objectivesContainer != null)
             {
                 foreach (Transform child in _objectivesContainer) Destroy(child.gameObject);
-                foreach (var obj in mission.Objectives)
+                for (int i = 0; i < mission.Objectives.Length; i++)
                 {
+                    var obj = mission.Objectives[i];
                     string icon = obj.IsComplete ? "✓" : "✗";
                     Color color = obj.IsComplete ? UIColors.BUTTON_GREEN : UIColors.BUTTON_RED;
                     var lbl = UIFactory.CreateLabel(_objectivesContainer, "Obj",
-                        $"{icon} {obj.Description}", 14f, FontStyles.Normal, _font);
+                        $"{icon} {LocalizedNames.MissionObjective(mission, i)}",
+                        14f, FontStyles.Normal, _font);
                     lbl.color = color;
                     lbl.gameObject.AddComponent<LayoutElement>().preferredHeight = 22f;
                 }
             }
         }
+
+        /// <summary>Re-resolve creation-time baked labels (locale can change).</summary>
+        private void RefreshChrome()
+        {
+            if (_objHeader != null) _objHeader.text = L.Get("ui.mission.objectives");
+            if (_menuLabel != null) _menuLabel.text = L.Get("ui.mission.menu");
+            if (_retryLabel != null) _retryLabel.text = L.Get("ui.mission.retry");
+            if (_continueLabel != null) _continueLabel.text = L.Get("ui.mission.continue");
+        }
+
+        private TextMeshProUGUI _objHeader;
+        private TextMeshProUGUI _menuLabel;
+        private TextMeshProUGUI _retryLabel;
+        private TextMeshProUGUI _continueLabel;
 
         public void Hide() => _panelRoot?.SetActive(false);
 
@@ -132,6 +151,11 @@ namespace Settlers.UI
             btns[0].onClick.AddListener(ui.OnMenuClicked);
             btns[1].onClick.AddListener(ui.OnRetryClicked);
             btns[2].onClick.AddListener(ui.OnContinueClicked);
+
+            ui._objHeader = objHeader;
+            ui._menuLabel = btns[0].GetComponentInChildren<TextMeshProUGUI>();
+            ui._retryLabel = btns[1].GetComponentInChildren<TextMeshProUGUI>();
+            ui._continueLabel = btns[2].GetComponentInChildren<TextMeshProUGUI>();
 
             root.SetActive(false);
             return ui;
