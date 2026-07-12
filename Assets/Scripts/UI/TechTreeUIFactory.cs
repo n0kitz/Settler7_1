@@ -86,6 +86,9 @@ namespace Settlers.UI
             UIFactory.SetField(ui, "_tier1Container", tier1Col.transform);
             UIFactory.SetField(ui, "_tier2Container", tier2Col.transform);
             UIFactory.SetField(ui, "_tier3Container", tier3Col.transform);
+            ui._tierHeaders[0] = tier1Col.transform.Find("Header").GetComponent<TextMeshProUGUI>();
+            ui._tierHeaders[1] = tier2Col.transform.Find("Header").GetComponent<TextMeshProUGUI>();
+            ui._tierHeaders[2] = tier3Col.transform.Find("Header").GetComponent<TextMeshProUGUI>();
 
             foreach (var tech in TechTree.All)
             {
@@ -100,12 +103,8 @@ namespace Settlers.UI
             }
 
             var legendText = UIFactory.CreateLabel(contentGo.transform, "Legend",
-                "<color=#59BF66>■</color> " + L.Get("ui.tech.legend.available") + "  " +
-                "<color=#F2CC4D>■</color> " + L.Get("ui.tech.legend.owned") + "  " +
-                "<color=#CC3326>■</color> " + L.Get("ui.tech.legend.taken") + "  " +
-                "<color=#6699E5>■</color> " + L.Get("ui.tech.legend.researching") + "  " +
-                "<color=#737373>■</color> " + L.Get("ui.tech.legend.locked"),
-                11, FontStyles.Normal, font);
+                LegendText(), 11, FontStyles.Normal, font);
+            ui.LegendLabel = legendText;
             legendText.color = CARD_DESC;
             legendText.richText = true;
             var legendRect = legendText.GetComponent<RectTransform>();
@@ -158,6 +157,16 @@ namespace Settlers.UI
             }
         }
 
+        /// <summary>Status-gem legend, re-resolved on every Show (locale can change).</summary>
+        internal static string LegendText()
+        {
+            return "<color=#59BF66>■</color> " + L.Get("ui.tech.legend.available") + "  " +
+                "<color=#F2CC4D>■</color> " + L.Get("ui.tech.legend.owned") + "  " +
+                "<color=#CC3326>■</color> " + L.Get("ui.tech.legend.taken") + "  " +
+                "<color=#6699E5>■</color> " + L.Get("ui.tech.legend.researching") + "  " +
+                "<color=#737373>■</color> " + L.Get("ui.tech.legend.locked");
+        }
+
         private static GameObject CreateTierColumn(Transform parent, string label,
             TMP_FontAsset font)
         {
@@ -205,8 +214,8 @@ namespace Settlers.UI
             innerRect.offsetMax = new Vector2(-2f, -2f);
             inner.AddComponent<Image>().color = CARD_BG;
 
-            var nameText = UIFactory.CreateLabel(inner.transform, "Name", def.DisplayName, 13,
-                FontStyles.Bold, font);
+            var nameText = UIFactory.CreateLabel(inner.transform, "Name",
+                LocalizedNames.Tech(def.Id), 13, FontStyles.Bold, font);
             nameText.color = CARD_NAME;
             var nameRect = nameText.GetComponent<RectTransform>();
             nameRect.anchorMin = new Vector2(0f, 0.5f);
@@ -215,16 +224,8 @@ namespace Settlers.UI
             nameRect.offsetMax = new Vector2(-24f, -2f);
             nameText.alignment = TextAlignmentOptions.MidlineLeft;
 
-            string descContent = $"[{def.CostNovices}/{def.CostBrothers}/{def.CostFathers}]  " +
-                $"{def.Description}  ({def.ResearchTime:0}s)";
-            if (def.PrerequisiteId != null)
-            {
-                var prereq = TechTree.Get(def.PrerequisiteId);
-                if (prereq != null)
-                    descContent += $"  ← {prereq.DisplayName}";
-            }
-            var descText = UIFactory.CreateLabel(inner.transform, "Desc", descContent,
-                10, FontStyles.Italic, font);
+            var descText = UIFactory.CreateLabel(inner.transform, "Desc",
+                TechTreeUI.CardDescText(def), 10, FontStyles.Italic, font);
             descText.color = CARD_DESC;
             var descRect = descText.GetComponent<RectTransform>();
             descRect.anchorMin = new Vector2(0f, 0f);
@@ -247,6 +248,7 @@ namespace Settlers.UI
 
             ui._nodeImages[def.Id] = gemImg;
             ui._nodeLabels[def.Id] = nameText;
+            ui._nodeDescs[def.Id] = descText;
         }
     }
 }

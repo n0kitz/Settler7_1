@@ -21,6 +21,16 @@ namespace Settlers.UI
 
         private readonly Dictionary<string, Image> _nodeImages = new();
         private readonly Dictionary<string, Button> _nodeButtons = new();
+        private readonly Dictionary<string, TextMeshProUGUI> _nodeNames = new();
+        private readonly Dictionary<string, TextMeshProUGUI> _nodeDescs = new();
+        internal readonly TextMeshProUGUI[] BranchHeaders = new TextMeshProUGUI[3];
+
+        private static readonly string[] BRANCH_KEYS =
+        {
+            "ui.prestige.branch.economy",
+            "ui.prestige.branch.military",
+            "ui.prestige.branch.culture"
+        };
 
         private float _refreshTimer;
         private const float REFRESH_INTERVAL = 0.5f;
@@ -30,7 +40,25 @@ namespace Settlers.UI
         public void Show()
         {
             if (_panelRoot != null) _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
             RefreshNodes();
+        }
+
+        /// <summary>Re-resolve creation-time baked strings (locale can change).</summary>
+        private void RefreshLocaleTexts()
+        {
+            if (_titleText != null) _titleText.text = L.Get("ui.prestige.title");
+            for (int i = 0; i < BranchHeaders.Length; i++)
+                if (BranchHeaders[i] != null) BranchHeaders[i].text = L.Get(BRANCH_KEYS[i]);
+            foreach (var kvp in _nodeNames)
+                if (kvp.Value != null) kvp.Value.text = LocalizedNames.Prestige(kvp.Key);
+            foreach (var kvp in _nodeDescs)
+            {
+                var def = PrestigeDatabase.Get(kvp.Key);
+                if (kvp.Value != null && def != null)
+                    kvp.Value.text = string.Format(L.Get("ui.prestige.node_desc"),
+                        def.MinLevel, LocalizedNames.PrestigeDescription(def.Id));
+            }
         }
 
         public void Hide() { if (_panelRoot != null) _panelRoot.SetActive(false); }
@@ -40,6 +68,13 @@ namespace Settlers.UI
         {
             _nodeImages[id] = img;
             _nodeButtons[id] = btn;
+        }
+
+        internal void RegisterNodeLabels(string id, TextMeshProUGUI name,
+            TextMeshProUGUI desc)
+        {
+            _nodeNames[id] = name;
+            _nodeDescs[id] = desc;
         }
 
         public void HandleNodeClicked(string id)
@@ -65,9 +100,8 @@ namespace Settlers.UI
             bool success = prestige.TryUnlock(playerId, id);
             if (success)
             {
-                var def = PrestigeDatabase.Get(id);
-                string name = def != null ? def.DisplayName : id;
-                UpdateStatus(string.Format(L.Get("ui.prestige.unlocked"), name),
+                UpdateStatus(string.Format(L.Get("ui.prestige.unlocked"),
+                    LocalizedNames.Prestige(id)),
                     UIColors.TEXT_GREEN_LIGHT);
             }
             else
@@ -102,7 +136,8 @@ namespace Settlers.UI
                 int level = prestige.GetLevel(playerId);
                 int unspent = prestige.GetUnspentLevels(playerId);
                 int points = prestige.GetPoints(playerId);
-                _statusText.text = $"Level: {level}  |  Unspent: {unspent}  |  Points: {points}";
+                _statusText.text = string.Format(L.Get("ui.prestige.status"),
+                    level, unspent, points);
             }
 
             foreach (var kvp in _nodeImages)

@@ -151,19 +151,24 @@ namespace Settlers.UI
             var sb = new System.Text.StringBuilder();
             foreach (var building in buildings)
             {
-                string state = building.IsOperational ? "" : " (Building)";
-                string food = building.FoodSetting != FoodSetting.None
-                    ? $" [{building.FoodSetting}]" : "";
+                string state = building.IsOperational
+                    ? "" : " " + L.Get("ui.sector.under_construction");
+                string food = building.FoodSetting switch
+                {
+                    FoodSetting.Plain => $" [{L.Get("ui.food.plain")}]",
+                    FoodSetting.Fancy => $" [{L.Get("ui.food.fancy")}]",
+                    _ => ""
+                };
                 sb.AppendLine($"{building.Type}{state}{food}");
 
                 foreach (var wy in building.WorkYards)
                 {
                     var recipe = RecipeDatabase.Get(wy.TypeId);
-                    string displayName = recipe?.DisplayName ?? wy.TypeId;
+                    string displayName = LocalizedNames.Recipe(wy.TypeId);
 
                     if (!wy.IsOperational)
                     {
-                        sb.AppendLine($"  - {displayName} (idle)");
+                        sb.AppendLine($"  - {displayName} {L.Get("ui.sector.idle")}");
                         continue;
                     }
 

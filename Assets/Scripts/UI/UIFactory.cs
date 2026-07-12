@@ -81,6 +81,9 @@ namespace Settlers.UI
             colors.pressedColor = bgColor * 0.8f;
             btn.colors = colors;
             if (onClick != null) btn.onClick.AddListener(onClick);
+            // Every factory button clicks audibly (ui_click stays silent if absent)
+            btn.onClick.AddListener(() =>
+                Presentation.AudioManager.Instance?.PlayUIClick());
 
             var text = CreateLabel(btnGo.transform, "Label", label, fontSize,
                 FontStyles.Bold, font);

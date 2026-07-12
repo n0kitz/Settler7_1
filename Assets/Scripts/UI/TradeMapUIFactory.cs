@@ -82,13 +82,10 @@ namespace Settlers.UI
             nodesGo.transform.SetParent(mapAreaGo.transform, false);
             Stretch(nodesGo.AddComponent<RectTransform>());
 
-            CreateCapitalNode(mapAreaGo.transform, font);
+            var capitalLabel = CreateCapitalNode(mapAreaGo.transform, font);
 
             var legendText = UIFactory.CreateLabel(contentGo.transform, "Legend",
-                "<color=#B08020>■</color> " + L.Get("ui.trade.legend.yours") + "   " +
-                "<color=#9E2A1E>■</color> " + L.Get("ui.trade.legend.other") + "   " +
-                "<color=#7A7266>■</color> " + L.Get("ui.trade.legend.unclaimed"),
-                12, FontStyles.Normal, font);
+                LegendText(), 12, FontStyles.Normal, font);
             legendText.color = INK;
             legendText.richText = true;
             var legendRect = legendText.GetComponent<RectTransform>();
@@ -106,6 +103,8 @@ namespace Settlers.UI
             ui.MapFont = font;
             ui.RoutesRoot = routesGo.transform;
             ui.NodesRoot = nodesGo.transform;
+            ui.LegendLabel = legendText;
+            ui.CapitalLabel = capitalLabel;
 
             frameGo.SetActive(false);
             return ui;
@@ -149,7 +148,15 @@ namespace Settlers.UI
             return new Vector2(Mathf.Clamp(x, 0.10f, 0.90f), Mathf.Clamp(y, 0.12f, 0.88f));
         }
 
-        private static void CreateCapitalNode(Transform mapArea, TMP_FontAsset font)
+        /// <summary>Claim-state legend, re-resolved on every Show (locale can change).</summary>
+        internal static string LegendText()
+        {
+            return "<color=#B08020>■</color> " + L.Get("ui.trade.legend.yours") + "   " +
+                "<color=#9E2A1E>■</color> " + L.Get("ui.trade.legend.other") + "   " +
+                "<color=#7A7266>■</color> " + L.Get("ui.trade.legend.unclaimed");
+        }
+
+        private static TextMeshProUGUI CreateCapitalNode(Transform mapArea, TMP_FontAsset font)
         {
             var nodeGo = new GameObject("Capital");
             nodeGo.transform.SetParent(mapArea, false);
@@ -188,6 +195,7 @@ namespace Settlers.UI
             labelRect.anchoredPosition = new Vector2(0f, 2f);
             labelRect.sizeDelta = new Vector2(0f, 18f);
             label.alignment = TextAlignmentOptions.Center;
+            return label;
         }
 
         private static void CreateOutpostNode(Transform parent, TradeMapUI ui,
@@ -231,7 +239,7 @@ namespace Settlers.UI
             }
 
             var nameText = UIFactory.CreateLabel(inner.transform, "Name",
-                outpost.DisplayName, 12, FontStyles.Bold, font);
+                LocalizedNames.Outpost(outpost), 12, FontStyles.Bold, font);
             nameText.color = INK;
             var nameRect = nameText.GetComponent<RectTransform>();
             nameRect.anchorMin = new Vector2(0f, 0.5f);

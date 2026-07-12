@@ -87,14 +87,14 @@ namespace Settlers.UI
             {
                 if (ContainsResource(recipe.Outputs, resource))
                 {
-                    producedBy.Add(recipe.DisplayName);
+                    producedBy.Add(LocalizedNames.Recipe(recipe.WorkYardId));
                     foreach (var (type, amount) in recipe.Inputs)
                         AddUnique(requires, seen, $"req|{type}|{amount}",
                             $"{amount} × {LocalizedNames.Resource(type)}");
                 }
                 if (ContainsResource(recipe.Inputs, resource))
                 {
-                    consumedBy.Add(recipe.DisplayName);
+                    consumedBy.Add(LocalizedNames.Recipe(recipe.WorkYardId));
                     foreach (var (type, amount) in recipe.Outputs)
                         AddUnique(yields, seen, $"yld|{type}|{amount}",
                             $"{amount} × {LocalizedNames.Resource(type)}");

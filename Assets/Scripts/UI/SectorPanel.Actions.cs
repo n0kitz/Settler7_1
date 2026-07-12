@@ -35,7 +35,8 @@ namespace Settlers.UI
                         offsetX, building.LocalZ);
                     if (wy != null)
                     {
-                        ShowFeedback($"Attached {recipe.WorkYardId}", Color.green);
+                        ShowFeedback(string.Format(L.Get("ui.sector.attached"),
+                            LocalizedNames.Recipe(recipe.WorkYardId)), Color.green);
                         Refresh();
                         return;
                     }
@@ -56,7 +57,8 @@ namespace Settlers.UI
             {
                 if (gc.TryUpgradeBuilding(building.Id))
                 {
-                    ShowFeedback($"Upgrading {building.Type}", Color.green);
+                    ShowFeedback(string.Format(L.Get("ui.sector.upgrading"),
+                        building.Type), Color.green);
                     break;
                 }
             }
@@ -79,11 +81,12 @@ namespace Settlers.UI
                 bool sent = gc.State.Army.MoveArmy(gen, targetSectorId);
                 if (sent)
                 {
-                    ShowFeedback($"General #{gen.Id} marching", Color.green);
+                    ShowFeedback(string.Format(L.Get("ui.sector.general_marching"),
+                        gen.Id), Color.green);
                     return;
                 }
             }
-            ShowFeedback("No available general", Color.yellow);
+            ShowFeedback(L.Get("ui.sector.no_general"), Color.yellow);
         }
 
         /// <summary>Start proselytism on a neutral sector.</summary>
@@ -95,16 +98,17 @@ namespace Settlers.UI
             var sector = gc.Graph.GetSector(sectorId);
             if (!sector.IsNeutral)
             {
-                ShowFeedback("Only works on neutral sectors", new Color(1f, 0.4f, 0.4f));
+                ShowFeedback(L.Get("ui.sector.neutral_only"), new Color(1f, 0.4f, 0.4f));
                 return;
             }
 
             int clericCount = sector.IsFortified ? 12 : 6;
             bool started = gc.State.Conquest.StartProselytism(0, sectorId, clericCount);
             if (started)
-                ShowFeedback($"Proselytism started ({clericCount} clerics)", Color.green);
+                ShowFeedback(string.Format(L.Get("ui.sector.proselytism_started"),
+                    clericCount), Color.green);
             else
-                ShowFeedback("Cannot start proselytism", new Color(1f, 0.4f, 0.4f));
+                ShowFeedback(L.Get("ui.sector.proselytism_failed"), new Color(1f, 0.4f, 0.4f));
         }
 
         /// <summary>Try to build a fortification in an owned sector.</summary>
@@ -115,9 +119,9 @@ namespace Settlers.UI
 
             bool ok = gc.TryBuildFortification(sectorId, 0);
             if (ok)
-                ShowFeedback("Fortification started", Color.green);
+                ShowFeedback(L.Get("ui.sector.fortify_started"), Color.green);
             else
-                ShowFeedback("Cannot fortify: check prestige unlock + 10 Stone", new Color(1f, 0.4f, 0.4f));
+                ShowFeedback(L.Get("ui.sector.fortify_failed"), new Color(1f, 0.4f, 0.4f));
         }
 
         /// <summary>Cycle food setting on all buildings in a sector.</summary>

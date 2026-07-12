@@ -66,11 +66,11 @@ namespace Settlers.UI
 
             // Tab 2 — Empire (crown): empire-wide prestige objects
             AddEmpireTile(empireTab.transform, menu, "mil_stronghold",
-                L.Get("ui.build.empire.stronghold_active"), font);
+                "ui.build.empire.stronghold_active", font);
             AddEmpireTile(empireTab.transform, menu, "cul_church",
-                L.Get("ui.build.empire.church_active"), font);
+                "ui.build.empire.church_active", font);
             AddEmpireTile(empireTab.transform, menu, "cul_export_office",
-                L.Get("ui.build.empire.export_active"), font);
+                "ui.build.empire.export_active", font);
 
             // Cost text + feedback (below the grid)
             var costText = UIFactory.CreateLabel(contentGo.transform, "CostText", "", 12,
@@ -168,12 +168,11 @@ namespace Settlers.UI
         }
 
         private static void AddEmpireTile(Transform parent, BuildMenu menu,
-            string unlockId, string activeHint, TMP_FontAsset font)
+            string unlockId, string activeHintKey, TMP_FontAsset font)
         {
-            string name = PrestigeDatabase.Get(unlockId)?.DisplayName ?? unlockId;
             var (btn, img, label) = CreateTile(parent, $"Empire_{unlockId}",
-                IconFactory.CrownTab(), name, font);
-            menu.RegisterEmpire(btn, img, label, unlockId, activeHint);
+                IconFactory.CrownTab(), LocalizedNames.Prestige(unlockId), font);
+            menu.RegisterEmpire(btn, img, label, unlockId, activeHintKey);
         }
 
         private static (Button btn, Image img, TextMeshProUGUI label) CreateTile(
@@ -217,7 +216,7 @@ namespace Settlers.UI
         }
 
         /// <summary>Short tile name from the localized button string ("Lodge (3 Planks)" → "Lodge").</summary>
-        private static string TileName(BaseBuildingType type)
+        internal static string TileName(BaseBuildingType type)
         {
             string full = type switch
             {

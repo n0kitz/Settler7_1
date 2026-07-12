@@ -70,8 +70,20 @@ namespace Settlers.UI
             _isVisible = true;
             if (_panelRoot != null)
                 _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
             UpdateCostText(null);
             RefreshEntries();
+        }
+
+        /// <summary>Re-resolve creation-time baked tile labels (locale can change).</summary>
+        private void RefreshLocaleTexts()
+        {
+            foreach (var entry in _buildEntries)
+                if (entry.Label != null)
+                    entry.Label.text = BuildMenuFactory.TileName(entry.Type);
+            foreach (var entry in _empireEntries)
+                if (entry.Label != null)
+                    entry.Label.text = LocalizedNames.Prestige(entry.UnlockId);
         }
 
         /// <summary>Hide the build menu.</summary>
@@ -133,10 +145,10 @@ namespace Settlers.UI
         }
 
         internal void RegisterEmpire(Button btn, Image img, TextMeshProUGUI label,
-            string unlockId, string activeHint)
+            string unlockId, string activeHintKey)
         {
             _empireEntries.Add(new EmpireEntry { Img = img, Label = label, UnlockId = unlockId });
-            btn.onClick.AddListener(() => HandleEmpireClicked(unlockId, activeHint));
+            btn.onClick.AddListener(() => HandleEmpireClicked(unlockId, activeHintKey));
         }
 
         // --- Click handling ---
@@ -146,9 +158,8 @@ namespace Settlers.UI
             var prestige = Presentation.GameController.Instance?.State?.Prestige;
             if (prestige != null && !BuildingPrestigeGate.IsUnlocked(prestige, 0, type))
             {
-                var def = PrestigeDatabase.Get(BuildingPrestigeGate.RequiredUnlock(type));
                 ShowFeedback(string.Format(L.Get("ui.build.locked_feedback"),
-                    def?.DisplayName ?? type.ToString()));
+                    LocalizedNames.Prestige(BuildingPrestigeGate.RequiredUnlock(type))));
                 return;
             }
 
@@ -162,11 +173,11 @@ namespace Settlers.UI
             Hide();
         }
 
-        private void HandleEmpireClicked(string unlockId, string activeHint)
+        private void HandleEmpireClicked(string unlockId, string activeHintKey)
         {
             var prestige = Presentation.GameController.Instance?.State?.Prestige;
             bool unlocked = prestige != null && prestige.HasUnlock(0, unlockId);
-            ShowFeedback(unlocked ? activeHint : L.Get("ui.build.empire.locked_hint"));
+            ShowFeedback(L.Get(unlocked ? activeHintKey : "ui.build.empire.locked_hint"));
         }
 
         // --- State refresh ---

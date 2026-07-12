@@ -29,6 +29,8 @@ namespace Settlers.UI
         internal TMP_FontAsset MapFont;
         internal Transform RoutesRoot;
         internal Transform NodesRoot;
+        internal TextMeshProUGUI LegendLabel;
+        internal TextMeshProUGUI CapitalLabel;
 
         private float _refreshTimer;
         private const float REFRESH_INTERVAL = 0.5f;
@@ -39,6 +41,8 @@ namespace Settlers.UI
         {
             if (_panelRoot != null) _panelRoot.SetActive(true);
             if (_titleText != null) _titleText.text = L.Get("ui.trade.title");
+            if (LegendLabel != null) LegendLabel.text = TradeMapUIFactory.LegendText();
+            if (CapitalLabel != null) CapitalLabel.text = L.Get("ui.trade.capital");
             TradeMapUIFactory.RebuildNodes(this);
             RefreshNodes();
         }
@@ -69,12 +73,12 @@ namespace Settlers.UI
                 bool sent = trade.SendTrader(playerId, outpostId);
                 if (sent)
                 {
-                    UpdateStatus($"Trader sent to {outpost.DisplayName}!", UIColors.TEXT_GREEN_LIGHT);
+                    UpdateStatus(string.Format(L.Get("ui.trade.trader_sent"),
+                        LocalizedNames.Outpost(outpost)), UIColors.TEXT_GREEN_LIGHT);
                 }
                 else
                 {
-                    UpdateStatus("Cannot send trader — need Export Office prestige unlock.",
-                        UIColors.TEXT_RED_BRIGHT);
+                    UpdateStatus(L.Get("ui.trade.need_unlock"), UIColors.TEXT_RED_BRIGHT);
                 }
             }
             else if (outpost.ClaimedBy == playerId)
@@ -82,20 +86,21 @@ namespace Settlers.UI
                 bool traded = trade.ExecuteTrade(playerId, outpostId);
                 if (traded)
                 {
-                    UpdateStatus(
-                        $"Traded {outpost.InputAmount} {outpost.InputResource} → {outpost.OutputAmount} {outpost.OutputResource}!",
+                    UpdateStatus(string.Format(L.Get("ui.trade.traded"),
+                        outpost.InputAmount, LocalizedNames.Resource(outpost.InputResource),
+                        outpost.OutputAmount, LocalizedNames.Resource(outpost.OutputResource)),
                         UIColors.TEXT_GREEN_LIGHT);
                 }
                 else
                 {
-                    UpdateStatus(
-                        $"Not enough {outpost.InputResource}! (need {outpost.InputAmount})",
+                    UpdateStatus(string.Format(L.Get("ui.trade.not_enough"),
+                        LocalizedNames.Resource(outpost.InputResource), outpost.InputAmount),
                         UIColors.TEXT_RED_BRIGHT);
                 }
             }
             else
             {
-                UpdateStatus("This outpost belongs to another player!", UIColors.TEXT_RED_BRIGHT);
+                UpdateStatus(L.Get("ui.trade.enemy_outpost"), UIColors.TEXT_RED_BRIGHT);
             }
 
             RefreshNodes();

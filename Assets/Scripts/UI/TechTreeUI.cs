@@ -24,7 +24,15 @@ namespace Settlers.UI
 
         internal readonly Dictionary<string, Image> _nodeImages = new();
         internal readonly Dictionary<string, TextMeshProUGUI> _nodeLabels = new();
+        internal readonly Dictionary<string, TextMeshProUGUI> _nodeDescs = new();
         internal readonly TextMeshProUGUI[] _clericLabels = new TextMeshProUGUI[3];
+        internal readonly TextMeshProUGUI[] _tierHeaders = new TextMeshProUGUI[3];
+        internal TextMeshProUGUI LegendLabel;
+
+        private static readonly string[] TIER_KEYS =
+        {
+            "ui.tech.tier1", "ui.tech.tier2", "ui.tech.tier3"
+        };
 
         private static readonly string[] CLERIC_KEYS =
         {
@@ -42,7 +50,34 @@ namespace Settlers.UI
         {
             if (_panelRoot != null) _panelRoot.SetActive(true);
             if (_titleText != null) _titleText.text = L.Get("ui.tech.title");
+            RefreshLocaleTexts();
             RefreshNodes();
+        }
+
+        /// <summary>Re-resolve creation-time baked strings (locale can change).</summary>
+        private void RefreshLocaleTexts()
+        {
+            for (int i = 0; i < _tierHeaders.Length; i++)
+                if (_tierHeaders[i] != null) _tierHeaders[i].text = L.Get(TIER_KEYS[i]);
+            if (LegendLabel != null) LegendLabel.text = TechTreeUIFactory.LegendText();
+
+            foreach (var kvp in _nodeLabels)
+                if (kvp.Value != null) kvp.Value.text = LocalizedNames.Tech(kvp.Key);
+            foreach (var kvp in _nodeDescs)
+            {
+                var def = TechTree.Get(kvp.Key);
+                if (kvp.Value != null && def != null) kvp.Value.text = CardDescText(def);
+            }
+        }
+
+        /// <summary>Card description line: [cost] effect (time) ← prerequisite.</summary>
+        internal static string CardDescText(TechTree.TechDef def)
+        {
+            string text = $"[{def.CostNovices}/{def.CostBrothers}/{def.CostFathers}]  " +
+                $"{LocalizedNames.TechDescription(def.Id)}  ({def.ResearchTime:0}s)";
+            if (def.PrerequisiteId != null)
+                text += $"  ← {LocalizedNames.Tech(def.PrerequisiteId)}";
+            return text;
         }
 
         public void Hide() { if (_panelRoot != null) _panelRoot.SetActive(false); }
@@ -69,19 +104,19 @@ namespace Settlers.UI
 
             if (research.HasTech(playerId, techId))
             {
-                UpdateStatus("Already researched.", UIColors.TEXT_GOLD);
+                UpdateStatus(L.Get("ui.tech.already_researched"), UIColors.TEXT_GOLD);
                 return;
             }
 
             if (research.IsResearchedGlobally(techId))
             {
-                UpdateStatus("Already taken by another player!", UIColors.TEXT_RED_BRIGHT);
+                UpdateStatus(L.Get("ui.tech.already_taken"), UIColors.TEXT_RED_BRIGHT);
                 return;
             }
 
             if (research.IsBlocked(techId))
             {
-                UpdateStatus("Currently being researched by another player!", UIColors.TEXT_RED_BRIGHT);
+                UpdateStatus(L.Get("ui.tech.blocked"), UIColors.TEXT_RED_BRIGHT);
                 return;
             }
 
@@ -95,13 +130,12 @@ namespace Settlers.UI
             bool success = research.StartResearch(playerId, techId);
             if (success)
             {
-                var def = TechTree.Get(techId);
-                string name = def != null ? def.DisplayName : techId;
-                UpdateStatus($"Researching: {name}...", UIColors.TEXT_GREEN_LIGHT);
+                UpdateStatus(string.Format(L.Get("ui.tech.researching"),
+                    LocalizedNames.Tech(techId)), UIColors.TEXT_GREEN_LIGHT);
             }
             else
             {
-                UpdateStatus("Cannot research — prerequisites not met.", UIColors.TEXT_RED_BRIGHT);
+                UpdateStatus(L.Get("ui.tech.prereq_missing"), UIColors.TEXT_RED_BRIGHT);
             }
 
             RefreshNodes();

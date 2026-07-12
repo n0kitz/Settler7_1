@@ -215,3 +215,344 @@ ui.tech.clerics.brothers,Brothers
 ui.tech.clerics.fathers,Fathers
 ui.tech.recruit.failed,Cannot recruit — missing goods
 ui.tech.research.no_clerics,Not enough clerics — recruit more first
+
+# Panel status messages (display-time resolved)
+ui.trade.trader_sent,Trader sent to {0}!
+ui.trade.need_unlock,Cannot send trader — need Export Office prestige unlock.
+ui.trade.traded,Traded {0} {1} → {2} {3}!
+ui.trade.not_enough,Not enough {0}! (need {1})
+ui.trade.enemy_outpost,This outpost belongs to another player!
+ui.tech.already_researched,Already researched.
+ui.tech.already_taken,Already taken by another player!
+ui.tech.blocked,Currently being researched by another player!
+ui.tech.researching,Researching: {0}...
+ui.tech.prereq_missing,Cannot research — prerequisites not met.
+ui.prestige.status,Level: {0}  |  Unspent: {1}  |  Points: {2}
+ui.prestige.node_desc,Lv{0}: {1}
+
+# Work yard recipe names (RecipeDatabase)
+ui.recipe.forester,Forester
+ui.recipe.woodcutter,Woodcutter
+ui.recipe.sawmill,Sawmill
+ui.recipe.fisher,Fisher
+ui.recipe.hunter,Hunter
+ui.recipe.well,Well
+ui.recipe.grain_barn,Grain Barn
+ui.recipe.windmill,Windmill
+ui.recipe.piggery,Piggery
+ui.recipe.shepherd,Shepherd
+ui.recipe.stable,Stable
+ui.recipe.quarry,Quarry
+ui.recipe.coal_miner,Coal Miner
+ui.recipe.iron_miner,Iron Miner
+ui.recipe.gold_miner,Gold Miner
+ui.recipe.iron_smelter,Iron Smelter
+ui.recipe.coking_plant,Coking Plant
+ui.recipe.charcoal_kiln,Charcoal Kiln
+ui.recipe.bakery,Bakery
+ui.recipe.brewery,Brewery
+ui.recipe.paper_mill,Paper Mill
+ui.recipe.weaving_mill,Weaving Mill
+ui.recipe.wheelwright,Wheelwright
+ui.recipe.toolmaker,Toolmaker
+ui.recipe.butcher,Butcher
+ui.recipe.blacksmith,Blacksmith
+ui.recipe.mint,Mint
+ui.recipe.goldsmith,Goldsmith
+ui.recipe.bookbinder,Bookbinder
+ui.recipe.tailor,Tailor
+
+# Trade outposts — test map
+ui.outpost.trade_planks_iron,Ironworks Exchange
+ui.outpost.trade_grain_bread,Baker's Exchange
+ui.outpost.trade_wool_cloth,Weaver's Exchange
+ui.outpost.trade_stone_tools,Toolsmith Exchange
+ui.outpost.trade_gold_coins,Mint Exchange
+ui.outpost.trade_iron_weapons,Armory Exchange
+ui.outpost.trade_special_silk,Silk Road
+ui.outpost.trade_special_spice,Spice Route
+
+# Trade outposts — large_valley
+ui.outpost.lv_planks_stone,Mason's Exchange
+ui.outpost.lv_wood_tools,Carpenter's Exchange
+ui.outpost.lv_grain_bread,Baker's Exchange
+ui.outpost.lv_wool_cloth,Weaver's Exchange
+ui.outpost.lv_iron_weapons,Armory Exchange
+ui.outpost.lv_gold_coins,Mint Exchange
+ui.outpost.lv_cloth_garments,Tailor's Exchange
+ui.outpost.lv_paper_books,Scribe's Exchange
+ui.outpost.lv_coins_horses,Stable Exchange
+ui.outpost.lv_beer_coins,Tavern Exchange
+ui.outpost.lv_special_exotic,Exotic Goods Route
+ui.outpost.lv_special_relics,Relic Exchange
+
+# Trade outposts — crown_war
+ui.outpost.cw_planks_stone,Mason's Exchange
+ui.outpost.cw_grain_bread,Baker's Exchange
+ui.outpost.cw_wood_tools,Carpenter's Exchange
+ui.outpost.cw_wool_cloth,Weaver's Exchange
+ui.outpost.cw_iron_weapons,Armory Exchange
+ui.outpost.cw_gold_coins,Mint Exchange
+ui.outpost.cw_cloth_garments,Tailor's Exchange
+ui.outpost.cw_paper_books,Scribe's Exchange
+ui.outpost.cw_coins_horses,Stable Exchange
+ui.outpost.cw_beer_coins,Tavern Exchange
+ui.outpost.cw_jewelry_trade,Crown Jeweler
+ui.outpost.cw_relics_trade,Relic Exchange
+ui.outpost.cw_exotic_trade,Exotic Goods
+ui.outpost.cw_royal_trade,Royal Commission
+
+# Trade outposts — empire
+ui.outpost.emp_planks_stone,Quarry Exchange
+ui.outpost.emp_grain_bread,Bakery Exchange
+ui.outpost.emp_wood_tools,Workshop Exchange
+ui.outpost.emp_wool_cloth,Loom Exchange
+ui.outpost.emp_fish_bread,Harbor Exchange
+ui.outpost.emp_iron_weapons,Imperial Armory
+ui.outpost.emp_gold_coins,Imperial Mint
+ui.outpost.emp_cloth_garments,Imperial Tailor
+ui.outpost.emp_paper_books,Imperial Library
+ui.outpost.emp_coins_horses,Imperial Stables
+ui.outpost.emp_beer_coins,Grand Tavern
+ui.outpost.emp_coal_iron,Smelter Exchange
+ui.outpost.emp_sausage_coins,Butcher's Exchange
+ui.outpost.emp_special_silk,Silk Road
+ui.outpost.emp_special_relics,Ancient Relics
+ui.outpost.emp_special_crown,Crown Commission
+ui.outpost.emp_special_war,War Council
+ui.outpost.emp_luxury_trade,Luxury Exchange
+
+# Technology names (TechTree)
+ui.techname.tech_plowing,Plowing
+ui.techname.tech_masonry,Masonry
+ui.techname.tech_carpentry,Carpentry
+ui.techname.tech_animal_husbandry,Animal Husbandry
+ui.techname.tech_smelting,Smelting
+ui.techname.tech_fishing,Fishing Nets
+ui.techname.tech_crop_rotation,Crop Rotation
+ui.techname.tech_fortification_tech,Fortification Engineering
+ui.techname.tech_woodworking,Woodworking
+ui.techname.tech_breeding,Selective Breeding
+ui.techname.tech_steel,Steel Working
+ui.techname.tech_preservation,Food Preservation
+ui.techname.tech_irrigation,Irrigation
+ui.techname.tech_architecture,Architecture
+ui.techname.tech_logistics,Advanced Logistics
+ui.techname.tech_cavalry,Cavalry Tactics
+ui.techname.tech_metallurgy,Metallurgy
+ui.techname.tech_hygiene,Hygiene
+
+# Technology descriptions (TechTree)
+ui.techdesc.tech_plowing,Grain barns produce +50% grain
+ui.techdesc.tech_masonry,Stone quarries produce +50% stone
+ui.techdesc.tech_carpentry,Sawmills produce +50% planks
+ui.techdesc.tech_animal_husbandry,Piggeries + shepherds produce +50%
+ui.techdesc.tech_smelting,Iron smelters produce +50%
+ui.techdesc.tech_fishing,Fishers produce +50%
+ui.techdesc.tech_crop_rotation,Grain barns produce ×2
+ui.techdesc.tech_fortification_tech,Build fortifications 50% faster
+ui.techdesc.tech_woodworking,Wheelwrights produce +50%
+ui.techdesc.tech_breeding,Stables produce horses +50%
+ui.techdesc.tech_steel,Weapons production +50%
+ui.techdesc.tech_preservation,Fancy food multiplier +1
+ui.techdesc.tech_irrigation,All farms produce ×2
+ui.techdesc.tech_architecture,Construction time -50%
+ui.techdesc.tech_logistics,Carriers move 50% faster
+ui.techdesc.tech_cavalry,Cavaliers +30% attack
+ui.techdesc.tech_metallurgy,All metal production ×2
+ui.techdesc.tech_hygiene,Residence +2 pop, Noble +4 pop
+
+# Prestige unlock names (PrestigeDatabase)
+ui.prestige.name.eco_residence_upgrade,Residence Upgrade
+ui.prestige.name.eco_storehouse_lv2,Storehouse Level 2
+ui.prestige.name.eco_paved_roads,Paved Roads
+ui.prestige.name.eco_noble_residence,Noble Residence Unlock
+ui.prestige.name.eco_noble_upgrade,Noble Upgrade
+ui.prestige.name.eco_storehouse_lv3,Storehouse Level 3
+ui.prestige.name.eco_geologist,Geologist
+ui.prestige.name.eco_food_master,Food Master
+ui.prestige.name.mil_stronghold,Stronghold
+ui.prestige.name.mil_pikeman,Pikeman Training
+ui.prestige.name.mil_musketeer,Musketeer Training
+ui.prestige.name.mil_cavalier,Cavalier Training
+ui.prestige.name.mil_cannon,Cannon Foundry
+ui.prestige.name.mil_fortification,Fortification
+ui.prestige.name.mil_second_general,Second General
+ui.prestige.name.mil_standard_bearer,Standard Bearer
+ui.prestige.name.cul_church,Church
+ui.prestige.name.cul_export_office,Export Office
+ui.prestige.name.cul_novice,Novice Training
+ui.prestige.name.cul_hawker,Hawker Training
+ui.prestige.name.cul_brother,Brother Training
+ui.prestige.name.cul_salesman,Salesman Training
+ui.prestige.name.cul_father,Father Training
+ui.prestige.name.cul_merchant,Merchant Training
+
+# Prestige unlock descriptions (PrestigeDatabase)
+ui.prestige.desc.eco_residence_upgrade,Unlock Residence upgrades (+4 pop each level)
+ui.prestige.desc.eco_storehouse_lv2,Upgrade storehouses to level 2 (+1 carrier)
+ui.prestige.desc.eco_paved_roads,Build paved roads (faster carrier movement, costs stone)
+ui.prestige.desc.eco_noble_residence,Unlock Noble Residence building type
+ui.prestige.desc.eco_noble_upgrade,Unlock Noble Residence upgrades (+5 pop each level)
+ui.prestige.desc.eco_storehouse_lv3,Upgrade storehouses to level 3 (+1 carrier)
+ui.prestige.desc.eco_geologist,Unlock geologist mode for miners (higher yield)
+ui.prestige.desc.eco_food_master,Fancy food provides ×4 instead of ×3
+ui.prestige.desc.mil_stronghold,Unlock Stronghold building (military units)
+ui.prestige.desc.mil_pikeman,Train pikemen at the Stronghold
+ui.prestige.desc.mil_musketeer,Train musketeers (required for fortified sectors)
+ui.prestige.desc.mil_cavalier,Train cavaliers (fast, strong)
+ui.prestige.desc.mil_cannon,Build cannons (siege, breach fortifications)
+ui.prestige.desc.mil_fortification,Build fortifications in your sectors
+ui.prestige.desc.mil_second_general,Hire a second general
+ui.prestige.desc.mil_standard_bearer,Train standard bearers (army morale bonus)
+ui.prestige.desc.cul_church,Unlock Church building (technology research)
+ui.prestige.desc.cul_export_office,Unlock Export Office (trade routes)
+ui.prestige.desc.cul_novice,Train novices at the Church
+ui.prestige.desc.cul_hawker,Train hawkers at the Export Office
+ui.prestige.desc.cul_brother,Train brothers (advanced clerics)
+ui.prestige.desc.cul_salesman,Train salesmen (advanced traders)
+ui.prestige.desc.cul_father,Train fathers (master clerics)
+ui.prestige.desc.cul_merchant,Train merchants (master traders)
+ui.prestige.branch.economy,Economy
+ui.prestige.branch.military,Military
+ui.prestige.branch.culture,Culture
+
+# Floating world-space feedback texts
+ui.float.placed,Under construction
+ui.float.built,Built!
+ui.float.conquered,Conquered!
+ui.float.lost,Lost!
+ui.float.vp,+1 VP
+
+# §14.9 completion goods (Sprint 7c)
+ui.res.meat,Meat
+ui.res.fur,Fur
+ui.res.leather,Leather
+ui.res.spice,Spice
+ui.res.wine,Wine
+ui.recipe.trapper,Trapper
+ui.recipe.smokehouse,Smokehouse
+ui.recipe.tannery,Tannery
+
+# Trade outposts — highland_duel
+ui.outpost.hd_fish_bread,Loch Fishery
+ui.outpost.hd_wool_cloth,Crofters' Exchange
+ui.outpost.hd_stone_tools,Mason's Exchange
+ui.outpost.hd_planks_iron,Smelter Exchange
+ui.outpost.hd_fur_coins,Fur Post
+ui.outpost.hd_leather_jewelry,Leatherworks
+ui.outpost.hd_bread_spice,Spice Caravan
+ui.outpost.hd_coins_wine,Wine Cellar
+ui.outpost.hd_special_gold,Highland Treasury
+ui.outpost.hd_special_relic,Standing Stone Shrine
+
+# Trade outposts — golden_meadows
+ui.outpost.gm_grain_bread,Fair Bakery
+ui.outpost.gm_wool_cloth,Fair Loom
+ui.outpost.gm_wood_tools,Fair Workshop
+ui.outpost.gm_meat_coins,Butchers' Row
+ui.outpost.gm_iron_weapons,Armory Row
+ui.outpost.gm_gold_coins,Fair Mint
+ui.outpost.gm_cloth_garments,Tailors' Row
+ui.outpost.gm_beer_coins,Fair Tavern
+ui.outpost.gm_coins_spice,Spice Merchants
+ui.outpost.gm_grain_wine,Vineyard Cart
+ui.outpost.gm_special_crown,Golden Pavilion
+ui.outpost.gm_special_relics,Monastery Vault
+
+# Trade outposts — the_frontier
+ui.outpost.tf_planks_stone,Border Quarry
+ui.outpost.tf_fish_bread,River Post
+ui.outpost.tf_wood_tools,Wagon Camp
+ui.outpost.tf_fur_coins,Trappers' Post
+ui.outpost.tf_meat_coins,Provision Depot
+ui.outpost.tf_iron_weapons,Frontier Armory
+ui.outpost.tf_gold_coins,Prospectors' Mint
+ui.outpost.tf_leather_garments,Tannery Post
+ui.outpost.tf_coins_horses,Horse Traders
+ui.outpost.tf_coins_spice,Far-East Caravan
+ui.outpost.tf_coins_wine,Old-World Cellars
+ui.outpost.tf_special_expedition,Lost Expedition
+ui.outpost.tf_special_cathedral,Cathedral Reliquary
+ui.outpost.tf_special_citadel,Citadel Commission
+
+# Mission UI chrome (Sprint 8b)
+ui.mission.complete,Mission Complete!
+ui.mission.failed,Mission Failed
+ui.mission.time,Time
+ui.mission.objectives,Objectives:
+ui.mission.menu,Main Menu
+ui.mission.retry,Retry
+ui.mission.continue,Continue →
+ui.mission.back,← Back
+ui.mission.start,Start Mission →
+
+# End screens
+ui.endscreen.victory,VICTORY!
+ui.endscreen.defeat,DEFEAT
+ui.endscreen.duration,Match Duration
+ui.endscreen.score,Score
+ui.endscreen.play_again,Play Again
+ui.endscreen.return_menu,Return to Menu
+ui.endscreen.stats,Map: {0}\nDuration: {1}\nPlayers: {2}  •  VP to win: {3}\n\nBuildings completed: {4}\nSectors conquered: {5}\nTechnologies: {6}\nTrades completed: {7}
+ui.vp.tracker,VPs (need {0}):
+ui.vp.you,You
+ui.vp.player,P{0}
+ui.vp.countdown,{0} wins in {1}s!
+
+# Sector panel
+ui.sector.under_construction,(building)
+ui.sector.idle,(idle)
+ui.food.plain,Plain food
+ui.food.fancy,Fancy food
+ui.sector.attached,Attached: {0}
+ui.sector.upgrading,Upgrading: {0}
+ui.sector.general_marching,General {0} marching
+ui.sector.no_general,No available general
+ui.sector.neutral_only,Only works on neutral sectors
+ui.sector.proselytism_started,Proselytism started ({0} clerics)
+ui.sector.proselytism_failed,Cannot start proselytism
+ui.sector.fortify_started,Fortification started
+ui.sector.fortify_failed,Cannot fortify — needs prestige unlock + 10 Stone
+
+# Mission titles/briefings/objectives (fallbacks live in CampaignSystem.Missions)
+ui.mission.c1_m1_first_steps.title,First Steps
+ui.mission.c1_m1_first_steps.briefing,My lord, our people have settled in the valley. We must build our economy quickly — rival lords eye our lands. Establish a Lodge and Farm, then expand to the neutral sectors nearby.
+ui.mission.c1_m1_first_steps.obj0,Reach 2 Victory Points
+ui.mission.c1_m1_first_steps.obj1,Own at least 3 sectors
+ui.mission.c1_m2_hearth_and_home.title,Hearth and Home
+ui.mission.c1_m2_hearth_and_home.briefing,The highlands are harsh, my lord, and winter is near. Our people need bread before they need swords. Raise farms in the heather meadows and keep the ovens burning — a fed settlement is a loyal settlement.
+ui.mission.c1_m2_hearth_and_home.obj0,Build 2 operational Farms
+ui.mission.c1_m2_hearth_and_home.obj1,Stockpile 15 Bread
+ui.mission.c1_m2_hearth_and_home.obj2,Own at least 4 sectors
+ui.mission.c1_m2_iron_fist.title,Iron Fist
+ui.mission.c1_m2_iron_fist.briefing,The Iron Ridge holds resources vital to our military ambitions. An eastern lord has garrisoned the ridge with soldiers. Train your army and crush his forces. The iron belongs to us!
+ui.mission.c1_m2_iron_fist.obj0,Conquer 5 sectors
+ui.mission.c1_m2_iron_fist.obj1,Stockpile 20 Iron Bars
+ui.mission.c1_m3_mountain_lord.title,Lord of the Mountain
+ui.mission.c1_m3_mountain_lord.briefing,Three lords vie for the Central Stronghold. He who holds it commands the pass and wins prestige across the realm. Take the stronghold by any means necessary.
+ui.mission.c1_m3_mountain_lord.obj0,Reach 5 Victory Points
+ui.mission.c1_m3_mountain_lord.obj1,Own the Central Stronghold (7 sectors)
+ui.mission.c2_m1_sea_roads.title,Sea Roads
+ui.mission.c2_m1_sea_roads.briefing,The island chain is a vital trade corridor. Control its outposts and your merchants will profit handsomely. But a rival fleet already claims the eastern isle!
+ui.mission.c2_m1_sea_roads.obj0,Reach 4 Victory Points
+ui.mission.c2_m1_sea_roads.obj1,Accumulate 30 Coins
+ui.mission.c2_m2_scholars_duel.title,The Scholars' Duel
+ui.mission.c2_m2_scholars_duel.briefing,Three great academies stand empty in the large valley. He who researches the most technologies will be known as the wisest lord. Your rivals have sent their clerics — do not let them claim every monastery!
+ui.mission.c2_m2_scholars_duel.obj0,Reach 5 Victory Points
+ui.mission.c2_m3_meadow_fair.title,The Meadow Fair
+ui.mission.c2_m3_meadow_fair.briefing,Three realms meet at the golden meadows, and their merchants meet at the great fair. Gold buys loyalty faster than any sword — fill your coffers and let your rivals watch their markets empty.
+ui.mission.c2_m3_meadow_fair.obj0,Accumulate 40 Coins
+ui.mission.c2_m3_meadow_fair.obj1,Reach 6 Victory Points
+ui.mission.c3_m1_crown_war.title,The Crown War
+ui.mission.c3_m1_crown_war.briefing,Four noble houses stand at the brink of all-out war. Only one can wear the crown. Forge your empire through blood, trade, or wisdom — but win you must. The realm watches.
+ui.mission.c3_m1_crown_war.obj0,Reach 5 Victory Points
+ui.mission.c3_m2_empire.title,Empire
+ui.mission.c3_m2_empire.briefing,This is the final battle for dominion over the entire realm. 24 sectors, 4 lords, and only one throne. Conquer, trade, or out-think your rivals. The empire is yours to claim — if you are worthy.
+ui.mission.c3_m2_empire.obj0,Reach 6 Victory Points
+ui.mission.c3_m2_empire.obj1,Survive 600 seconds
+ui.mission.c3_m3_last_frontier.title,The Last Frontier
+ui.mission.c3_m3_last_frontier.briefing,Beyond the old borders lies the frontier — forty sectors of wilderness, and three lords who will never kneel. There is no throne to inherit here; whatever kingdom rises from this land, you must build it yourself.
+ui.mission.c3_m3_last_frontier.obj0,Reach 7 Victory Points
+ui.mission.c3_m3_last_frontier.obj1,Own at least 12 sectors
+ui.mission.c3_m3_last_frontier.obj2,Survive 900 seconds

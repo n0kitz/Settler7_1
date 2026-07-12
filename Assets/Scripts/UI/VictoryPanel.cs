@@ -56,13 +56,15 @@ namespace Settlers.UI
             // VP tracker
             if (_vpText != null)
             {
-                string text = $"VPs (need {victory.VPRequired}): ";
+                string text = string.Format(L.Get("ui.vp.tracker"), victory.VPRequired) + " ";
                 for (int p = 0; p < gc.State.PlayerCount; p++)
                 {
                     int vps = victory.GetVPCount(p);
+                    string who = p == 0
+                        ? L.Get("ui.vp.you") : string.Format(L.Get("ui.vp.player"), p);
                     text += p == 0
-                        ? $"<color=#55FF55>You:{vps}</color>  "
-                        : $"<color=#FF5555>P{p}:{vps}</color>  ";
+                        ? $"<color=#55FF55>{who}:{vps}</color>  "
+                        : $"<color=#FF5555>{who}:{vps}</color>  ";
                 }
                 _vpText.text = text;
             }
@@ -73,8 +75,10 @@ namespace Settlers.UI
                 if (victory.IsCountdownActive)
                 {
                     int secs = (int)victory.CountdownRemaining;
-                    string who = victory.CountdownPlayerId == 0 ? "YOU" : $"Player {victory.CountdownPlayerId}";
-                    _countdownText.text = $"{who} wins in {secs}s!";
+                    string who = victory.CountdownPlayerId == 0
+                        ? L.Get("ui.vp.you")
+                        : string.Format(L.Get("ui.vp.player"), victory.CountdownPlayerId);
+                    _countdownText.text = string.Format(L.Get("ui.vp.countdown"), who, secs);
                     _countdownText.gameObject.SetActive(true);
                 }
                 else
@@ -83,11 +87,18 @@ namespace Settlers.UI
                 }
             }
 
-            // Game over
+            // Game over — PostGameSummaryUI owns the end screen; this overlay
+            // is only the fallback when no summary actually made it on screen
+            // (e.g. games started outside the bootstrap wiring). Both showing
+            // at once was a double game-over screen. The summary shows
+            // synchronously on GameOverEvent, i.e. before this 0.5s poll.
             if (victory.IsGameOver && !_gameOverShown)
             {
                 _gameOverShown = true;
-                ShowGameOver(gc.State, victory.WinnerId);
+                var summary = FindFirstObjectByType<PostGameSummaryUI>(
+                    FindObjectsInactive.Include);
+                if (summary == null || !summary.IsVisible)
+                    ShowGameOver(gc.State, victory.WinnerId);
             }
             else if (!victory.IsGameOver && _gameOverShown)
             {
@@ -113,8 +124,8 @@ namespace Settlers.UI
             if (_gameOverText != null)
             {
                 _gameOverText.text = winnerId == 0
-                    ? "VICTORY!"
-                    : $"DEFEAT";
+                    ? L.Get("ui.endscreen.victory")
+                    : L.Get("ui.endscreen.defeat");
             }
 
             // Build standings below the header

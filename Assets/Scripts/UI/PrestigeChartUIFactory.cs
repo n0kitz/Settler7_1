@@ -64,9 +64,12 @@ namespace Settlers.UI
             columnsLayout.childForceExpandHeight = true;
             columnsLayout.padding = new RectOffset(5, 5, 5, 5);
 
-            var ecoCol = CreateColumn(columnsRoot.transform, "Economy", font);
-            var milCol = CreateColumn(columnsRoot.transform, "Military", font);
-            var culCol = CreateColumn(columnsRoot.transform, "Culture", font);
+            var ecoCol = CreateColumn(columnsRoot.transform,
+                L.Get("ui.prestige.branch.economy"), font);
+            var milCol = CreateColumn(columnsRoot.transform,
+                L.Get("ui.prestige.branch.military"), font);
+            var culCol = CreateColumn(columnsRoot.transform,
+                L.Get("ui.prestige.branch.culture"), font);
 
             // Component
             var chart = panelGo.AddComponent<PrestigeChartUI>();
@@ -76,6 +79,9 @@ namespace Settlers.UI
             UIFactory.SetField(chart, "_economyColumn", ecoCol.transform);
             UIFactory.SetField(chart, "_militaryColumn", milCol.transform);
             UIFactory.SetField(chart, "_cultureColumn", culCol.transform);
+            chart.BranchHeaders[0] = ecoCol.transform.Find("Header").GetComponent<TextMeshProUGUI>();
+            chart.BranchHeaders[1] = milCol.transform.Find("Header").GetComponent<TextMeshProUGUI>();
+            chart.BranchHeaders[2] = culCol.transform.Find("Header").GetComponent<TextMeshProUGUI>();
 
             // Populate unlock nodes
             foreach (var def in PrestigeDatabase.All)
@@ -140,8 +146,8 @@ namespace Settlers.UI
             btn.onClick.AddListener(() => chart.HandleNodeClicked(capturedId));
 
             // Name text
-            var nameText = UIFactory.CreateLabel(nodeGo.transform, "Name", def.DisplayName, 12,
-                FontStyles.Bold, font);
+            var nameText = UIFactory.CreateLabel(nodeGo.transform, "Name",
+                LocalizedNames.Prestige(def.Id), 12, FontStyles.Bold, font);
             var nameRect = nameText.GetComponent<RectTransform>();
             nameRect.anchorMin = new Vector2(0f, 0.5f);
             nameRect.anchorMax = new Vector2(1f, 1f);
@@ -150,7 +156,9 @@ namespace Settlers.UI
             nameText.alignment = TextAlignmentOptions.MidlineLeft;
 
             // Description text
-            var descText = UIFactory.CreateLabel(nodeGo.transform, "Desc", $"Lv{def.MinLevel}: {def.Description}",
+            var descText = UIFactory.CreateLabel(nodeGo.transform, "Desc",
+                string.Format(L.Get("ui.prestige.node_desc"), def.MinLevel,
+                    LocalizedNames.PrestigeDescription(def.Id)),
                 10, FontStyles.Normal, font);
             descText.color = new Color(0.7f, 0.7f, 0.7f);
             var descRect = descText.GetComponent<RectTransform>();
@@ -161,6 +169,7 @@ namespace Settlers.UI
             descText.alignment = TextAlignmentOptions.MidlineLeft;
 
             chart.RegisterNode(def.Id, nodeImg, btn);
+            chart.RegisterNodeLabels(def.Id, nameText, descText);
         }
 
     }

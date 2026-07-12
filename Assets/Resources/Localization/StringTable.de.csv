@@ -216,3 +216,342 @@ ui.tech.clerics.brothers,Mönche
 ui.tech.clerics.fathers,Prälaten
 ui.tech.recruit.failed,Anwerben nicht möglich — Waren fehlen
 ui.tech.research.no_clerics,Nicht genug Geistliche — erst mehr anwerben
+
+# Panel-Statusmeldungen (zur Anzeigezeit aufgelöst)
+ui.trade.trader_sent,Händler zu {0} entsandt!
+ui.trade.need_unlock,Händler kann nicht entsandt werden — Exportkontor-Freischaltung (Prestige) erforderlich.
+ui.trade.traded,{0} {1} → {2} {3} getauscht!
+ui.trade.not_enough,Nicht genug {0}! ({1} benötigt)
+ui.trade.enemy_outpost,Dieser Außenposten gehört einem anderen Spieler!
+ui.tech.already_researched,Bereits erforscht.
+ui.tech.already_taken,Bereits von einem anderen Spieler erforscht!
+ui.tech.blocked,Wird gerade von einem anderen Spieler erforscht!
+ui.tech.researching,Forschung läuft: {0}...
+ui.tech.prereq_missing,Forschung nicht möglich — Voraussetzungen fehlen.
+ui.prestige.status,Stufe: {0}  |  Frei: {1}  |  Punkte: {2}
+ui.prestige.node_desc,St{0}: {1}
+
+# Werkgebäude-Namen (RecipeDatabase) — DE-Namen zur Prüfung durch Normen
+ui.recipe.forester,Förster
+ui.recipe.woodcutter,Holzfäller
+ui.recipe.sawmill,Sägewerk
+ui.recipe.fisher,Fischer
+ui.recipe.hunter,Jäger
+ui.recipe.well,Brunnen
+ui.recipe.grain_barn,Kornspeicher
+ui.recipe.windmill,Windmühle
+ui.recipe.piggery,Schweinezucht
+ui.recipe.shepherd,Schäferei
+ui.recipe.stable,Gestüt
+ui.recipe.quarry,Steinbruch
+ui.recipe.coal_miner,Kohlemine
+ui.recipe.iron_miner,Eisenmine
+ui.recipe.gold_miner,Goldmine
+ui.recipe.iron_smelter,Eisenschmelze
+ui.recipe.coking_plant,Kokerei
+ui.recipe.charcoal_kiln,Köhlerei
+ui.recipe.bakery,Bäckerei
+ui.recipe.brewery,Brauerei
+ui.recipe.paper_mill,Papiermühle
+ui.recipe.weaving_mill,Weberei
+ui.recipe.wheelwright,Wagnerei
+ui.recipe.toolmaker,Werkzeugschmiede
+ui.recipe.butcher,Metzgerei
+ui.recipe.blacksmith,Waffenschmiede
+ui.recipe.mint,Münzprägerei
+ui.recipe.goldsmith,Goldschmiede
+ui.recipe.bookbinder,Buchbinderei
+ui.recipe.tailor,Schneiderei
+
+# Handelsaußenposten — Testkarte
+ui.outpost.trade_planks_iron,Eisenhütten-Kontor
+ui.outpost.trade_grain_bread,Bäcker-Kontor
+ui.outpost.trade_wool_cloth,Weber-Kontor
+ui.outpost.trade_stone_tools,Werkzeugschmied-Kontor
+ui.outpost.trade_gold_coins,Münz-Kontor
+ui.outpost.trade_iron_weapons,Waffenkammer-Kontor
+ui.outpost.trade_special_silk,Seidenstraße
+ui.outpost.trade_special_spice,Gewürzroute
+
+# Handelsaußenposten — large_valley
+ui.outpost.lv_planks_stone,Steinmetz-Kontor
+ui.outpost.lv_wood_tools,Zimmermanns-Kontor
+ui.outpost.lv_grain_bread,Bäcker-Kontor
+ui.outpost.lv_wool_cloth,Weber-Kontor
+ui.outpost.lv_iron_weapons,Waffenkammer-Kontor
+ui.outpost.lv_gold_coins,Münz-Kontor
+ui.outpost.lv_cloth_garments,Schneider-Kontor
+ui.outpost.lv_paper_books,Schreiber-Kontor
+ui.outpost.lv_coins_horses,Gestüt-Kontor
+ui.outpost.lv_beer_coins,Tavernen-Kontor
+ui.outpost.lv_special_exotic,Route der exotischen Waren
+ui.outpost.lv_special_relics,Reliquien-Kontor
+
+# Handelsaußenposten — crown_war
+ui.outpost.cw_planks_stone,Steinmetz-Kontor
+ui.outpost.cw_grain_bread,Bäcker-Kontor
+ui.outpost.cw_wood_tools,Zimmermanns-Kontor
+ui.outpost.cw_wool_cloth,Weber-Kontor
+ui.outpost.cw_iron_weapons,Waffenkammer-Kontor
+ui.outpost.cw_gold_coins,Münz-Kontor
+ui.outpost.cw_cloth_garments,Schneider-Kontor
+ui.outpost.cw_paper_books,Schreiber-Kontor
+ui.outpost.cw_coins_horses,Gestüt-Kontor
+ui.outpost.cw_beer_coins,Tavernen-Kontor
+ui.outpost.cw_jewelry_trade,Kronjuwelier
+ui.outpost.cw_relics_trade,Reliquien-Kontor
+ui.outpost.cw_exotic_trade,Exotische Waren
+ui.outpost.cw_royal_trade,Königlicher Auftrag
+
+# Handelsaußenposten — empire
+ui.outpost.emp_planks_stone,Steinbruch-Kontor
+ui.outpost.emp_grain_bread,Bäckerei-Kontor
+ui.outpost.emp_wood_tools,Werkstatt-Kontor
+ui.outpost.emp_wool_cloth,Webstuhl-Kontor
+ui.outpost.emp_fish_bread,Hafen-Kontor
+ui.outpost.emp_iron_weapons,Kaiserliche Waffenkammer
+ui.outpost.emp_gold_coins,Kaiserliche Münzprägerei
+ui.outpost.emp_cloth_garments,Kaiserlicher Schneider
+ui.outpost.emp_paper_books,Kaiserliche Bibliothek
+ui.outpost.emp_coins_horses,Kaiserliches Gestüt
+ui.outpost.emp_beer_coins,Große Taverne
+ui.outpost.emp_coal_iron,Schmelzhütten-Kontor
+ui.outpost.emp_sausage_coins,Metzger-Kontor
+ui.outpost.emp_special_silk,Seidenstraße
+ui.outpost.emp_special_relics,Alte Reliquien
+ui.outpost.emp_special_crown,Kronauftrag
+ui.outpost.emp_special_war,Kriegsrat
+ui.outpost.emp_luxury_trade,Luxuswaren-Kontor
+
+# Technologie-Namen (TechTree; Fischerei verifiziert §14.6)
+ui.techname.tech_plowing,Pflügen
+ui.techname.tech_masonry,Steinmetzkunst
+ui.techname.tech_carpentry,Zimmerei
+ui.techname.tech_animal_husbandry,Viehzucht
+ui.techname.tech_smelting,Verhüttung
+ui.techname.tech_fishing,Fischerei
+ui.techname.tech_crop_rotation,Fruchtwechsel
+ui.techname.tech_fortification_tech,Festungsbau
+ui.techname.tech_woodworking,Holzverarbeitung
+ui.techname.tech_breeding,Gezielte Zucht
+ui.techname.tech_steel,Stahlverarbeitung
+ui.techname.tech_preservation,Konservierung
+ui.techname.tech_irrigation,Bewässerung
+ui.techname.tech_architecture,Architektur
+ui.techname.tech_logistics,Logistik
+ui.techname.tech_cavalry,Kavallerietaktik
+ui.techname.tech_metallurgy,Metallurgie
+ui.techname.tech_hygiene,Hygiene
+
+# Technologie-Beschreibungen (TechTree)
+ui.techdesc.tech_plowing,Kornspeicher produzieren +50% Getreide
+ui.techdesc.tech_masonry,Steinbrüche produzieren +50% Stein
+ui.techdesc.tech_carpentry,Sägewerke produzieren +50% Planken
+ui.techdesc.tech_animal_husbandry,Schweinezucht + Schäferei produzieren +50%
+ui.techdesc.tech_smelting,Eisenschmelzen produzieren +50%
+ui.techdesc.tech_fishing,Fischer produzieren +50%
+ui.techdesc.tech_crop_rotation,Kornspeicher produzieren ×2
+ui.techdesc.tech_fortification_tech,Befestigungen 50% schneller bauen
+ui.techdesc.tech_woodworking,Wagnereien produzieren +50%
+ui.techdesc.tech_breeding,Gestüte produzieren +50% Pferde
+ui.techdesc.tech_steel,Waffenproduktion +50%
+ui.techdesc.tech_preservation,Multiplikator für feine Verpflegung +1
+ui.techdesc.tech_irrigation,Alle Bauernhöfe produzieren ×2
+ui.techdesc.tech_architecture,Bauzeit -50%
+ui.techdesc.tech_logistics,Träger bewegen sich 50% schneller
+ui.techdesc.tech_cavalry,Kavaliere +30% Angriff
+ui.techdesc.tech_metallurgy,Gesamte Metallproduktion ×2
+ui.techdesc.tech_hygiene,Wohnhaus +2 Bev., Adelsresidenz +4 Bev.
+
+# Prestige-Freischaltungen — Namen (PrestigeDatabase)
+ui.prestige.name.eco_residence_upgrade,Wohnhaus-Ausbau
+ui.prestige.name.eco_storehouse_lv2,Lagerhaus Stufe 2
+ui.prestige.name.eco_paved_roads,Gepflasterte Straßen
+ui.prestige.name.eco_noble_residence,Adelsresidenz
+ui.prestige.name.eco_noble_upgrade,Adelsresidenz-Ausbau
+ui.prestige.name.eco_storehouse_lv3,Lagerhaus Stufe 3
+ui.prestige.name.eco_geologist,Geologe
+ui.prestige.name.eco_food_master,Verpflegungsmeister
+ui.prestige.name.mil_stronghold,Festung
+ui.prestige.name.mil_pikeman,Pikenier-Ausbildung
+ui.prestige.name.mil_musketeer,Musketier-Ausbildung
+ui.prestige.name.mil_cavalier,Kavalier-Ausbildung
+ui.prestige.name.mil_cannon,Kanonengießerei
+ui.prestige.name.mil_fortification,Befestigung
+ui.prestige.name.mil_second_general,Zweiter General
+ui.prestige.name.mil_standard_bearer,Bannerträger
+ui.prestige.name.cul_church,Kirche
+ui.prestige.name.cul_export_office,Exportkontor
+ui.prestige.name.cul_novice,Geistlichen-Ausbildung
+ui.prestige.name.cul_hawker,Hausierer-Ausbildung
+ui.prestige.name.cul_brother,Mönchs-Ausbildung
+ui.prestige.name.cul_salesman,Verkäufer-Ausbildung
+ui.prestige.name.cul_father,Prälaten-Ausbildung
+ui.prestige.name.cul_merchant,Kaufmanns-Ausbildung
+
+# Prestige-Freischaltungen — Beschreibungen (PrestigeDatabase)
+ui.prestige.desc.eco_residence_upgrade,Schaltet Wohnhaus-Ausbauten frei (+4 Bev. pro Stufe)
+ui.prestige.desc.eco_storehouse_lv2,Lagerhäuser auf Stufe 2 ausbauen (+1 Träger)
+ui.prestige.desc.eco_paved_roads,Gepflasterte Straßen bauen (schnellere Träger, kostet Stein)
+ui.prestige.desc.eco_noble_residence,Schaltet die Adelsresidenz frei
+ui.prestige.desc.eco_noble_upgrade,Schaltet Adelsresidenz-Ausbauten frei (+5 Bev. pro Stufe)
+ui.prestige.desc.eco_storehouse_lv3,Lagerhäuser auf Stufe 3 ausbauen (+1 Träger)
+ui.prestige.desc.eco_geologist,Schaltet den Geologen-Modus für Minen frei (höherer Ertrag)
+ui.prestige.desc.eco_food_master,Feine Verpflegung liefert ×4 statt ×3
+ui.prestige.desc.mil_stronghold,Schaltet die Festung frei (Militäreinheiten)
+ui.prestige.desc.mil_pikeman,Pikeniere in der Festung ausbilden
+ui.prestige.desc.mil_musketeer,Musketiere ausbilden (nötig für befestigte Sektoren)
+ui.prestige.desc.mil_cavalier,Kavaliere ausbilden (schnell, stark)
+ui.prestige.desc.mil_cannon,Kanonen bauen (Belagerung, durchbricht Befestigungen)
+ui.prestige.desc.mil_fortification,Befestigungen in Euren Sektoren errichten
+ui.prestige.desc.mil_second_general,Einen zweiten General anheuern
+ui.prestige.desc.mil_standard_bearer,Bannerträger ausbilden (Moralbonus für die Armee)
+ui.prestige.desc.cul_church,Schaltet die Kirche frei (Technologieforschung)
+ui.prestige.desc.cul_export_office,Schaltet das Exportkontor frei (Handelsrouten)
+ui.prestige.desc.cul_novice,Geistliche in der Kirche anwerben
+ui.prestige.desc.cul_hawker,Hausierer im Exportkontor ausbilden
+ui.prestige.desc.cul_brother,Mönche anwerben (fortgeschrittene Geistliche)
+ui.prestige.desc.cul_salesman,Verkäufer ausbilden (fortgeschrittene Händler)
+ui.prestige.desc.cul_father,Prälaten anwerben (Meister-Geistliche)
+ui.prestige.desc.cul_merchant,Kaufleute ausbilden (Meister-Händler)
+ui.prestige.branch.economy,Wirtschaft
+ui.prestige.branch.military,Militär
+ui.prestige.branch.culture,Kultur
+
+# Schwebende Feedback-Texte in der Welt
+ui.float.placed,Im Bau
+ui.float.built,Fertig!
+ui.float.conquered,Erobert!
+ui.float.lost,Verloren!
+ui.float.vp,+1 SP
+
+# §14.9-Vervollständigung (Sprint 7c; Warennamen verifiziert §14.9)
+ui.res.meat,Fleisch
+ui.res.fur,Pelz
+ui.res.leather,Leder
+ui.res.spice,Gewürz
+ui.res.wine,Wein
+ui.recipe.trapper,Fallensteller
+ui.recipe.smokehouse,Räucherei
+ui.recipe.tannery,Gerberei
+
+# Handelsaußenposten — highland_duel
+ui.outpost.hd_fish_bread,Loch-Fischerei
+ui.outpost.hd_wool_cloth,Häusler-Kontor
+ui.outpost.hd_stone_tools,Steinmetz-Kontor
+ui.outpost.hd_planks_iron,Schmelzhütten-Kontor
+ui.outpost.hd_fur_coins,Pelzposten
+ui.outpost.hd_leather_jewelry,Lederwerkstatt
+ui.outpost.hd_bread_spice,Gewürzkarawane
+ui.outpost.hd_coins_wine,Weinkeller
+ui.outpost.hd_special_gold,Hochland-Schatzkammer
+ui.outpost.hd_special_relic,Schrein der Steinkreise
+# Handelsaußenposten — golden_meadows
+ui.outpost.gm_grain_bread,Markt-Bäckerei
+ui.outpost.gm_wool_cloth,Markt-Weberei
+ui.outpost.gm_wood_tools,Markt-Werkstatt
+ui.outpost.gm_meat_coins,Metzgergasse
+ui.outpost.gm_iron_weapons,Waffengasse
+ui.outpost.gm_gold_coins,Markt-Münze
+ui.outpost.gm_cloth_garments,Schneidergasse
+ui.outpost.gm_beer_coins,Markt-Taverne
+ui.outpost.gm_coins_spice,Gewürzhändler
+ui.outpost.gm_grain_wine,Weinbauern-Karren
+ui.outpost.gm_special_crown,Goldener Pavillon
+ui.outpost.gm_special_relics,Klostergewölbe
+# Handelsaußenposten — the_frontier
+ui.outpost.tf_planks_stone,Grenz-Steinbruch
+ui.outpost.tf_fish_bread,Flussposten
+ui.outpost.tf_wood_tools,Wagenlager
+ui.outpost.tf_fur_coins,Fallensteller-Posten
+ui.outpost.tf_meat_coins,Proviantdepot
+ui.outpost.tf_iron_weapons,Grenz-Waffenkammer
+ui.outpost.tf_gold_coins,Goldsucher-Münze
+ui.outpost.tf_leather_garments,Gerberposten
+ui.outpost.tf_coins_horses,Pferdehändler
+ui.outpost.tf_coins_spice,Karawane aus dem Osten
+ui.outpost.tf_coins_wine,Keller der Alten Welt
+ui.outpost.tf_special_expedition,Verschollene Expedition
+ui.outpost.tf_special_cathedral,Reliquienschrein der Kathedrale
+ui.outpost.tf_special_citadel,Auftrag der Zitadelle
+
+# Missions-UI (Sprint 8b)
+ui.mission.complete,Mission erfüllt!
+ui.mission.failed,Mission gescheitert
+ui.mission.time,Zeit
+ui.mission.objectives,Ziele:
+ui.mission.menu,Hauptmenü
+ui.mission.retry,Wiederholen
+ui.mission.continue,Weiter →
+ui.mission.back,← Zurück
+ui.mission.start,Mission starten →
+
+# End-Screens
+ui.endscreen.victory,SIEG!
+ui.endscreen.defeat,NIEDERLAGE
+ui.endscreen.duration,Spieldauer
+ui.endscreen.score,Punktzahl
+ui.endscreen.play_again,Nochmal spielen
+ui.endscreen.return_menu,Zum Hauptmenü
+ui.endscreen.stats,Karte: {0}\nDauer: {1}\nSpieler: {2}  •  SP zum Sieg: {3}\n\nGebäude fertiggestellt: {4}\nSektoren erobert: {5}\nTechnologien: {6}\nHandel abgeschlossen: {7}
+ui.vp.tracker,SP (Ziel {0}):
+ui.vp.you,Ihr
+ui.vp.player,S{0}
+ui.vp.countdown,{0} siegt in {1} s!
+
+# Sektor-Panel
+ui.sector.under_construction,(im Bau)
+ui.sector.idle,(untätig)
+ui.food.plain,Einfache Kost
+ui.food.fancy,Feine Kost
+ui.sector.attached,Angebaut: {0}
+ui.sector.upgrading,Ausbau: {0}
+ui.sector.general_marching,General {0} marschiert
+ui.sector.no_general,Kein General verfügbar
+ui.sector.neutral_only,Nur bei neutralen Sektoren möglich
+ui.sector.proselytism_started,Missionierung begonnen ({0} Geistliche)
+ui.sector.proselytism_failed,Missionierung nicht möglich
+ui.sector.fortify_started,Befestigung begonnen
+ui.sector.fortify_failed,Befestigung nicht möglich — Prestige-Freischaltung + 10 Stein nötig
+
+# Missions-Texte (DE-Prosa zur Prüfung durch Normen)
+ui.mission.c1_m1_first_steps.title,Erste Schritte
+ui.mission.c1_m1_first_steps.briefing,Mein Fürst, unser Volk hat sich im Tal niedergelassen. Wir müssen unsere Wirtschaft rasch aufbauen — rivalisierende Fürsten begehren unser Land. Errichtet Forsthütte und Bauernhof, dann expandiert in die benachbarten neutralen Sektoren.
+ui.mission.c1_m1_first_steps.obj0,Erreicht 2 Siegpunkte
+ui.mission.c1_m1_first_steps.obj1,Besitzt mindestens 3 Sektoren
+ui.mission.c1_m2_hearth_and_home.title,Herd und Heim
+ui.mission.c1_m2_hearth_and_home.briefing,Das Hochland ist rau, mein Fürst, und der Winter naht. Unser Volk braucht Brot, bevor es Schwerter braucht. Errichtet Bauernhöfe in den Heidewiesen und haltet die Öfen warm — eine satte Siedlung ist eine treue Siedlung.
+ui.mission.c1_m2_hearth_and_home.obj0,Baut 2 betriebsbereite Bauernhöfe
+ui.mission.c1_m2_hearth_and_home.obj1,Lagert 15 Brot
+ui.mission.c1_m2_hearth_and_home.obj2,Besitzt mindestens 4 Sektoren
+ui.mission.c1_m2_iron_fist.title,Eiserne Faust
+ui.mission.c1_m2_iron_fist.briefing,Der Eisenrücken birgt Rohstoffe, die für unsere militärischen Ambitionen entscheidend sind. Ein östlicher Fürst hat den Rücken mit Soldaten besetzt. Bildet Eure Armee aus und zerschlagt seine Truppen. Das Eisen gehört uns!
+ui.mission.c1_m2_iron_fist.obj0,Erobert 5 Sektoren
+ui.mission.c1_m2_iron_fist.obj1,Lagert 20 Eisenbarren
+ui.mission.c1_m3_mountain_lord.title,Herr des Berges
+ui.mission.c1_m3_mountain_lord.briefing,Drei Fürsten ringen um die Zentralfestung. Wer sie hält, beherrscht den Pass und erntet Prestige im ganzen Reich. Nehmt die Festung ein — mit allen Mitteln.
+ui.mission.c1_m3_mountain_lord.obj0,Erreicht 5 Siegpunkte
+ui.mission.c1_m3_mountain_lord.obj1,Haltet die Zentralfestung (7 Sektoren)
+ui.mission.c2_m1_sea_roads.title,Seewege
+ui.mission.c2_m1_sea_roads.briefing,Die Inselkette ist ein wichtiger Handelskorridor. Kontrolliert ihre Außenposten, und Eure Kaufleute werden prächtig verdienen. Doch eine rivalisierende Flotte beansprucht bereits die Ostinsel!
+ui.mission.c2_m1_sea_roads.obj0,Erreicht 4 Siegpunkte
+ui.mission.c2_m1_sea_roads.obj1,Sammelt 30 Münzen
+ui.mission.c2_m2_scholars_duel.title,Das Duell der Gelehrten
+ui.mission.c2_m2_scholars_duel.briefing,Drei große Akademien stehen leer im weiten Tal. Wer die meisten Technologien erforscht, wird als weisester Fürst gelten. Eure Rivalen haben ihre Geistlichen entsandt — überlasst ihnen nicht jedes Kloster!
+ui.mission.c2_m2_scholars_duel.obj0,Erreicht 5 Siegpunkte
+ui.mission.c2_m3_meadow_fair.title,Der Wiesenmarkt
+ui.mission.c2_m3_meadow_fair.briefing,Drei Reiche treffen sich auf den goldenen Wiesen, ihre Kaufleute auf dem großen Markt. Gold kauft Treue schneller als jedes Schwert — füllt Eure Truhen und lasst die Märkte Eurer Rivalen veröden.
+ui.mission.c2_m3_meadow_fair.obj0,Sammelt 40 Münzen
+ui.mission.c2_m3_meadow_fair.obj1,Erreicht 6 Siegpunkte
+ui.mission.c3_m1_crown_war.title,Der Kronkrieg
+ui.mission.c3_m1_crown_war.briefing,Vier Adelshäuser stehen am Rand des offenen Krieges. Nur einer kann die Krone tragen. Schmiedet Euer Reich durch Blut, Handel oder Weisheit — aber siegen müsst Ihr. Das Reich schaut zu.
+ui.mission.c3_m1_crown_war.obj0,Erreicht 5 Siegpunkte
+ui.mission.c3_m2_empire.title,Imperium
+ui.mission.c3_m2_empire.briefing,Dies ist die letzte Schlacht um die Herrschaft über das ganze Reich. 24 Sektoren, 4 Fürsten und nur ein Thron. Erobert, handelt oder überlistet Eure Rivalen. Das Imperium gehört Euch — wenn Ihr würdig seid.
+ui.mission.c3_m2_empire.obj0,Erreicht 6 Siegpunkte
+ui.mission.c3_m2_empire.obj1,Überdauert 600 Sekunden
+ui.mission.c3_m3_last_frontier.title,Die letzte Grenze
+ui.mission.c3_m3_last_frontier.briefing,Jenseits der alten Grenzen liegt das Grenzland — vierzig Sektoren Wildnis und drei Fürsten, die niemals knien werden. Hier gibt es keinen Thron zu erben; welches Königreich auch aus diesem Land ersteht, Ihr müsst es selbst errichten.
+ui.mission.c3_m3_last_frontier.obj0,Erreicht 7 Siegpunkte
+ui.mission.c3_m3_last_frontier.obj1,Besitzt mindestens 12 Sektoren
+ui.mission.c3_m3_last_frontier.obj2,Überdauert 900 Sekunden
