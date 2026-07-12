@@ -17,7 +17,8 @@ namespace Settlers.Presentation
 
         private Image[] _sectorDots;
         private TextMeshProUGUI[] _sectorLabels;
-        private bool _initialized;
+        private SectorGraph _builtGraph;
+        private Image _background;
 
         private static readonly Color[] PLAYER_COLORS = {
             new Color(0.2f, 0.5f, 0.9f),
@@ -30,23 +31,36 @@ namespace Settlers.Presentation
 
         private void LateUpdate()
         {
-            if (!_initialized) TryInitialize();
-            if (!_initialized) return;
-            Refresh();
+            var gc = GameController.Instance;
+            // The pre-game bootstrap placeholder (single "Home" sector) is not
+            // a real map — rendering it left a stray "Home" box on screen, and
+            // the one-shot init never rebuilt when the real game replaced it.
+            var graph = gc != null && gc.State != null && gc.State.MapId != "bootstrap"
+                ? gc.Graph : null;
+            if (graph != _builtGraph) Rebuild(gc, graph);
+            if (_builtGraph != null) Refresh();
         }
 
-        private void TryInitialize()
+        /// <summary>Tear down and rebuild all dots for the current game's graph.</summary>
+        private void Rebuild(GameController gc, SectorGraph graph)
         {
-            var gc = GameController.Instance;
-            if (gc == null || gc.Graph == null || _mapRoot == null) return;
+            if (_mapRoot == null) return;
 
-            int count = gc.Graph.SectorCount;
+            for (int i = _mapRoot.childCount - 1; i >= 0; i--)
+                Destroy(_mapRoot.GetChild(i).gameObject);
+            _sectorDots = null;
+            _sectorLabels = null;
+            _builtGraph = graph;
+            if (_background != null) _background.enabled = graph != null;
+            if (graph == null) return;
+
+            int count = graph.SectorCount;
             _sectorDots = new Image[count];
             _sectorLabels = new TextMeshProUGUI[count];
 
             for (int i = 0; i < count; i++)
             {
-                var sector = gc.Graph.GetSector(i);
+                var sector = graph.GetSector(i);
                 var worldPos = gc.GetSectorPosition(i);
 
                 // Create dot
@@ -83,19 +97,17 @@ namespace Settlers.Presentation
                 if (font != null) tmp.font = font;
                 _sectorLabels[i] = tmp;
             }
-
-            _initialized = true;
         }
 
         private void Refresh()
         {
-            var gc = GameController.Instance;
-            if (gc?.Graph == null) return;
+            if (_sectorDots == null) return;
 
             for (int i = 0; i < _sectorDots.Length; i++)
             {
-                var sector = gc.Graph.GetSector(i);
-                _sectorDots[i].color = GetSectorColor(sector);
+                var sector = _builtGraph.GetSector(i);
+                if (_sectorDots[i] != null)
+                    _sectorDots[i].color = GetSectorColor(sector);
             }
         }
 
@@ -132,6 +144,7 @@ namespace Settlers.Presentation
 
             var bg = panelGo.AddComponent<Image>();
             bg.color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
+            bg.enabled = false; // hidden until a real game's graph is built
 
             // Map content area (centered in panel)
             var mapRoot = new GameObject("MapRoot");
@@ -146,6 +159,7 @@ namespace Settlers.Presentation
             var field = typeof(MinimapController).GetField("_mapRoot",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             field?.SetValue(controller, mapRect);
+            controller._background = bg;
 
             return controller;
         }

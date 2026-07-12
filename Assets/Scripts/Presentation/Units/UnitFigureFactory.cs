@@ -66,6 +66,10 @@ namespace Settlers.Presentation
             hands.transform.SetParent(root.transform, false);
             hands.transform.localPosition = new Vector3(0f, 0.30f, 0.16f);
 
+            // Figures are distance-culled at overview zoom and cast no
+            // shadows — both halves of the 60 fps bar (Sprint 8a)
+            ViewLayers.SetLayerRecursive(root, ViewLayers.UNITS);
+            ViewLayers.DisableShadows(root);
             return root;
         }
 

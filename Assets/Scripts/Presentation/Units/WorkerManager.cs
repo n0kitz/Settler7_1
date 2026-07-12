@@ -11,6 +11,8 @@ namespace Settlers.Presentation
     public class WorkerManager : MonoBehaviour
     {
         private readonly Dictionary<int, WorkerView> _views = new();
+        private readonly HashSet<int> _aliveIds = new();
+        private readonly List<int> _staleIds = new();
         private Transform _root;
         private Material _material;
 
@@ -27,6 +29,22 @@ namespace Settlers.Presentation
         public void Sync(IReadOnlyList<WorkYard> allWorkYards)
         {
             if (_root == null) return;
+
+            // Remove views whose yards were unregistered (destroyed buildings,
+            // conquests) — without this, long wars accumulate hundreds of
+            // zombie worker figures and frame rate collapses.
+            _aliveIds.Clear();
+            for (int i = 0; i < allWorkYards.Count; i++)
+                _aliveIds.Add(allWorkYards[i].Id);
+            _staleIds.Clear();
+            foreach (var kvp in _views)
+                if (!_aliveIds.Contains(kvp.Key)) _staleIds.Add(kvp.Key);
+            for (int i = 0; i < _staleIds.Count; i++)
+            {
+                if (_views[_staleIds[i]] != null)
+                    Destroy(_views[_staleIds[i]].gameObject);
+                _views.Remove(_staleIds[i]);
+            }
 
             for (int i = 0; i < allWorkYards.Count; i++)
             {

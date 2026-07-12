@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Settlers.Simulation;
 
@@ -211,13 +212,32 @@ namespace Settlers.Presentation
             return obj;
         }
 
+        // One cached material per color. Per-part MaterialPropertyBlocks broke
+        // SRP batching for every primitive in the world (thousands of unbatched
+        // draw calls — the 60 fps killer of Sprint 8a). The palette is a small
+        // fixed set, so the cache stays tiny and everything batches again.
+        private static readonly Dictionary<Color32, Material> _colorMaterials = new();
+
         public static void SetColor(GameObject obj, Color color)
         {
             var renderer = obj.GetComponent<MeshRenderer>();
             if (renderer == null) return;
-            var block = new MaterialPropertyBlock();
-            block.SetColor(ColorProperty, color);
-            renderer.SetPropertyBlock(block);
+            renderer.sharedMaterial = GetColorMaterial(renderer.sharedMaterial, color);
+        }
+
+        /// <summary>Cached SRP-batchable material for the given tint.</summary>
+        public static Material GetColorMaterial(Material baseMat, Color color)
+        {
+            Color32 key = color;
+            if (_colorMaterials.TryGetValue(key, out var mat) && mat != null)
+                return mat;
+            mat = baseMat != null
+                ? new Material(baseMat)
+                : new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            mat.name = $"Tint_{key.r}_{key.g}_{key.b}";
+            mat.color = color;
+            _colorMaterials[key] = mat;
+            return mat;
         }
 
         public static float GetHeight(BaseBuildingType type) => type switch

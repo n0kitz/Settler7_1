@@ -17,6 +17,7 @@ namespace Settlers.Presentation
         private MeshRenderer _torso;
         private MaterialPropertyBlock _propBlock;
         private Vector3 _lastPos;
+        private bool _idleTint = true;
 
         private static readonly int ColorProp = Shader.PropertyToID("_BaseColor");
         private static readonly Color IDLE_TUNIC = new(0.5f, 0.5f, 0.5f);
@@ -56,13 +57,15 @@ namespace Settlers.Presentation
         {
             if (wy == null || !wy.IsOperational)
             {
-                SetTunicColor(IDLE_TUNIC);
+                // Tint only on state CHANGE — Get/SetPropertyBlock every frame
+                // for hundreds of workers was the 60-fps killer (Sprint 8a)
+                if (!_idleTint) { SetTunicColor(IDLE_TUNIC); _idleTint = true; }
                 transform.position = _homePos;
                 _lastPos = _homePos;
                 return;
             }
 
-            SetTunicColor(ACTIVE_TUNIC);
+            if (_idleTint) { SetTunicColor(ACTIVE_TUNIC); _idleTint = false; }
 
             // Walk back and forth based on cycle progress
             float cyclePhase = wy.CycleProgress * 2f; // 0→2 over full cycle
@@ -85,9 +88,9 @@ namespace Settlers.Presentation
         private void SetTunicColor(Color color)
         {
             if (_torso == null) return;
-            _torso.GetPropertyBlock(_propBlock);
-            _propBlock.SetColor(ColorProp, color);
-            _torso.SetPropertyBlock(_propBlock);
+            // Cached material swap instead of MPB — keeps the torso SRP-batched
+            _torso.sharedMaterial =
+                BuildingViewFactory.GetColorMaterial(_torso.sharedMaterial, color);
         }
     }
 }

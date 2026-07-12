@@ -97,6 +97,8 @@ namespace Settlers.Presentation
             SetPrivateField(view, "_constructionView", constructionView);
 
             view.SetColor(color);
+            // Building detail is distance-culled at extreme zoom (60 fps bar)
+            ViewLayers.SetLayerRecursive(go, ViewLayers.BUILDINGS);
             return view;
         }
 
