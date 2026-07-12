@@ -10,6 +10,7 @@ namespace Settlers.Presentation
     /// Drop this on any GameObject in an empty scene.
     /// Creates GameController, camera with SettlerCamera, light, and full UI hierarchy.
     /// Flow: MainMenu -> MapSelection -> Play.
+    /// Menu click handlers live in BootstrapScene.MenuFlow.cs.
     /// </summary>
     public partial class BootstrapScene : MonoBehaviour
     {
@@ -119,6 +120,10 @@ namespace Settlers.Presentation
 
             if (camGo.GetComponent<SettlerCamera>() == null)
                 camGo.AddComponent<SettlerCamera>();
+
+            // Detail layers (units, building parts) cull by distance — the
+            // sector overview reads via terrain/walls/landmarks (60 fps bar)
+            ViewLayers.ApplyCullDistances(camGo.GetComponent<Camera>());
         }
 
         private void CreateLight()
@@ -181,91 +186,33 @@ namespace Settlers.Presentation
             _diplomacyPanel?.Bind(_diplomacySystem, _defaultFont);
         }
 
-        private void OnNewGameClicked()
+        /// <summary>
+        /// Attach a CampaignSystem to the just-started mission game: apply the
+        /// mission's starting resources, evaluate objectives each tick (via
+        /// GameController), and on completion mark progress + show the
+        /// mission-complete panel. Skirmish games leave ActiveCampaign null.
+        /// </summary>
+        private void WireCampaign(Simulation.Mission mission)
         {
-            _mainMenu.Hide();
-            _mapSelect.Show();
-        }
+            var gc = GameController.Instance;
+            if (gc == null || gc.State == null || mission == null) return;
 
-        private void OnTutorialClicked()
-        {
-            _mainMenu.Hide();
-            // Start tutorial map directly — no map/setup screens
-            StartTrackedGame("tutorial", playerCount: 1, vpRequired: 3);
-        }
-
-        private void OnCampaignClicked()
-        {
-            _mainMenu.Hide();
-            _campaignProgress ??= Simulation.CampaignProgress.Load();
-            _campaignSelect?.Show(_campaignProgress);
-        }
-
-        private void OnCampaignMissionSelected(Simulation.Mission mission)
-        {
-            _pendingMission = mission;
-            _campaignSelect?.Hide();
-            _missionBriefing?.Show(mission);
-        }
-
-        private void OnMissionStart(Simulation.Mission mission)
-        {
-            StartTrackedGame(mission.MapId, mission.PlayerCount, mission.VPRequired);
-        }
-
-        private void OnMissionBriefingBack()
-        {
-            _missionBriefing?.Hide();
-            _campaignSelect?.Show(_campaignProgress);
-        }
-
-        private void OnCampaignBack()
-        {
-            _campaignSelect?.Hide();
-            _mainMenu.Show();
-        }
-
-        private void OnMapEditorClicked()
-        {
-            _mainMenu.Hide();
-            if (_mapEditorController == null)
+            var campaign = new Simulation.CampaignSystem(gc.State);
+            campaign.SetActiveMission(mission);
+            campaign.ApplyStartingResources();
+            campaign.OnObjectivesComplete += m =>
             {
-                var go = new GameObject("MapEditorController");
-                _mapEditorController = go.AddComponent<MapEditorController>();
-            }
-            var editorUI = FindAnyObjectByType<UI.MapEditorUI>();
-            var propPanel = FindAnyObjectByType<UI.SectorPropertyPanel>();
-            _mapEditorController.OnEditorClosed += OnMapEditorClosed;
-            _mapEditorController.OnPlaytestRequested += OnMapEditorPlaytest;
-            _mapEditorController.Activate(editorUI, propPanel);
+                _campaignProgress ??= Simulation.CampaignProgress.Load();
+                _campaignProgress.MarkComplete(m.Id);
+                float elapsed = Time.realtimeSinceStartup - _gameStartTime;
+                FindAnyObjectByType<UI.MissionCompleteUI>(FindObjectsInactive.Include)
+                    ?.Show(m, victory: true, elapsedSeconds: elapsed);
+            };
+            gc.ActiveCampaign = campaign;
         }
 
-        private void OnMapEditorClosed()
-        {
-            if (_mapEditorController != null)
-            {
-                _mapEditorController.OnEditorClosed -= OnMapEditorClosed;
-                _mapEditorController.OnPlaytestRequested -= OnMapEditorPlaytest;
-            }
-            _mainMenu.Show();
-        }
-
-        private void OnMapEditorPlaytest(Simulation.MapEditorState editorState)
-        {
-            if (GameController.Instance == null) return;
-            var graph = editorState.ToSectorGraph();
-            var rules = Simulation.GameRules.Default;
-            // Inline-launch the editor map as a skirmish
-            GameController.Instance.StartGame("editor_custom",
-                editorState.MaxPlayers, editorState.DefaultVP,
-                Simulation.AIDifficultyLevel.Normal,
-                Simulation.AIPersonalityType.Builder, rules);
-        }
-
-        private void OnSettingsClicked() => _settingsUI?.Show();
-
-        private void OnAchievementsClicked() => _achievementsPanel?.Show();
-        private void OnHallOfFameClicked()   => _hallOfFame?.Show();
+        // Menu click handlers (New Game / Tutorial / Campaign / Map Editor /
+        // Load / Settings / map+setup flow) → BootstrapScene.MenuFlow.cs
 
         private void OnGameOver(int winnerId)
         {
@@ -276,51 +223,6 @@ namespace Settlers.Presentation
             Simulation.MatchHistoryPersistence.Append(result);
             _postGameSummary?.Show(result);
         }
-
-        private void OnLoadGameClicked()
-        {
-            _mainMenu.Hide();
-
-            // Need a game initialized before loading — start with default map
-            if (GameController.Instance != null && GameController.Instance.State == null)
-                GameController.Instance.SetMapId("test_valley");
-
-            _loadSlotUI.Show(SaveSlotUI.Mode.Load);
-        }
-
-        private void OnLoadSlotClosed()
-        {
-            // If closed without loading, return to main menu
-            _mainMenu.Show();
-        }
-
-        private void OnQuitToMenu()
-        {
-            _mapSelect.Hide();
-            _gameSetup.Hide();
-            _mainMenu.Show();
-        }
-
-        private void OnMapSelected(string mapId)
-        {
-            _mapSelect.Hide();
-            var mapInfo = Simulation.MapFactory.CreateMap(mapId);
-            _gameSetup.SetMap(mapId, mapInfo.DisplayName, mapInfo.PlayerCount, mapInfo.VPRequired);
-            _gameSetup.Show();
-        }
-
-        private void OnStartGame(string mapId, int playerCount, int vpRequired,
-            Simulation.AIDifficultyLevel difficulty, Simulation.AIPersonalityType personality,
-            Simulation.StartingProfileType startingProfile, Simulation.VictoryRuleSetType victoryRules)
-        {
-            var rules = new Simulation.GameRules(
-                Simulation.StartingProfile.Get(startingProfile),
-                Simulation.VictoryRuleSet.Get(victoryRules));
-            StartTrackedGame(mapId, playerCount, vpRequired,
-                difficulty, personality, rules);
-        }
-
-        private void OnGameSetupBack() => _mapSelect.Show();
 
         private TMP_FontAsset LoadDefaultTMPFont()
         {

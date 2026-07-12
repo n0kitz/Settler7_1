@@ -23,11 +23,10 @@ namespace Settlers.Presentation
 
             if (!BuildingPrestigeGate.IsUnlocked(State.Prestige, playerId, type))
             {
-                var def = PrestigeDatabase.Get(BuildingPrestigeGate.RequiredUnlock(type));
                 if (_buildMenu != null)
                     _buildMenu.ShowFeedback(string.Format(
                         L.Get("ui.build.locked_feedback"),
-                        def?.DisplayName ?? type.ToString()));
+                        LocalizedNames.Prestige(BuildingPrestigeGate.RequiredUnlock(type))));
                 return;
             }
 
@@ -43,22 +42,42 @@ namespace Settlers.Presentation
             }
 
             int currentCount = Construction.GetBuildingCountInSector(sectorId);
+            // Store sector-LOCAL coords (like the AI does) — the view spawner
+            // reconstructs the world position as sectorPos + local.
+            var sectorPos = GetSectorPosition(sectorId);
             var building = Construction.PlaceBuilding(
                 type, sectorId, playerId,
                 maxWorkYards: 3,
-                localX: worldPos.x, localZ: worldPos.z,
+                localX: worldPos.x - sectorPos.x, localZ: worldPos.z - sectorPos.z,
                 currentBuildCount: currentCount, maxSlots: sector.BuildSlots);
 
             if (building != null)
             {
-                var view = BuildingView.CreatePrimitive(
-                    _buildingsRoot, building.Id, worldPos, type, _buildingMaterial);
-                _buildingViews[building.Id] = view;
-
+                // View spawn happens in HandleBuildingPlacedEvent — PlaceBuilding
+                // published the event synchronously, so the view already exists.
                 Debug.Log($"Placed {type} in {sector.Name} (ID:{building.Id}, " +
                     $"Slot {currentCount + 1}/{sector.BuildSlots}, " +
                     $"Planks:{resources?.Get(ResourceType.Planks)}, Stone:{resources?.Get(ResourceType.Stone)})");
             }
+        }
+
+        /// <summary>
+        /// Spawn a view for EVERY placed building — human, AI, and restored
+        /// (save-load) ones. Views used to exist only for the human placement
+        /// path, leaving AI buildings and loaded games invisible.
+        /// </summary>
+        private void HandleBuildingPlacedEvent(BuildingPlacedEvent evt)
+        {
+            if (_buildingsRoot == null || _buildingViews.ContainsKey(evt.BuildingId))
+                return;
+            var building = Construction.GetBuilding(evt.BuildingId);
+            if (building == null) return;
+
+            var pos = GetSectorPosition(evt.SectorId)
+                + new Vector3(building.LocalX, 0f, building.LocalZ);
+            var view = BuildingView.CreatePrimitive(
+                _buildingsRoot, evt.BuildingId, pos, evt.BuildingType, _buildingMaterial);
+            _buildingViews[evt.BuildingId] = view;
         }
 
         /// <summary>
