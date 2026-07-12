@@ -158,7 +158,10 @@ screenshot. (Detailed status lives in `project_status.md`; the active plan in `.
 | 5 | UI Fidelity | Parchment trade map, stone tech tree, ÜBERSICHT columns | ✅ done |
 | 6 | Polish & Balance | AI balance, DE everywhere, UI defects, audio, refactors | ✅ done¹ |
 | 7 | Content | Skirmish map set, campaign arc, economy depth (incl. live carriers) | ✅ done |
-| 8 | Performance & Acceptance | The 60 fps bar, §14 string sweep, final acceptance | ▶ next |
+| 8 | Performance & Acceptance | The 60 fps bar, §14 string sweep, final acceptance | ✅ done² |
+
+² Code-side complete. Open: the final acceptance test — Normen plays one full match per
+victory path (military / technology / trade); findings become a punch-list sprint.
 
 ¹ Audio clips are synthesized placeholders — regenerate via Coplay (needs sign-in) or CC0 drop-in.
 

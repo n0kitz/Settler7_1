@@ -1,0 +1,297 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887d9c2c33d3b4a4dbc186b8a2a28a16, type: 3}
+  m_Name: empire
+  m_EditorClassIdentifier: Settlers.Game::Settlers.Data.MapDefinition
+  mapId: empire
+  displayName: Empire (24 Sectors, 4 Players)
+  playerCount: 4
+  victoryPointsRequired: 6
+  sectors:
+  - sectorName: Verdant Haven
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 0
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 9
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Stormwatch Keep
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 1
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 9
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Sunstone Citadel
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 2
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 9
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Ironwood Hall
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 3
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 9
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Amber Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000007000000
+  - sectorName: Silver Brook
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000008000000
+  - sectorName: Thornwood Grove
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0600000005000000
+  - sectorName: Windmill Heights
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000006000000
+  - sectorName: Northern Ironworks
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Eastern Coal Pits
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0100000004000000
+  - sectorName: Southern Quarries
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0400000002000000
+  - sectorName: Western Smelters
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Lakeside Hamlet
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 070000000500000008000000
+  - sectorName: Vineyard Slopes
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000008000000
+  - sectorName: Shepherd's Rest
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000006000000
+  - sectorName: Timber Hollow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000007000000
+  - sectorName: Golden Crown
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000002000000
+  - sectorName: Sacred Monastery
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 7
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0600000008000000
+  - sectorName: Imperial Arena
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0400000002000000
+  - sectorName: Merchant's Bazaar
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0500000008000000
+  - sectorName: Throne of Kings
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 12
+    isFortified: 1
+    buildSlots: 3
+    resourceNodes: 03000000020000000100000004000000
+  - sectorName: Ancient Library
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 0
+    buildSlots: 4
+    resourceNodes: 0600000008000000
+  - sectorName: Dragon's Hoard
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 10
+    isFortified: 1
+    buildSlots: 3
+    resourceNodes: 0300000001000000
+  - sectorName: Crystal Caverns
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000004000000
+  edges:
+  - sectorA: 0
+    sectorB: 4
+  - sectorA: 0
+    sectorB: 7
+  - sectorA: 1
+    sectorB: 4
+  - sectorA: 1
+    sectorB: 5
+  - sectorA: 2
+    sectorB: 6
+  - sectorA: 2
+    sectorB: 5
+  - sectorA: 3
+    sectorB: 6
+  - sectorA: 3
+    sectorB: 7
+  - sectorA: 4
+    sectorB: 8
+  - sectorA: 4
+    sectorB: 12
+  - sectorA: 5
+    sectorB: 9
+  - sectorA: 5
+    sectorB: 13
+  - sectorA: 6
+    sectorB: 10
+  - sectorA: 6
+    sectorB: 14
+  - sectorA: 7
+    sectorB: 11
+  - sectorA: 7
+    sectorB: 15
+  - sectorA: 8
+    sectorB: 12
+  - sectorA: 8
+    sectorB: 15
+  - sectorA: 8
+    sectorB: 16
+  - sectorA: 9
+    sectorB: 12
+  - sectorA: 9
+    sectorB: 13
+  - sectorA: 9
+    sectorB: 17
+  - sectorA: 10
+    sectorB: 13
+  - sectorA: 10
+    sectorB: 14
+  - sectorA: 10
+    sectorB: 18
+  - sectorA: 11
+    sectorB: 14
+  - sectorA: 11
+    sectorB: 15
+  - sectorA: 11
+    sectorB: 19
+  - sectorA: 12
+    sectorB: 16
+  - sectorA: 12
+    sectorB: 17
+  - sectorA: 13
+    sectorB: 17
+  - sectorA: 13
+    sectorB: 18
+  - sectorA: 14
+    sectorB: 18
+  - sectorA: 14
+    sectorB: 19
+  - sectorA: 15
+    sectorB: 19
+  - sectorA: 15
+    sectorB: 16
+  - sectorA: 16
+    sectorB: 20
+  - sectorA: 16
+    sectorB: 22
+  - sectorA: 17
+    sectorB: 20
+  - sectorA: 17
+    sectorB: 21
+  - sectorA: 18
+    sectorB: 20
+  - sectorA: 18
+    sectorB: 23
+  - sectorA: 19
+    sectorB: 20
+  - sectorA: 19
+    sectorB: 21
+  - sectorA: 20
+    sectorB: 21
+  - sectorA: 20
+    sectorB: 22
+  - sectorA: 20
+    sectorB: 23
+  - sectorA: 21
+    sectorB: 22
+  - sectorA: 21
+    sectorB: 23
+  - sectorA: 22
+    sectorB: 23
+  playerStarts:
+  - sectorIndex: 0
+    playerId: 0
+  - sectorIndex: 1
+    playerId: 1
+  - sectorIndex: 2
+    playerId: 2
+  - sectorIndex: 3
+    playerId: 3

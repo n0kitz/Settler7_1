@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887d9c2c33d3b4a4dbc186b8a2a28a16, type: 3}
+  m_Name: highland_duel
+  m_EditorClassIdentifier: Settlers.Game::Settlers.Data.MapDefinition
+  mapId: highland_duel
+  displayName: Highland Duel (20 Sectors)
+  playerCount: 2
+  victoryPointsRequired: 5
+  sectors:
+  - sectorName: Western Hold
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 0
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 10
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Western Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 0
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000007000000
+  - sectorName: Eastern Hold
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 1
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 10
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Eastern Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 1
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000007000000
+  - sectorName: Coal Foothills
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0100000004000000
+  - sectorName: Iron Crags
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Golden Summit
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000004000000
+  - sectorName: Iron Scree
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0200000004000000
+  - sectorName: Peat Slopes
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0100000005000000
+  - sectorName: Heather Meadows
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000008000000
+  - sectorName: Loch Shore
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0700000005000000
+  - sectorName: Loch Isle
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000007000000
+  - sectorName: Reed Banks
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0700000005000000
+  - sectorName: Bloom Meadows
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000008000000
+  - sectorName: Northwest Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000004000000
+  - sectorName: Northeast Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000005000000
+  - sectorName: Southwest Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000004000000
+  - sectorName: Southeast Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000005000000
+  - sectorName: Old Bridge
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 04000000
+  - sectorName: Standing Stones
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 7
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0400000005000000
+  edges:
+  - sectorA: 0
+    sectorB: 1
+  - sectorA: 0
+    sectorB: 4
+  - sectorA: 0
+    sectorB: 14
+  - sectorA: 1
+    sectorB: 9
+  - sectorA: 1
+    sectorB: 15
+  - sectorA: 2
+    sectorB: 3
+  - sectorA: 2
+    sectorB: 8
+  - sectorA: 2
+    sectorB: 16
+  - sectorA: 3
+    sectorB: 13
+  - sectorA: 3
+    sectorB: 17
+  - sectorA: 4
+    sectorB: 5
+  - sectorA: 4
+    sectorB: 14
+  - sectorA: 5
+    sectorB: 6
+  - sectorA: 6
+    sectorB: 7
+  - sectorA: 6
+    sectorB: 18
+  - sectorA: 7
+    sectorB: 8
+  - sectorA: 8
+    sectorB: 16
+  - sectorA: 9
+    sectorB: 10
+  - sectorA: 10
+    sectorB: 11
+  - sectorA: 10
+    sectorB: 15
+  - sectorA: 10
+    sectorB: 19
+  - sectorA: 11
+    sectorB: 12
+  - sectorA: 11
+    sectorB: 18
+  - sectorA: 12
+    sectorB: 13
+  - sectorA: 12
+    sectorB: 17
+  - sectorA: 12
+    sectorB: 19
+  - sectorA: 18
+    sectorB: 19
+  playerStarts:
+  - sectorIndex: 0
+    playerId: 0
+  - sectorIndex: 1
+    playerId: 0
+  - sectorIndex: 2
+    playerId: 1
+  - sectorIndex: 3
+    playerId: 1

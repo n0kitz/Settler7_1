@@ -75,9 +75,11 @@ namespace Settlers.UI
             RefreshEntries();
         }
 
-        /// <summary>Re-resolve creation-time baked tile labels (locale can change).</summary>
+        /// <summary>Re-resolve creation-time baked labels (locale can change).</summary>
         private void RefreshLocaleTexts()
         {
+            if (_titleLabel != null)
+                _titleLabel.text = L.Get("ui.build.menu_title");
             foreach (var entry in _buildEntries)
                 if (entry.Label != null)
                     entry.Label.text = BuildMenuFactory.TileName(entry.Type);
@@ -85,6 +87,9 @@ namespace Settlers.UI
                 if (entry.Label != null)
                     entry.Label.text = LocalizedNames.Prestige(entry.UnlockId);
         }
+
+        /// <summary>Set by the factory; refreshed on every Show.</summary>
+        internal TextMeshProUGUI _titleLabel;
 
         /// <summary>Hide the build menu.</summary>
         public void Hide()

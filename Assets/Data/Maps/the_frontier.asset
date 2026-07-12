@@ -1,0 +1,431 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887d9c2c33d3b4a4dbc186b8a2a28a16, type: 3}
+  m_Name: the_frontier
+  m_EditorClassIdentifier: Settlers.Game::Settlers.Data.MapDefinition
+  mapId: the_frontier
+  displayName: The Frontier (40 Sectors, 4 Players)
+  playerCount: 4
+  victoryPointsRequired: 7
+  sectors:
+  - sectorName: Northern Hold
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 0
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 10
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Northern Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 0
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000007000000
+  - sectorName: Northern Coal Hills
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0100000004000000
+  - sectorName: Northern Iron Hollow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Northern Meadow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000008000000
+  - sectorName: Northern Fishing Lake
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0700000005000000
+  - sectorName: Northern Gold Cliffs
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 7
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000004000000
+  - sectorName: Northern Border Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000005000000
+  - sectorName: Northern Watch Hill
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0400000002000000
+  - sectorName: Eastern Hold
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 1
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 10
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Eastern Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 1
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000007000000
+  - sectorName: Eastern Coal Hills
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0100000004000000
+  - sectorName: Eastern Iron Hollow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Eastern Meadow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000008000000
+  - sectorName: Eastern Fishing Lake
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0700000005000000
+  - sectorName: Eastern Gold Cliffs
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 7
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000004000000
+  - sectorName: Eastern Border Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000005000000
+  - sectorName: Eastern Watch Hill
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0400000002000000
+  - sectorName: Southern Hold
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 2
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 10
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Southern Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 2
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000007000000
+  - sectorName: Southern Coal Hills
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0100000004000000
+  - sectorName: Southern Iron Hollow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Southern Meadow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000008000000
+  - sectorName: Southern Fishing Lake
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0700000005000000
+  - sectorName: Southern Gold Cliffs
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 7
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000004000000
+  - sectorName: Southern Border Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000005000000
+  - sectorName: Southern Watch Hill
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0400000002000000
+  - sectorName: Western Hold
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 3
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 10
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Western Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 3
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000007000000
+  - sectorName: Western Coal Hills
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0100000004000000
+  - sectorName: Western Iron Hollow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Western Meadow
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 2
+    isFortified: 0
+    buildSlots: 7
+    resourceNodes: 0500000008000000
+  - sectorName: Western Fishing Lake
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0700000005000000
+  - sectorName: Western Gold Cliffs
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 7
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000004000000
+  - sectorName: Western Border Woods
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0600000005000000
+  - sectorName: Western Watch Hill
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0400000002000000
+  - sectorName: Frontier Citadel
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 12
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000002000000
+  - sectorName: Great Plains
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 0500000008000000
+  - sectorName: Twin Mines
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Old Cathedral
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 9
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0400000005000000
+  edges:
+  - sectorA: 0
+    sectorB: 1
+  - sectorA: 0
+    sectorB: 2
+  - sectorA: 1
+    sectorB: 4
+  - sectorA: 1
+    sectorB: 7
+  - sectorA: 2
+    sectorB: 3
+  - sectorA: 2
+    sectorB: 8
+  - sectorA: 3
+    sectorB: 6
+  - sectorA: 4
+    sectorB: 5
+  - sectorA: 5
+    sectorB: 6
+  - sectorA: 5
+    sectorB: 37
+  - sectorA: 6
+    sectorB: 36
+  - sectorA: 7
+    sectorB: 17
+  - sectorA: 7
+    sectorB: 38
+  - sectorA: 8
+    sectorB: 34
+  - sectorA: 9
+    sectorB: 10
+  - sectorA: 9
+    sectorB: 11
+  - sectorA: 10
+    sectorB: 13
+  - sectorA: 10
+    sectorB: 16
+  - sectorA: 11
+    sectorB: 12
+  - sectorA: 11
+    sectorB: 17
+  - sectorA: 12
+    sectorB: 15
+  - sectorA: 13
+    sectorB: 14
+  - sectorA: 14
+    sectorB: 15
+  - sectorA: 14
+    sectorB: 37
+  - sectorA: 15
+    sectorB: 36
+  - sectorA: 16
+    sectorB: 26
+  - sectorA: 16
+    sectorB: 39
+  - sectorA: 18
+    sectorB: 19
+  - sectorA: 18
+    sectorB: 20
+  - sectorA: 19
+    sectorB: 22
+  - sectorA: 19
+    sectorB: 25
+  - sectorA: 20
+    sectorB: 21
+  - sectorA: 20
+    sectorB: 26
+  - sectorA: 21
+    sectorB: 24
+  - sectorA: 22
+    sectorB: 23
+  - sectorA: 23
+    sectorB: 24
+  - sectorA: 23
+    sectorB: 37
+  - sectorA: 24
+    sectorB: 36
+  - sectorA: 25
+    sectorB: 35
+  - sectorA: 25
+    sectorB: 38
+  - sectorA: 27
+    sectorB: 28
+  - sectorA: 27
+    sectorB: 29
+  - sectorA: 28
+    sectorB: 31
+  - sectorA: 28
+    sectorB: 34
+  - sectorA: 29
+    sectorB: 30
+  - sectorA: 29
+    sectorB: 35
+  - sectorA: 30
+    sectorB: 33
+  - sectorA: 31
+    sectorB: 32
+  - sectorA: 32
+    sectorB: 33
+  - sectorA: 32
+    sectorB: 37
+  - sectorA: 33
+    sectorB: 36
+  - sectorA: 34
+    sectorB: 39
+  - sectorA: 36
+    sectorB: 37
+  - sectorA: 36
+    sectorB: 38
+  - sectorA: 36
+    sectorB: 39
+  - sectorA: 37
+    sectorB: 38
+  - sectorA: 37
+    sectorB: 39
+  playerStarts:
+  - sectorIndex: 0
+    playerId: 0
+  - sectorIndex: 1
+    playerId: 0
+  - sectorIndex: 9
+    playerId: 1
+  - sectorIndex: 10
+    playerId: 1
+  - sectorIndex: 18
+    playerId: 2
+  - sectorIndex: 19
+    playerId: 2
+  - sectorIndex: 27
+    playerId: 3
+  - sectorIndex: 28
+    playerId: 3

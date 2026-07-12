@@ -1,0 +1,215 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887d9c2c33d3b4a4dbc186b8a2a28a16, type: 3}
+  m_Name: crown_war
+  m_EditorClassIdentifier: Settlers.Game::Settlers.Data.MapDefinition
+  mapId: crown_war
+  displayName: Crown War (18 Sectors, 4 Players)
+  playerCount: 4
+  victoryPointsRequired: 5
+  sectors:
+  - sectorName: Northwestern Hold
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 0
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Northeastern Castle
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 1
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Southwestern Fort
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 2
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Southeastern Bastion
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: 3
+    garrisonStrength: 0
+    isFortified: 0
+    buildSlots: 8
+    resourceNodes: 06000000040000000500000008000000
+  - sectorName: Northern Plains
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000007000000
+  - sectorName: Eastern Meadows
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000006000000
+  - sectorName: Southern Fields
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000007000000
+  - sectorName: Western Pastures
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 3
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000006000000
+  - sectorName: Iron Ridge
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0200000001000000
+  - sectorName: Coal Valley
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0100000004000000
+  - sectorName: Copper Hills
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0200000004000000
+  - sectorName: Quarry Bluffs
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 5
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0400000001000000
+  - sectorName: King's Crossroads
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 8
+    isFortified: 1
+    buildSlots: 4
+    resourceNodes: 0300000002000000
+  - sectorName: Ancient Monastery
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 1
+    buildSlots: 5
+    resourceNodes: 0600000008000000
+  - sectorName: Grand Market
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 6
+    isFortified: 0
+    buildSlots: 6
+    resourceNodes: 0500000008000000
+  - sectorName: Dragon's Mine
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 10
+    isFortified: 1
+    buildSlots: 3
+    resourceNodes: 030000000200000001000000
+  - sectorName: River Crossing
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0700000008000000
+  - sectorName: Hill Pass
+    position: {x: 0, y: 0, z: 0}
+    initialOwner: -2
+    garrisonStrength: 4
+    isFortified: 0
+    buildSlots: 5
+    resourceNodes: 0400000006000000
+  edges:
+  - sectorA: 0
+    sectorB: 4
+  - sectorA: 0
+    sectorB: 7
+  - sectorA: 1
+    sectorB: 4
+  - sectorA: 1
+    sectorB: 5
+  - sectorA: 2
+    sectorB: 6
+  - sectorA: 2
+    sectorB: 7
+  - sectorA: 3
+    sectorB: 5
+  - sectorA: 3
+    sectorB: 6
+  - sectorA: 4
+    sectorB: 8
+  - sectorA: 4
+    sectorB: 9
+  - sectorA: 5
+    sectorB: 9
+  - sectorA: 5
+    sectorB: 11
+  - sectorA: 6
+    sectorB: 10
+  - sectorA: 6
+    sectorB: 11
+  - sectorA: 7
+    sectorB: 8
+  - sectorA: 7
+    sectorB: 10
+  - sectorA: 8
+    sectorB: 12
+  - sectorA: 8
+    sectorB: 13
+  - sectorA: 9
+    sectorB: 12
+  - sectorA: 9
+    sectorB: 13
+  - sectorA: 10
+    sectorB: 14
+  - sectorA: 10
+    sectorB: 16
+  - sectorA: 11
+    sectorB: 14
+  - sectorA: 11
+    sectorB: 17
+  - sectorA: 12
+    sectorB: 15
+  - sectorA: 13
+    sectorB: 15
+  - sectorA: 14
+    sectorB: 15
+  - sectorA: 15
+    sectorB: 16
+  - sectorA: 15
+    sectorB: 17
+  - sectorA: 16
+    sectorB: 17
+  playerStarts:
+  - sectorIndex: 0
+    playerId: 0
+  - sectorIndex: 1
+    playerId: 1
+  - sectorIndex: 2
+    playerId: 2
+  - sectorIndex: 3
+    playerId: 3

@@ -105,6 +105,7 @@ namespace Settlers.UI
             title.color = UIColors.TEXT_HEADER_GOLD;
             var titleElem = title.gameObject.AddComponent<LayoutElement>();
             titleElem.flexibleWidth = 1f;
+            menu._titleLabel = title;
 
             var closeBtn = UIFactory.CreateButton(rowGo.transform, "X", font,
                 UIColors.BUTTON_RED, () => menu.Hide(), new Vector2(22f, 22f), 13f);

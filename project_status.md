@@ -4,74 +4,43 @@
 > CLAUDE.md and VISION.md); update at session end. Goal & Definition of Done: [VISION.md](VISION.md).
 > How we build: [CLAUDE.md](CLAUDE.md). Read by the `/status` and `/validate` commands.
 >
-> Last updated: **2026-07-11**
+> Last updated: **2026-07-12**
 
 ## Current Position
 
-**Definition of Done: Tier 1 (A Game, Not a Prototype) — in progress; Tier 2 well underway.**
-Foundation (Tier 0) complete and stable. Visual roadmap **Phases 1–5 done** — Phase 5 landed
-the parchment trade map (§14.7), the stone-and-candlelight tech tree WITH the
-Geistliche/Mönche/Prälaten cost mechanic (§14.6, new `ClericSystem`), and the new ÜBERSICHT
-production stats panel (§14.1, verified columns live in both locales, O hotkey).
-**Phase 6 — Polish & Balance is in progress.** The Technology AI's economy now works end to
-end: Sprint 6a pointed it at the clergy supply chain (Books/Garments/Bread/Tools yards), and the
-AI-economy sprint fixed the over-building that starved it — the AI now runs a fully-staffed lean
-economy and **completes Tier-2 research** (play-verified: 37/37 yards operational, 6+ Tier-2
-techs). Remaining AI caveat: on iron-poor maps it needs tool access via trade/conquest.
-**Sprint 6b (localization completion) is done:** every database display string (recipes,
-outposts, techs, prestige unlocks) now resolves through `LocalizedNames` at display time, and all
-factory-baked panel texts re-resolve on `Show()` — DE shows zero English leftovers
-(play-verified on ÜBERSICHT, Handelskarte, Technologie, PRESTIGE-OPTIONEN).
-**Sprint 6c (UI defect sweep) is done:** single game-over screen (VictoryPanel defers to a
-visible PostGameSummary, else falls back), stray minimap "Home" box gone (minimap rebuilds per
-game graph, ignores the bootstrap placeholder), instant localized placement feedback added.
-Finding: carriers can never spawn in real games — `RequestDelivery` has no game-code caller
-(queued for 7c economy depth).
-**Sprint 6d (audio) is done at placeholder quality:** all 9 clips from the Audio README exist
-(procedurally synthesized WAVs — Coplay AI generation returned 401 Unauthorized, needs Normen's
-sign-in; same filenames, so regeneration/CC0 drop-in overwrites 1:1). Wired the two dead clips:
-`building_placed` now event-subscribed, `ui_click` fires from every `UIFactory.CreateButton`.
-Play-verified: music loops, placement SFX fires, AudioManager re-subscribes after restart.
-**Sprint 6e is done — Phase 6 complete:** all four over-limit files split into concern-named
-partials (SaveSystem → +Apply; GameController → +Lifecycle; SectorVisuals → +MapDressing;
-BootstrapScene → +MenuFlow); **zero files over 300 lines** project-wide; save → load → restart
-smoke test green through the split code.
-**Phase 7 has begun — Sprint 7a (skirmish map set) is done:** three new maps close the size
-gaps per §1/map-skill guidelines — `highland_duel` (20 sectors, 2p, mirrored dual-route duel),
-`golden_meadows` (30, 3p) and `the_frontier` (40, 4p), the latter two built from an identical
-9-sector player wedge so resource distances are fair by construction. 10 maps total; menu and
-smoke tests pick them up automatically via `GetMapIds`.
-**Sprint 7b (campaign arc) is done — the campaign now actually works:** `CampaignSystem` was
-never instantiated/ticked, progress never marked, starting resources never applied, and two
-objective types unevaluated. All wired now (mission flow → `WireCampaign` → per-frame tick via
-`GameController.ActiveCampaign`), plus a 10-mission single-chain arc (intro → economy →
-military → trade → tech → conquest → finale) with three new missions on the 7a maps.
-Play-verified end-to-end: mission 1 completes, progress persists, MissionCompleteUI shows,
-mission 2 unlocks and starts with its resource overrides.
-**Sprint 7c (economy depth) is done — Phase 7 complete:** (1) the **storehouse relay is real**
-(Critical Rule #4): production outside the home sector travels by carrier and is credited on
-delivery, never twice; home-sector production, busy carriers and unreachable paths credit
-immediately. Carriers finally spawn in real games — play-verified live. (2) **§14.9 goods
-closed**: Meat/Fur/Leather with trapper→tannery and smokehouse chains; Spice/Wine are
-trade-only (sourced from outposts). (3) **Map-specific trade networks** for the three 7a maps
-(10/12/14 outposts incl. Spice/Wine sources). Remaining §14.9 gap: the military goods split
-(Kanonen/Kanonenkugeln/Schwerter vs. generic Weapons) — deliberate, see Known Issues.
-**Phase 8 has begun — Sprint 8a (the 60 fps bar) is done:** max-load scenario (the_frontier,
-4 AIs, 20 sim-minutes of war, filled to 203 buildings / 340 work yards) went from **14.8 fps to
-100+ fps overview / 124 fps closeup**. Root causes found by bisection: (1) per-part
-`MaterialPropertyBlock`s broke SRP batching for every primitive in the world → replaced with a
-tiny cache of per-color materials; (2) `WorkerManager` leaked zombie worker figures for
-unregistered yards (conquest churn); (3) unit figures + building detail now distance-cull via
-camera layer distances and figures cast no shadows. Bonus fixes: **AI and save-loaded buildings
-finally have views** (spawn was human-placement-only) and the human path now stores sector-local
-coords like the AI. Next: **Sprint 8b — rough-edge + §14 string sweep**. See the tier
-checklists and the phase table in VISION.md.
+**ALL EIGHT ROADMAP PHASES ARE COMPLETE (2026-07-12). The only open roadmap item is the
+final acceptance test — Normen plays one full match per victory path (military / technology /
+trade); findings become a punch-list sprint if needed.**
+
+The road here, compressed (full details per sprint in Recent Sessions below):
+- **Phases 1–5**: terrain & fairy-tale lighting · playability (restart, AI victory-racing) ·
+  procedural building overhaul + home castles · unit overhaul · UI fidelity (parchment trade
+  map §14.7, stone tech tree with Geistliche/Mönche/Prälaten costs §14.6, ÜBERSICHT §14.1).
+- **Phase 6 (Polish & Balance)**: Technology-AI economy works end to end (clergy chain +
+  over-building fixed → Tier-2 research completes) · DE localization of all database display
+  strings with Show()-time re-resolution · UI defect sweep (single game-over screen, minimap
+  fix, placement feedback) · audio at placeholder quality · zero files over 300 lines.
+- **Phase 7 (Content)**: 3 new skirmish maps (20/30/40 sectors, fairness-tested) → 10 total ·
+  campaign made actually functional (was never ticked/unlockable) with a 10-mission arc ·
+  economy depth: real storehouse-relay carriers (Critical Rule #4), §14.9 goods closed
+  (Meat/Fur/Leather chains; Spice/Wine trade-only), map-specific trade networks.
+- **Phase 8 (Performance & Strings)**: max-load 14.8 → 100+ fps (root cause: per-part
+  MaterialPropertyBlocks broke SRP batching; plus zombie-figure leak and invisible AI/loaded
+  buildings fixed) · §14 string sweep done — mission texts, end screens, sector panel and all
+  panel chrome localized with live locale switching; §14.1/§14.2 strings enforced 1:1 by test.
+
+**Deliberate leftovers for the acceptance pass** (also in Known Issues): audio clips are
+synthesized placeholders (regenerate via Coplay after sign-in, or CC0 drop-in) · all new German
+prose awaits Normen's review (recipes, outposts, techs, prestige, mission texts — marked in the
+CSVs) · military goods split (Kanonen/Kanonenkugeln/Schwerter) deferred · meta screens
+(GameSetup, map names, achievements) still EN-first · tech AI needs a tool source on iron-poor
+maps.
 
 ## Health at a Glance
 
 | Metric | Value |
 |--------|-------|
-| NUnit tests | **516 / 516 green** |
+| NUnit tests | **517 / 517 green** |
 | Playable end-to-end | ✅ menu → map → play → victory/defeat → restart |
 | Bilingual EN/DE | ✅ test-enforced key parity |
 | Architecture (Simulation = pure C#) | ✅ no UnityEngine in Simulation/ |
@@ -118,7 +87,9 @@ SaveSystem, SimulationRunner, Tutorial) · Localization · Settings · Replay ·
 | 5 | UI Fidelity — parchment trade map, stone tech tree, ÜBERSICHT | ✅ done |
 | 6 | Polish & Balance — AI economy, localization, UI defects, audio¹, refactors | ✅ done |
 | 7 | Content — skirmish maps (7a), campaign arc (7b), economy depth (7c) | ✅ done |
-| 8 | Performance & Acceptance — 60 fps bar (8a), §14 string sweep (8b), acceptance | ▶ **next** |
+| 8 | Performance & Acceptance — 60 fps bar (8a) ✅, §14 string sweep (8b) ✅ | ✅ done¹ |
+
+¹ Only the **final acceptance test** remains: Normen plays one full match per victory path.
 
 ¹ Audio clips are placeholders — regenerate via Coplay once signed in (or CC0 drop-in).
 
@@ -171,6 +142,21 @@ next status rewrite.
 
 ## Recent Sessions
 
+- **2026-07-12 — Sprint 8b (rough-edge + §14 string sweep — ROADMAP CODE-COMPLETE):**
+  localized the last gameplay-visible EN strings: all 10 mission titles/briefings/objectives
+  (`ui.mission.<id>.*` keys, resolved via `LocalizedNames.MissionTitle/Briefing/Objective`,
+  DE prose flagged for review), MissionBriefing/MissionComplete chrome (headers + buttons,
+  re-resolved on Show), PostGameSummary (VICTORY/DEFEAT header, stats block as ONE format key,
+  Score, buttons), VictoryPanel VP-tracker/countdown/fallback header (`SP (Ziel {n}): Ihr/S{p}`),
+  SectorPanel ("(im Bau)", "(untätig)", Kost-Labels) + all 9 action-feedback strings, and the
+  BuildMenu title now re-resolves on Show (was baked). §14 audit hardened into a test:
+  `VerifiedGermanStrings_MatchOriginal` now asserts ALL §14.1 titles/columns/carrier lines and
+  ALL §14.2 VP names 1:1, plus `EnglishTable_HasAllMissionKeys` per mission/objective.
+  Critical Rule 9 visually re-verified (Empire tab: Festung/Kirche/Exportkontor as visible gray
+  silhouettes); Rule 10 (BELOHNUNGEN modal, never auto-grant) was play-verified in earlier
+  sessions. **517/517 green.** CSV parser note: commas in values are FINE (split on first
+  comma) — do NOT escape them. All prior work was committed 2026-07-12 as 11 logical commits;
+  the 8b BuildMenu-title fix is the only uncommitted diff.
 - **2026-07-11 — Sprint 8a (60 fps bar — Phase 8 started):** max-load scenario (the_frontier,
   4 AIs, 20 sim-minutes, synthetic fill to 203 buildings / 340 yards) measured **14.8 fps** —
   then bisected (units root off? renderers only off? shadows off? sim stopwatch = 0.02ms/tick).
