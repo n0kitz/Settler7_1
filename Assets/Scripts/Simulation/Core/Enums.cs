@@ -73,7 +73,15 @@ namespace Settlers.Simulation
         Tools,
         Wheels,
         Horses,
-        Jewelry
+        Jewelry,
+
+        // §14.9 completion (Sprint 7c): Fleisch/Pelz/Leder chains + the two
+        // trade-only luxuries (Gewürz/Wein arrive via trade outposts, no recipe)
+        Meat,
+        Fur,
+        Leather,
+        Spice,
+        Wine
     }
 
     /// <summary>

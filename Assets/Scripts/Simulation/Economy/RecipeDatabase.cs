@@ -102,6 +102,11 @@ namespace Settlers.Simulation
                 new (ResourceType, int)[] { },
                 new[] { (ResourceType.Animal, 1) }, 12f);
 
+            Add("trapper", "Trapper", BaseBuildingType.Lodge,
+                ResourceNodeType.Forest,
+                new (ResourceType, int)[] { },
+                new[] { (ResourceType.Fur, 1) }, 12f);
+
             // ---- FARM (3 Planks) ----
             Add("well", "Well", BaseBuildingType.Farm,
                 ResourceNodeType.WaterSource,
@@ -200,6 +205,11 @@ namespace Settlers.Simulation
                 new[] { (ResourceType.IronBars, 1), (ResourceType.Planks, 1) },
                 new[] { (ResourceType.Tools, 1) }, 8f);
 
+            Add("smokehouse", "Smokehouse", BaseBuildingType.Residence,
+                ResourceNodeType.None,
+                new[] { (ResourceType.Animal, 1) },
+                new[] { (ResourceType.Meat, 1) }, 8f);
+
             // ---- NOBLE RESIDENCE (3P+2S, 5 pop) ----
             Add("butcher", "Butcher", BaseBuildingType.NobleResidence,
                 ResourceNodeType.None,
@@ -230,6 +240,11 @@ namespace Settlers.Simulation
                 ResourceNodeType.None,
                 new[] { (ResourceType.Cloth, 1) },
                 new[] { (ResourceType.Garments, 1) }, 8f);
+
+            Add("tannery", "Tannery", BaseBuildingType.NobleResidence,
+                ResourceNodeType.None,
+                new[] { (ResourceType.Fur, 1) },
+                new[] { (ResourceType.Leather, 1) }, 8f);
         }
 
         private static void Add(string id, string name, BaseBuildingType parent,

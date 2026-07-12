@@ -128,6 +128,17 @@ namespace Settlers.Simulation
                     Logistics.PlaceStorehouse(i, sector.OwnerId);
             }
 
+            // Storehouse relay (Critical Rule #4): produced goods travel by
+            // carrier from their sector to the owner's home storehouse; the
+            // credit happens on CarrierDeliveryEvent. Home-sector production,
+            // busy carriers and unreachable paths credit immediately instead.
+            Production.RouteDelivery = (playerId, fromSectorId, type, amount) =>
+            {
+                int home = GetHomeSector(playerId);
+                if (home < 0 || home == fromSectorId) return false;
+                return Logistics.RequestDelivery(fromSectorId, home, type, amount);
+            };
+
             // Victory system
             Victory = new VictorySystem(this, vpRequired, countdownDuration, vpThresholds);
 
@@ -219,6 +230,17 @@ namespace Settlers.Simulation
             if (toStorehouse == null) return;
             if (PlayerResources.TryGetValue(toStorehouse.OwnerId, out var res))
                 res.Add(evt.ResourceType, evt.Amount);
+        }
+
+        /// <summary>
+        /// A player's home sector: the lowest-id sector they own (same rule the
+        /// presentation layer uses for the home castle). -1 when they own none.
+        /// </summary>
+        public int GetHomeSector(int playerId)
+        {
+            for (int i = 0; i < Graph.SectorCount; i++)
+                if (Graph.GetSector(i).OwnerId == playerId) return i;
+            return -1;
         }
 
         /// <summary>Advance simulation time.</summary>

@@ -31,6 +31,16 @@ namespace Settlers.Simulation
         /// <summary>Wire PrestigeSystem for eco_food_master check.</summary>
         public void SetPrestige(PrestigeSystem prestige) => _prestige = prestige;
 
+        /// <summary>
+        /// Storehouse relay hook (Critical Rule #4): asked to carry each produced
+        /// output (playerId, fromSectorId, type, amount) toward the owner's
+        /// storehouse network. Returns true when a carrier took the goods — the
+        /// credit then happens on delivery (CarrierDeliveryEvent), NOT here.
+        /// Null or false = credit immediately (standalone tests, home-sector
+        /// production, busy carriers, unreachable paths).
+        /// </summary>
+        public System.Func<int, int, ResourceType, int, bool> RouteDelivery { get; set; }
+
         /// <summary>All registered work yards.</summary>
         public IReadOnlyList<WorkYard> AllWorkYards => _allWorkYards;
 
@@ -109,7 +119,7 @@ namespace Settlers.Simulation
                     wy.InputsReserved = false;
                     // Consume 1 food item per completed cycle when food boost is active
                     ConsumeFoodForCycle(building, wy.OwnerId);
-                    ProduceOutputs(wy.OwnerId, recipe);
+                    ProduceOutputs(wy.OwnerId, wy.SectorId, recipe);
                 }
             }
         }
@@ -187,14 +197,20 @@ namespace Settlers.Simulation
             return true;
         }
 
-        private void ProduceOutputs(int playerId, RecipeDatabase.RecipeDef recipe)
+        private void ProduceOutputs(int playerId, int sectorId,
+            RecipeDatabase.RecipeDef recipe)
         {
             if (!_playerResources.TryGetValue(playerId, out var res))
                 return;
 
             for (int i = 0; i < recipe.Outputs.Length; i++)
             {
-                res.Add(recipe.Outputs[i].type, recipe.Outputs[i].amount);
+                var (type, amount) = recipe.Outputs[i];
+                // Storehouse relay: a dispatched carrier credits on delivery
+                bool carried = RouteDelivery != null
+                    && RouteDelivery(playerId, sectorId, type, amount);
+                if (!carried)
+                    res.Add(type, amount);
             }
 
             _eventBus.Publish(new ProductionCompleteEvent(

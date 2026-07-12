@@ -43,23 +43,24 @@ namespace Settlers.Tests
         }
 
         [Test]
-        public void RecipeDatabase_Has30Recipes()
+        public void RecipeDatabase_Has33Recipes()
         {
-            Assert.AreEqual(30, RecipeDatabase.All.Count);
+            // 30 + trapper/smokehouse/tannery (§14.9 completion, Sprint 7c)
+            Assert.AreEqual(33, RecipeDatabase.All.Count);
         }
 
         [Test]
-        public void RecipeDatabase_GetForBuilding_Lodge_Returns5()
+        public void RecipeDatabase_GetForBuilding_Lodge_Returns6()
         {
             var lodgeRecipes = RecipeDatabase.GetForBuilding(BaseBuildingType.Lodge);
-            Assert.AreEqual(5, lodgeRecipes.Count);
+            Assert.AreEqual(6, lodgeRecipes.Count);
         }
 
         [Test]
-        public void RecipeDatabase_GetForBuilding_NobleResidence_Returns6()
+        public void RecipeDatabase_GetForBuilding_NobleResidence_Returns7()
         {
             var nobleRecipes = RecipeDatabase.GetForBuilding(BaseBuildingType.NobleResidence);
-            Assert.AreEqual(6, nobleRecipes.Count);
+            Assert.AreEqual(7, nobleRecipes.Count);
         }
 
         [Test]
