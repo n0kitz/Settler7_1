@@ -6,11 +6,32 @@ namespace Settlers.Simulation
     /// AI economy helper: building placement, work yard attachment, food management,
     /// building upgrades, and resource-aware decisions.
     /// Used by AIController. Pure C# — no UnityEngine references.
+    /// Building/work-yard selection lives in AIEconomy.BuildingChoice.cs.
     /// </summary>
-    public static class AIEconomy
+    public static partial class AIEconomy
     {
-        public static void BuildEconomy(GameState state, int playerId)
+        /// <summary>
+        /// How far the AI may let total work-yard capacity (3 slots per building) run
+        /// ahead of its living space before it stops raising more utility buildings.
+        /// A utility building nets negative settlers when fully yarded, so an unchecked
+        /// build-out ends with a swarm of yards no population can ever staff.
+        /// </summary>
+        private const int BUILD_SLOT_SLACK = 12;
+
+        /// <summary>Work-yard slots the AI equips per building (matches TryPlaceBuilding).</summary>
+        private const int AI_YARDS_PER_BUILDING = 3;
+
+        public static void BuildEconomy(GameState state, int playerId,
+            bool prioritizeClergyGoods = false)
         {
+            // Don't out-build the population: once committed work-yard slots outrun living
+            // space (plus a starter buffer), only population homes are still worth raising.
+            int livingSpace = state.Population.GetLivingSpace(playerId);
+            int opBuildings = 0;
+            foreach (var b in state.Construction.GetBuildingsByPlayer(playerId))
+                if (b.IsOperational) opBuildings++;
+            bool saturated = opBuildings * AI_YARDS_PER_BUILDING > livingSpace + BUILD_SLOT_SLACK;
+
             var ownedSectors = state.Graph.GetSectorsOwnedBy(playerId);
             foreach (int sectorId in ownedSectors)
             {
@@ -18,18 +39,29 @@ namespace Settlers.Simulation
                 var sector = state.Graph.GetSector(sectorId);
                 if (buildCount >= sector.BuildSlots) continue;
 
-                var type = ChooseBuildingType(state, playerId, sector);
+                var type = ChooseBuildingType(state, playerId, sector, prioritizeClergyGoods);
+                bool isPopHome = type == BaseBuildingType.Residence ||
+                                 type == BaseBuildingType.NobleResidence;
+                if (saturated && !isPopHome) continue;
+
                 TryPlaceBuilding(state, playerId, type, sectorId);
             }
         }
 
-        public static void AttachWorkYards(GameState state, int playerId)
+        public static void AttachWorkYards(GameState state, int playerId,
+            bool prioritizeClergyGoods = false)
         {
+            // Only attach as many work yards as the population can actually staff — a
+            // swarm of idle yards just spreads the scarce settlers and tools too thin.
+            int settlerBudget = state.Population.GetAvailableSettlers(playerId);
+            if (settlerBudget <= 0) return;
+
             foreach (var building in state.Construction.GetBuildingsByPlayer(playerId))
             {
+                if (settlerBudget <= 0) break;
                 if (!building.IsOperational || !building.CanAttachWorkYard) continue;
 
-                string wyId = ChooseWorkYard(state, playerId, building);
+                string wyId = ChooseWorkYard(state, playerId, building, prioritizeClergyGoods);
                 if (wyId == null) continue;
 
                 var recipe = RecipeDatabase.Get(wyId);
@@ -44,7 +76,10 @@ namespace Settlers.Simulation
                 var wy = new WorkYard(wyId, building.Id, building.SectorId,
                     playerId, recipe.RequiredNode, 0f, 0f);
                 if (building.AttachWorkYard(wy))
+                {
                     state.Production.RegisterWorkYard(wy);
+                    settlerBudget--;
+                }
             }
         }
 
@@ -124,97 +159,6 @@ namespace Settlers.Simulation
                 state.Quests.TryCompleteQuest(playerId, quest.Id);
         }
 
-        private static BaseBuildingType ChooseBuildingType(GameState state, int playerId, Sector sector)
-        {
-            int planks = GetResource(state, playerId, ResourceType.Planks);
-            int wood = GetResource(state, playerId, ResourceType.Wood);
-            int tools = GetResource(state, playerId, ResourceType.Tools);
-            int food = GetResource(state, playerId, ResourceType.Bread) +
-                       GetResource(state, playerId, ResourceType.Fish);
-            int ironBars = GetResource(state, playerId, ResourceType.IronBars);
-
-            // Priority: wood/planks → food → mining → tools/processed → luxury
-            if (planks < 10 && wood < 5)
-                return BaseBuildingType.Lodge;
-            if (food < 5 && sector.HasResource(ResourceNodeType.FertileLand))
-                return BaseBuildingType.Farm;
-            if (sector.HasResource(ResourceNodeType.Iron) ||
-                sector.HasResource(ResourceNodeType.Coal) ||
-                sector.HasResource(ResourceNodeType.Stone))
-                return BaseBuildingType.MountainShelter;
-            if (tools < 5 && planks >= 2 && ironBars >= 1)
-                return BaseBuildingType.Residence;
-            if (planks >= 3 && ironBars >= 2)
-                return BaseBuildingType.NobleResidence;
-            return BaseBuildingType.Lodge;
-        }
-
-        private static string ChooseWorkYard(GameState state, int playerId, Building building)
-        {
-            var existing = new HashSet<string>();
-            foreach (var wy in building.WorkYards) existing.Add(wy.TypeId);
-
-            // Smarter priority based on current needs
-            string[] priority = GetWorkYardPriority(state, playerId, building.Type);
-
-            foreach (string wyId in priority)
-            {
-                if (existing.Contains(wyId)) continue;
-                var recipe = RecipeDatabase.Get(wyId);
-                if (recipe == null) continue;
-                if (recipe.RequiredNode != ResourceNodeType.None)
-                {
-                    var sector = state.Graph.GetSector(building.SectorId);
-                    if (!sector.HasResource(recipe.RequiredNode)) continue;
-                }
-                return wyId;
-            }
-            return null;
-        }
-
-        private static string[] GetWorkYardPriority(GameState state, int playerId, BaseBuildingType type)
-        {
-            switch (type)
-            {
-                case BaseBuildingType.Lodge:
-                {
-                    int wood = GetResource(state, playerId, ResourceType.Wood);
-                    int planks = GetResource(state, playerId, ResourceType.Planks);
-                    // Prioritize sawmill if we have wood but low planks
-                    if (wood >= 5 && planks < 10)
-                        return new[] { "sawmill", "forester", "woodcutter", "fisher", "hunter", "well" };
-                    return new[] { "forester", "woodcutter", "sawmill", "fisher", "hunter", "well" };
-                }
-                case BaseBuildingType.Farm:
-                {
-                    int grain = GetResource(state, playerId, ResourceType.Grain);
-                    if (grain >= 5)
-                        return new[] { "windmill", "piggery", "grain_barn", "shepherd", "stable" };
-                    return new[] { "grain_barn", "windmill", "piggery", "shepherd", "stable" };
-                }
-                case BaseBuildingType.MountainShelter:
-                {
-                    int ironOre = GetResource(state, playerId, ResourceType.IronOre);
-                    int coal = GetResource(state, playerId, ResourceType.Coal);
-                    // Prioritize smelter if we have raw materials
-                    if (ironOre >= 3 && coal >= 3)
-                        return new[] { "iron_smelter", "iron_miner", "coal_miner", "quarry", "coking_plant", "gold_miner" };
-                    return new[] { "iron_miner", "coal_miner", "quarry", "iron_smelter", "coking_plant", "gold_miner" };
-                }
-                case BaseBuildingType.Residence:
-                {
-                    int tools = GetResource(state, playerId, ResourceType.Tools);
-                    if (tools < 3)
-                        return new[] { "toolmaker", "bakery", "brewery", "wheelwright", "weaving_mill", "paper_mill" };
-                    return new[] { "bakery", "toolmaker", "brewery", "wheelwright", "weaving_mill", "paper_mill" };
-                }
-                case BaseBuildingType.NobleResidence:
-                    return new[] { "butcher", "blacksmith", "mint", "bookbinder", "tailor", "goldsmith" };
-                default:
-                    return System.Array.Empty<string>();
-            }
-        }
-
         public static bool TryPlaceBuilding(GameState state, int playerId,
             BaseBuildingType type, int sectorId)
         {
@@ -230,7 +174,7 @@ namespace Settlers.Simulation
 
             res.TrySpendBuildingCost(plankCost, stoneCost);
             return state.Construction.PlaceBuilding(type, sectorId, playerId,
-                3, 0f, buildCount * 3f, buildCount, sector.BuildSlots) != null;
+                AI_YARDS_PER_BUILDING, 0f, buildCount * 3f, buildCount, sector.BuildSlots) != null;
         }
 
         public static int GetResource(GameState state, int playerId, ResourceType type) =>

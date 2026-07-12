@@ -148,5 +148,139 @@ namespace Settlers.Tests
             // AI should have progressed past early economy
             Assert.Pass("200 ticks completed without exception");
         }
+
+        // ---- §14.6 cleric balance: a Technology AI must produce Books/Garments ----
+
+        [Test]
+        public void AIEconomy_ClergyDemand_AttachesBookbinderFirst_ToNobleResidence()
+        {
+            var b = _state.Construction.PlaceBuilding(
+                BaseBuildingType.NobleResidence, 1, 1, 3, 0f, 0f, 0, 8);
+            _state.Construction.Tick(1f); // complete construction
+
+            AIEconomy.AttachWorkYards(_state, 1, prioritizeClergyGoods: true);
+
+            Assert.IsTrue(HasWorkYard(b, "bookbinder"),
+                "Technology AI should attach a bookbinder (Books) to its Noble Residence first");
+        }
+
+        [Test]
+        public void AIEconomy_NormalMode_AttachesButcherFirst_ToNobleResidence()
+        {
+            var b = _state.Construction.PlaceBuilding(
+                BaseBuildingType.NobleResidence, 1, 1, 3, 0f, 0f, 0, 8);
+            _state.Construction.Tick(1f);
+
+            AIEconomy.AttachWorkYards(_state, 1); // default — no clergy bias
+
+            Assert.IsTrue(HasWorkYard(b, "butcher"),
+                "Default AI keeps the original Noble Residence priority (butcher first)");
+            Assert.IsFalse(HasWorkYard(b, "bookbinder"));
+        }
+
+        [Test]
+        public void AIEconomy_ClergyDemand_BuildsResidence_OnMineralSector()
+        {
+            // Sector 1 has a Stone node, so the default AI keeps building Mountain Shelters.
+            // Over a few build cycles the Technology AI must instead stand up its chain,
+            // including a Residence to host the Books chain — not just mines.
+            _state.PlayerResources[1].Set(ResourceType.Planks, 100);
+            _state.PlayerResources[1].Set(ResourceType.Stone, 60);
+            _state.PlayerResources[1].Set(ResourceType.Wood, 20);
+            _state.PlayerResources[1].Set(ResourceType.Bread, 20);
+            _state.Construction.SetConstructorCount(1, 10);
+
+            for (int i = 0; i < 6; i++)
+            {
+                AIEconomy.BuildEconomy(_state, 1, prioritizeClergyGoods: true);
+                _state.Construction.Tick(1f);
+            }
+
+            bool hasResidence = false;
+            foreach (var bldg in _state.Construction.GetBuildingsByPlayer(1))
+                if (bldg.Type == BaseBuildingType.Residence) hasResidence = true;
+
+            Assert.IsTrue(hasResidence,
+                "Technology AI should build a Residence for the Books chain, not only mines");
+        }
+
+        [Test]
+        public void AIEconomy_ClergyDemand_StandsUpBooksChain()
+        {
+            // From an empty economy on player 1's home sector (Forest + Water + FertileLand),
+            // a clergy-focused AI must raise a Residence + Noble Residence and attach the full
+            // Books chain (paper_mill → bookbinder). Under the default 3-slot priorities neither
+            // yard is ever reached, so this fails without the fix.
+            _state.PlayerResources[1].Set(ResourceType.Planks, 200);
+            _state.PlayerResources[1].Set(ResourceType.Stone, 200);
+            _state.PlayerResources[1].Set(ResourceType.Wood, 20);
+            _state.PlayerResources[1].Set(ResourceType.Bread, 20);
+
+            for (int i = 0; i < 30; i++)
+            {
+                AIEconomy.BuildEconomy(_state, 1, prioritizeClergyGoods: true);
+                _state.Construction.Tick(1f); // complete builds
+                AIEconomy.AttachWorkYards(_state, 1, prioritizeClergyGoods: true);
+            }
+
+            bool paperMill = false, bookbinder = false;
+            foreach (var b in _state.Construction.GetBuildingsByPlayer(1))
+                foreach (var wy in b.WorkYards)
+                {
+                    if (wy.TypeId == "paper_mill") paperMill = true;
+                    if (wy.TypeId == "bookbinder") bookbinder = true;
+                }
+
+            Assert.IsTrue(paperMill, "clergy AI should build a paper_mill (Paper for Books)");
+            Assert.IsTrue(bookbinder, "clergy AI should build a bookbinder (Books for Brothers)");
+        }
+
+        private static bool HasWorkYard(Building b, string typeId)
+        {
+            foreach (var wy in b.WorkYards)
+                if (wy.TypeId == typeId) return true;
+            return false;
+        }
+
+        // ---- AI economy scaling: don't out-build the population ----
+
+        [Test]
+        public void AIEconomy_AttachWorkYards_StopsWhenNoSettlersAvailable()
+        {
+            // A Lodge provides one settler and hosts up to three yards. After the first yard
+            // is staffed, no further yard should attach — there is no settler left to run it.
+            var b = _state.Construction.PlaceBuilding(
+                BaseBuildingType.Lodge, 1, 1, 3, 0f, 0f, 0, 8);
+            _state.Construction.Tick(1f); // operational → living space 1
+            _state.PlayerResources[1].Add(ResourceType.Tools, 5);
+
+            AIEconomy.AttachWorkYards(_state, 1); // budget 1 → attaches one yard
+            Assert.AreEqual(1, b.WorkYards.Count);
+
+            _state.Population.Tick(1f); // employs that settler → 0 available
+
+            AIEconomy.AttachWorkYards(_state, 1); // budget 0 → attaches nothing
+
+            Assert.AreEqual(1, b.WorkYards.Count,
+                "no second yard should attach once all settlers are employed");
+        }
+
+        [Test]
+        public void AIEconomy_BuildEconomy_StopsUtilitySprawl_WhenSlotsOutrunPopulation()
+        {
+            // Seven low-population utility buildings already commit 21 work-yard slots against
+            // only 7 living space — past the slack — while sector 1 (8 slots) still has room.
+            // The AI must decline to add another utility shell it could never staff.
+            _state.Construction.SetConstructorCount(1, 10);
+            for (int i = 0; i < 7; i++)
+                _state.Construction.PlaceBuilding(BaseBuildingType.Lodge, 1, 1, 3, 0f, 0f, i, 8);
+            _state.Construction.Tick(1f); // 7 Lodges operational → livingSpace 7, slots 21
+            int before = _state.Construction.GetBuildingsByPlayer(1).Count;
+
+            AIEconomy.BuildEconomy(_state, 1); // would otherwise place an 8th utility building
+
+            Assert.AreEqual(before, _state.Construction.GetBuildingsByPlayer(1).Count,
+                "AI should not keep adding utility buildings past what population can staff");
+        }
     }
 }

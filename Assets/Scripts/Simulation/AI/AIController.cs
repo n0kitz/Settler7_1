@@ -39,6 +39,12 @@ namespace Settlers.Simulation
         /// <summary>True when an opponent is within 1 VP of winning or counting down.</summary>
         internal bool LeaderNearWin => _leaderNearWin;
 
+        /// <summary>
+        /// Technology-path AI biases its economy toward the Books/Garments chains that its
+        /// Brother/Father clerics consume (§14.6) — otherwise it stalls on Tier-1 research.
+        /// </summary>
+        internal bool WantsClergyGoods => _chosenPath == AIPath.Technology;
+
         public void Tick(float deltaTime)
         {
             _decisionTimer -= deltaTime;
@@ -93,8 +99,8 @@ namespace Settlers.Simulation
             AssessVictoryRace();
 
             // Core economy — always runs
-            AIEconomy.BuildEconomy(_state, _playerId);
-            AIEconomy.AttachWorkYards(_state, _playerId);
+            AIEconomy.BuildEconomy(_state, _playerId, WantsClergyGoods);
+            AIEconomy.AttachWorkYards(_state, _playerId, WantsClergyGoods);
             AIEconomy.ManageFood(_state, _playerId);
             AIEconomy.TryUpgradeBuildings(_state, _playerId);
             AIEconomy.ManageQuests(_state, _playerId);
