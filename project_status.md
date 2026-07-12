@@ -4,7 +4,7 @@
 > CLAUDE.md and VISION.md); update at session end. Goal & Definition of Done: [VISION.md](VISION.md).
 > How we build: [CLAUDE.md](CLAUDE.md). Read by the `/status` and `/validate` commands.
 >
-> Last updated: **2026-07-08**
+> Last updated: **2026-07-11**
 
 ## Current Position
 
@@ -13,29 +13,80 @@ Foundation (Tier 0) complete and stable. Visual roadmap **Phases 1–5 done** �
 the parchment trade map (§14.7), the stone-and-candlelight tech tree WITH the
 Geistliche/Mönche/Prälaten cost mechanic (§14.6, new `ClericSystem`), and the new ÜBERSICHT
 production stats panel (§14.1, verified columns live in both locales, O hotkey).
-**Next: Phase 6 — Polish & Balance** (content, tuning, edge cases, the 60 fps bar).
-See the tier checklists and the 6-phase table in VISION.md.
+**Phase 6 — Polish & Balance is in progress.** The Technology AI's economy now works end to
+end: Sprint 6a pointed it at the clergy supply chain (Books/Garments/Bread/Tools yards), and the
+AI-economy sprint fixed the over-building that starved it — the AI now runs a fully-staffed lean
+economy and **completes Tier-2 research** (play-verified: 37/37 yards operational, 6+ Tier-2
+techs). Remaining AI caveat: on iron-poor maps it needs tool access via trade/conquest.
+**Sprint 6b (localization completion) is done:** every database display string (recipes,
+outposts, techs, prestige unlocks) now resolves through `LocalizedNames` at display time, and all
+factory-baked panel texts re-resolve on `Show()` — DE shows zero English leftovers
+(play-verified on ÜBERSICHT, Handelskarte, Technologie, PRESTIGE-OPTIONEN).
+**Sprint 6c (UI defect sweep) is done:** single game-over screen (VictoryPanel defers to a
+visible PostGameSummary, else falls back), stray minimap "Home" box gone (minimap rebuilds per
+game graph, ignores the bootstrap placeholder), instant localized placement feedback added.
+Finding: carriers can never spawn in real games — `RequestDelivery` has no game-code caller
+(queued for 7c economy depth).
+**Sprint 6d (audio) is done at placeholder quality:** all 9 clips from the Audio README exist
+(procedurally synthesized WAVs — Coplay AI generation returned 401 Unauthorized, needs Normen's
+sign-in; same filenames, so regeneration/CC0 drop-in overwrites 1:1). Wired the two dead clips:
+`building_placed` now event-subscribed, `ui_click` fires from every `UIFactory.CreateButton`.
+Play-verified: music loops, placement SFX fires, AudioManager re-subscribes after restart.
+**Sprint 6e is done — Phase 6 complete:** all four over-limit files split into concern-named
+partials (SaveSystem → +Apply; GameController → +Lifecycle; SectorVisuals → +MapDressing;
+BootstrapScene → +MenuFlow); **zero files over 300 lines** project-wide; save → load → restart
+smoke test green through the split code.
+**Phase 7 has begun — Sprint 7a (skirmish map set) is done:** three new maps close the size
+gaps per §1/map-skill guidelines — `highland_duel` (20 sectors, 2p, mirrored dual-route duel),
+`golden_meadows` (30, 3p) and `the_frontier` (40, 4p), the latter two built from an identical
+9-sector player wedge so resource distances are fair by construction. 10 maps total; menu and
+smoke tests pick them up automatically via `GetMapIds`.
+**Sprint 7b (campaign arc) is done — the campaign now actually works:** `CampaignSystem` was
+never instantiated/ticked, progress never marked, starting resources never applied, and two
+objective types unevaluated. All wired now (mission flow → `WireCampaign` → per-frame tick via
+`GameController.ActiveCampaign`), plus a 10-mission single-chain arc (intro → economy →
+military → trade → tech → conquest → finale) with three new missions on the 7a maps.
+Play-verified end-to-end: mission 1 completes, progress persists, MissionCompleteUI shows,
+mission 2 unlocks and starts with its resource overrides.
+**Sprint 7c (economy depth) is done — Phase 7 complete:** (1) the **storehouse relay is real**
+(Critical Rule #4): production outside the home sector travels by carrier and is credited on
+delivery, never twice; home-sector production, busy carriers and unreachable paths credit
+immediately. Carriers finally spawn in real games — play-verified live. (2) **§14.9 goods
+closed**: Meat/Fur/Leather with trapper→tannery and smokehouse chains; Spice/Wine are
+trade-only (sourced from outposts). (3) **Map-specific trade networks** for the three 7a maps
+(10/12/14 outposts incl. Spice/Wine sources). Remaining §14.9 gap: the military goods split
+(Kanonen/Kanonenkugeln/Schwerter vs. generic Weapons) — deliberate, see Known Issues.
+**Phase 8 has begun — Sprint 8a (the 60 fps bar) is done:** max-load scenario (the_frontier,
+4 AIs, 20 sim-minutes of war, filled to 203 buildings / 340 work yards) went from **14.8 fps to
+100+ fps overview / 124 fps closeup**. Root causes found by bisection: (1) per-part
+`MaterialPropertyBlock`s broke SRP batching for every primitive in the world → replaced with a
+tiny cache of per-color materials; (2) `WorkerManager` leaked zombie worker figures for
+unregistered yards (conquest churn); (3) unit figures + building detail now distance-cull via
+camera layer distances and figures cast no shadows. Bonus fixes: **AI and save-loaded buildings
+finally have views** (spawn was human-placement-only) and the human path now stores sector-local
+coords like the AI. Next: **Sprint 8b — rough-edge + §14 string sweep**. See the tier
+checklists and the phase table in VISION.md.
 
 ## Health at a Glance
 
 | Metric | Value |
 |--------|-------|
-| NUnit tests | **497 / 497 green** |
+| NUnit tests | **516 / 516 green** |
 | Playable end-to-end | ✅ menu → map → play → victory/defeat → restart |
 | Bilingual EN/DE | ✅ test-enforced key parity |
 | Architecture (Simulation = pure C#) | ✅ no UnityEngine in Simulation/ |
-| 300-line file rule | ⚠️ 4 files over (see Known Issues) |
+| 300-line file rule | ✅ zero files over (largest 293) |
 
-## File Counts (2026-07-08)
+## File Counts (2026-07-09)
 
 | Layer | Path | Count |
 |-------|------|-------|
-| Simulation | `Assets/Scripts/Simulation/` | 95 |
+| Simulation | `Assets/Scripts/Simulation/` | 96 |
 | Presentation | `Assets/Scripts/Presentation/` | 37 |
 | UI | `Assets/Scripts/UI/` | 54 |
 | Data | `Assets/Scripts/Data/` | 7 |
 | Editor | `Assets/Scripts/Editor/` | 2 |
-| **Scripts total** | `Assets/Scripts/` | **195** |
+| **Scripts total** | `Assets/Scripts/` | **196** |
 | Tests | `Assets/Tests/Editor/` | 44 |
 
 ## Assembly Definitions
@@ -65,29 +116,43 @@ SaveSystem, SimulationRunner, Tutorial) · Localization · Settings · Replay ·
 | 3 | Building Overhaul — procedural multi-part buildings, home castle | ✅ done |
 | 4 | Unit Overhaul — recognizable settlers, carriers, generals | ✅ done |
 | 5 | UI Fidelity — parchment trade map, stone tech tree, ÜBERSICHT | ✅ done |
-| 6 | Polish & Balance — content, tuning, edge-cases, 60 fps | ▶ **next** |
+| 6 | Polish & Balance — AI economy, localization, UI defects, audio¹, refactors | ✅ done |
+| 7 | Content — skirmish maps (7a), campaign arc (7b), economy depth (7c) | ✅ done |
+| 8 | Performance & Acceptance — 60 fps bar (8a), §14 string sweep (8b), acceptance | ▶ **next** |
+
+¹ Audio clips are placeholders — regenerate via Coplay once signed in (or CC0 drop-in).
 
 ## Known Issues / Tech Debt
 
-- **4 files exceed the 300-line rule** and should be split:
-  - `Assets/Scripts/Simulation/Core/SaveSystem.cs` — 405 (pre-existing, +cleric block; split by concern)
-  - `Assets/Scripts/Presentation/BootstrapScene.cs` — 342 (grew in Sprint 2; extract game-launch/teardown into a partial)
-  - `Assets/Scripts/Presentation/GameController.cs` — 332 (grew in Sprint 2; `TeardownGame` could move to a partial)
-  - `Assets/Scripts/Presentation/GameController.SectorVisuals.cs` — 318 (grew in Sprint 3; landmark wiring could move to its own partial)
-- **Audio has no clips yet** — framework wired, waiting on CC0 files in `Assets/Resources/Audio/`
-  (names in that folder's README). User action.
-- **Cleric recruiting costs may need balance tuning** — Novice 1 Bread+2 Coins, Brother
-  +1 Books, Father +Books/Garments (`ClericSystem.RECRUIT_COSTS`); AI Tier-2+ research stalls
-  until its economy produces Books/Garments. Revisit in Phase 6 playtests.
-- **Recipe/outpost display names are EN-only** (`RecipeDatabase.DisplayName`,
-  `TradeOutpost.DisplayName`) — simulation data strings, not in the string tables; ÜBERSICHT
-  and trade map columns show them untranslated in DE.
-- **Factory-built panel titles/legends resolve at creation locale** (BuildMenu, TechTree/TradeMap
-  legends) — live-switch applies on next game start; ÜBERSICHT headers/selector are the exception
-  (refreshed on every Show).
-- **PostGameSummary and VictoryPanel both draw a game-over overlay** — they overlap; cosmetic,
-  one should be suppressed.
-- **Stray minimap "Home" box** appears top-left on programmatic start (bootstrap leftover).
+- **Audio clips are synthesized placeholders** — all 9 README names exist and play, but they're
+  simple procedural tones/noise, not the "warm storybook" bar. Regenerate via Coplay
+  `generate_sfx`/`generate_music` once Normen signs the Coplay plugin in (cloud returns 401
+  Unauthorized), or replace with CC0 files — same filenames, drop-in.
+- **AI needs a tool source on iron-poor maps (residual, minor).** The over-building blocker is
+  *fixed* (see below) and the Technology AI now completes Tier-2 research. The one remaining gap:
+  on maps whose AI-owned sectors contain no Iron deposit (e.g. `twin_rivers`), the AI can't smelt
+  IronBars → can't make Tools domestically, capping its staffable yards at whatever tools it can
+  trade/conquer for. Verified by granting tools in play-mode. A future AI-strategy item: the tech
+  AI should trade for or conquer an iron sector (or bias tool imports) when its sectors lack iron.
+  Cleric `RECRUIT_COSTS` tuning remains optional (recruiting was gated on Bread, now produced).
+- **Campaign mission titles/briefings/objective texts are EN-only** (data strings in
+  `CampaignSystem.Missions.cs`, MissionBriefing/MissionComplete UIs show them raw) — add
+  `ui.mission.*` keys in the Phase-8 string sweep, same pattern as 6b.
+- **DE names for recipes/outposts/techs/prestige are new prose, flagged for Normen's review**
+  (Sprint 6b) — goods vocabulary follows the verified §14.9 list, but work-yard names
+  (Kornspeicher, Wagnerei, …), outpost names (…-Kontor) and tech/prestige names are Claude's
+  German, not screenshot-verified. Review in `StringTable.de.csv` (sections after
+  "Panel-Statusmeldungen").
+- **Military §14.9 goods are still generic** — Kanonen/Kanonenkugeln/Schwerter exist in the
+  original goods list but the game uses a single `Weapons` good (+ cannons as a prestige
+  unlock). Splitting them means touching ArmySystem/unit costs — defer until a balance pass
+  wants it; the ÜBERSICHT §14.9 coverage is otherwise complete.
+- **SO `.asset` regeneration pending** — 3 new recipes (trapper/smokehouse/tannery) exist in
+  `RecipeDatabase` (runtime source of truth); run `Settlers > Generate All` in the editor when
+  convenient to refresh the Inspector-side assets.
+- **SectorPanel(+Actions) still has EN literals** — "(Building)", "(idle)", FoodSetting enum
+  names, and ~9 `ShowFeedback` strings ("Attached …", "General #n marching", …); sweep in the
+  Phase-8 string pass.
 
 ## Key Patterns (bite-you-if-forgotten)
 
@@ -96,8 +161,158 @@ per game, tear down before restart, mesh winding, victory countdown needs two ti
 *new* traps here as you hit them, then promote the lasting ones to CLAUDE.md so they survive the
 next status rewrite.
 
+- **Settler economics: utility buildings are settler-negative when fully yarded.** Living space
+  is Lodge/Farm/MountainShelter = 1, Residence = 4 (+4/upgrade), NobleResidence = 5 (+5/upgrade)
+  — but every building hosts up to 3 work yards, each needing 1 settler + 1 tool
+  (`PopulationSystem`). So a 1-pop utility building fully yarded is −2 settlers. Any AI (or player
+  helper) that attaches a yard per slot regardless of population ends with a swarm of idle yards.
+  The AI now caps yard attachment to `GetAvailableSettlers` and building sprawl to
+  `3 × buildings ≤ livingSpace + slack`. Staffed yards ≈ living space, not `3 × buildings`.
+
 ## Recent Sessions
 
+- **2026-07-11 — Sprint 8a (60 fps bar — Phase 8 started):** max-load scenario (the_frontier,
+  4 AIs, 20 sim-minutes, synthetic fill to 203 buildings / 340 yards) measured **14.8 fps** —
+  then bisected (units root off? renderers only off? shadows off? sim stopwatch = 0.02ms/tick).
+  Three real bugs + two levers: (1) **THE fix: per-part `MaterialPropertyBlock`s disabled SRP
+  batching world-wide** (`BuildingViewFactory.SetColor` allocated an MPB per primitive part —
+  buildings, walls, figures, trees) → now a cached material per palette color
+  (`GetColorMaterial`), everything batches again → closeup 33→124 fps, overview 39→100 fps.
+  (2) `WorkerManager` never removed views for unregistered yards → 340 zombie figures after
+  conquest churn; now prunes per Sync. (3) **AI + save-loaded buildings had NO views ever**
+  (spawn lived only in the human placement path) → views now spawn from `BuildingPlacedEvent`
+  for everyone; human path stores sector-LOCAL coords (was world coords — pre-existing
+  inconsistency). (4) `ViewLayers`: units (layer 30, cull 70) + building detail (layer 29,
+  cull 260) distance-cull via `layerCullDistances`; figures cast no shadows. WorkerView tints
+  only on state change and swaps cached materials instead of MPB. 516/516 green; colors
+  verified visually intact. Uncommitted.
+- **2026-07-11 — Sprint 7c (economy depth — Phase 7 COMPLETE):** three pieces. (1) **Storehouse
+  relay** (Critical Rule #4): new `ProductionSystem.RouteDelivery` delegate — null/false =
+  credit immediately (standalone tests untouched, back-compat pattern); GameState wires it to
+  `Logistics.RequestDelivery(fromSector → GetHomeSector(player))`. KEY SEMANTICS: routed goods
+  are credited on `CarrierDeliveryEvent` (existing handler), NOT at production time — naive
+  wiring would DOUBLE-credit. Fallbacks (home-sector production, busy carriers — note:
+  `Storehouse.CarrierCount = Level + 1`, so level 1 has TWO — unreachable paths) credit
+  immediately so goods are never lost. Carriers now actually spawn in real games: play-verified
+  live (3 CarrierViews on route, slow-motion `Time.timeScale=0.02` to catch them; adjacent-
+  sector deliveries complete in seconds). +3 StorehouseRelayTests. (2) **§14.9 goods closed**:
+  +5 ResourceTypes (Meat/Fur/Leather/Spice/Wine), +3 recipes (trapper Lodge→Fur, smokehouse
+  Residence Animal→Meat, tannery NobleResidence Fur→Leather; recipe count 30→33, per-building
+  tests updated), Spice/Wine deliberately trade-only. ÜBERSICHT verified in DE: Pelz →
+  Fallensteller/1×Leder/Gerberei. (3) **Trade networks** for the 7a maps: new
+  `SkirmishTradeMapFactory` (10/12/14 outposts, Spice/Wine sources, 3 specials each) +
+  36 outpost keys per table; outpost-coverage test now iterates all 7 networks. **516/516
+  green**. Military goods split (Kanonen/Schwerter) deliberately deferred (Known Issue).
+  Uncommitted.
+- **2026-07-11 — Sprint 7b (campaign arc — campaign made functional):** the campaign was
+  half-dead: nobody instantiated `CampaignSystem`, ticked it, called `CampaignProgress.
+  MarkComplete` (mission 2+ could NEVER unlock), applied `Mission.StartingResources`, or
+  evaluated `BuildBuilding`/`DefendSector` objectives. Fixes: (1) `BootstrapScene.WireCampaign`
+  on mission start — creates the system, `SetActiveMission` (now RESETS the shared static
+  objectives for replays), `ApplyStartingResources`, subscribes completion → `MarkComplete` +
+  `MissionCompleteUI.Show`; (2) `GameController.ActiveCampaign` ticked after the runner,
+  cleared in teardown; (3) completion fires ONCE (`_completeFired`), `BuildBuilding` (operational
+  count by type) and `DefendSector` (hold sector-id until N seconds) implemented. Catalogue
+  moved to `CampaignSystem.Missions.cs` (partial, 300-line rule) and extended 7→10 missions in
+  ONE unlock chain: new "Hearth and Home" (economy, highland_duel, uses StartingResources +
+  BuildBuilding), "The Meadow Fair" (trade, golden_meadows), "The Last Frontier" (finale,
+  the_frontier). +3 CampaignTests (chain visits every mission exactly once; objective
+  evaluation + starting resources + fires-once on real GameState; replay reset) and the
+  valid-maps test now derives from `GetMapIds` → **513/513 green**. Play-verified end-to-end:
+  mission 1 via real flow → objectives complete → progress persisted → MissionCompleteUI →
+  mission 2 unlocked, starts on highland_duel with 30 Planks/15 Stone/10 Tools. Mission texts
+  are EN-only (new Known Issue → Phase-8 sweep). Uncommitted.
+- **2026-07-11 — Sprint 7a (skirmish map set — Phase 7 started):** new
+  `Simulation/Map/SkirmishMapFactory.cs` (223 lines) with three maps: **Highland Duel**
+  (20 sectors, 2p, VP 5 — hand-mirrored: west mining ridge 4-5-6-7-8, east loch route
+  9-10-11-12-13, wooded flank alternates, two contested golds linked by an Old-Bridge/
+  Standing-Stones center web), **Golden Meadows** (30, 3p, VP 6) and **The Frontier**
+  (40, 4p, VP 7) — both assembled from a shared `AddWedge` 9-sector player template
+  (Coal 1 step, Iron 2, Gold 3 from every home; two expansion paths each; wedge ring via
+  border-woods↔watch-hill; shared contested centers). Registered in `MapFactory.CreateMap` +
+  `GetMapIds` (7→10) — MapSelectionUI menu and GameFlowSmokeTests iterate `GetMapIds`, so both
+  picked the maps up with zero extra wiring. +4 MapFactoryTests incl. a BFS gold-distance
+  fairness test across all players of each new map → **510/510 green**. Play-verified: all
+  three maps boot via StartTrackedGame (20/30/40 sectors, correct player counts), sector
+  overview screenshots taken. Trade maps: unknown ids fall back to the test trade network —
+  map-specific networks are a 7c candidate. Uncommitted.
+- **2026-07-11 — Sprint 6e (300-line refactors — Phase 6 COMPLETE):** the three remaining
+  over-limit files split into concern-named partials, zero behavior change:
+  `GameController.cs` 332 → 169 + `GameController.Lifecycle.cs` 179 (StartGame/Initialize/
+  Teardown/InitializeGame + override fields + running flags); `GameController.SectorVisuals.cs`
+  318 → 229 + `GameController.MapDressing.cs` 107 (landmarks, world ground, roads);
+  `BootstrapScene.cs` 342 → 215 + `BootstrapScene.MenuFlow.cs` 144 (all menu click handlers).
+  **Zero files over 300 project-wide** (largest 293). Verified: compile clean, 506/506 green,
+  play-mode smoke test start → sim 30s → Serialize → fresh StartGame (teardown OK, 0 buildings)
+  → ApplyToState (6 buildings + simTime restored) → restart clean. Roadmap tables in
+  project_status.md AND VISION.md extended with Phase 7/8 rows; Phase 7a (skirmish maps) is next.
+  Uncommitted (with all Phase-6 sprints).
+- **2026-07-11 — Sprint 6d (audio, placeholder) + SaveSystem split (6e part 1):** Coplay plugin
+  got installed and its editor bridge connects, but cloud generation returns **401 Unauthorized**
+  (Normen must sign in; then regenerate). Fallback: 9 procedurally synthesized WAVs (stdlib
+  Python — plucked/bell/horn tones, noise bursts, 33s pastoral loop for `music_main`) written to
+  `Assets/Resources/Audio/` under the exact README names. Found and fixed two dead clips:
+  `building_placed` had NO event subscription (added `BuildingPlacedEvent` → PlaySFX) and
+  `ui_click`/`PlayUIClick()` had no caller (now fired by every `UIFactory.CreateButton`).
+  Play-verified: music loops, placement SFX fires, `_subscribedBus` re-subscribe after restart
+  works (one-frame gap after StartGame is by design). Also completed the first 6e split:
+  `SaveSystem.cs` 405 → 190 + `SaveSystem.Apply.cs` 240 (partials, no API change). 506/506
+  green. Uncommitted (with 6a/AI-eco/6b/6c).
+- **2026-07-10 — Sprint 6c (UI defect sweep + Tier-1 feedback audit):** (1) **Single game-over
+  screen** — `VictoryPanel` now defers to `PostGameSummaryUI` and only shows its own overlay as
+  a fallback when no summary actually made it on screen (`summary.IsVisible` check — an
+  existence check alone fails when a game is started outside the bootstrap wiring, Engine Gotcha
+  #1; both paths play-verified). (2) **Stray minimap "Home" box fixed** — `MinimapController`
+  initialized once against the bootstrap placeholder state and never rebuilt; it now rebuilds
+  whenever `gc.Graph` changes, treats `MapId == "bootstrap"` as no map, and hides its background
+  pre-game. (3) **Tier-1 feedback audit**: coverage already good (SectorPanel action feedback,
+  Built!/Conquered!/+1 VP floats, particles, stall speech, selection ring); added the missing
+  instant **placement feedback** (`BuildingPlacedEvent` → "Im Bau"/"Under construction" float
+  for player 0) and localized all FloatingTextManager strings (5 new `ui.float.*` keys per
+  table). **Finding:** carriers can never spawn in real games — `RequestDelivery` has no
+  game-code caller; queued for 7c (new Known Issue). 506/506 green; console clean. Uncommitted.
+- **2026-07-10 — Sprint 6b (localization completion — DE everywhere):** all EN-only database
+  display strings now localized at display time via `LocalizedNames` (extended with
+  `Recipe`/`Outpost`/`Tech`/`TechDescription`/`Prestige`/`PrestigeDescription`; fallback = EN
+  `DisplayName`, simulation stays EN). +199 keys per string table: `ui.recipe.*` (30),
+  `ui.outpost.*` (52, all 4 trade maps), `ui.techname/techdesc.*` (36), `ui.prestige.name/desc.*`
+  (48), prestige branch headers, and 12 formerly hardcoded status messages (TradeMapUI,
+  TechTreeUI, PrestigeChartUI). Locale-baked factory texts fixed with the ÜBERSICHT pattern —
+  `RefreshLocaleTexts()` on `Show()` re-resolves tech cards, tier headers, legends, prestige
+  nodes, build-menu tiles, capital node; BuildMenu empire hints now pass keys, resolved at click
+  time. +3 LocalizedNamesTests (EN key coverage for all 4 databases + all trade maps; DE via
+  existing parity test; locale-switch + fallback behavior) → **506/506 green**. Play-verified in
+  DE: ÜBERSICHT (Bäckerei), Handelskarte (Eisenhütten-Kontor, Gewürzroute…), Technologie
+  (Fischerei, Fruchtwechsel…), PRESTIGE-OPTIONEN (Stufe/Frei/Punkte). DE names are new prose —
+  flagged for Normen's review. Uncommitted (like 6a + AI-economy).
+- **2026-07-09 — AI-economy sprint (over-building fixed — AI now completes Tier-2 research):**
+  three changes in `AIEconomy`. (1) **Attachment cap** — `AttachWorkYards` attaches yards only
+  within a settler budget (`Population.GetAvailableSettlers`), so it never stands up more yards
+  than it can staff. (2) **Sprawl cap** — `BuildEconomy` stops raising utility buildings once
+  committed work-yard slots (`3 × operational buildings`) outrun living space + a slack of 12;
+  population homes (Residence/NobleResidence) stay exempt. (3) **Farm placement** — the clergy
+  `ChooseBuildingType` now guarantees a Farm and prefers a WaterSource+FertileLand sector so the
+  well (Water → Bread) actually runs. Split the file (was 339 lines) into `AIEconomy.cs` (183) +
+  new `AIEconomy.BuildingChoice.cs` (169). +2 AITests (attach-budget stop, sprawl stop) → **503
+  green**. Play-verified: work yards 108→**37, all 37 operational** (was 30/108); full Bread+Books
+  chains flow (Water 1267, Flour 2968, Books 75); AI recruits Brothers and **completes 6 Tier-2
+  techs** (scoreboard: 12 techs total). Remaining: tool sourcing on iron-poor maps (see Known
+  Issues). Sprint-6a + this sprint's code is uncommitted (awaiting ask).
+- **2026-07-09 — Sprint 6a (Cleric/AI economy, partial — Books chain fixed, over-building found):**
+  committed the pending Sprint 3/4/5/5b work as three logical commits first. Then made the
+  Technology AI bias its economy toward the goods its clerics consume (§14.6): new
+  `prioritizeClergyGoods` flag threaded through `AIEconomy.BuildEconomy`/`AttachWorkYards`/
+  `ChooseBuildingType`/`GetWorkYardPriority` (default `false` → all existing behaviour/tests
+  unchanged), driven by `AIController.WantsClergyGoods` (`_chosenPath == Technology`). Clergy
+  orderings: Farm `grain_barn,windmill,well,shepherd…` (well = Water for Bread); Residence
+  `bakery,toolmaker,paper_mill…` (the three Tier-2 essentials fill 3 slots); NobleResidence
+  `bookbinder,tailor,mint…`. ChooseBuildingType clergy branch raises a Residence + Noble
+  Residence even on mineral sectors. +4 AITests (bookbinder-first, butcher-first contrast,
+  Residence-on-mineral, full Books-chain stand-up). 497→**501 green**. Play-verified: the tech AI
+  now builds `Residence[bakery,toolmaker,paper_mill]` + `NobleResidence[bookbinder,tailor,mint]`
+  and produces **Books from nothing** — impossible before. BUT it still can't complete a Tier-2
+  tech: it over-builds (~108 yards, ~30 staffable) so Water/Bread/Tools stay 0. Logged as the
+  top Known Issue for a dedicated AI-economy sprint. Sprint 6a code is uncommitted (awaiting ask).
 - **2026-07-08 — Sprint 5b (§14.6 cleric research costs, complete):** new
   `Simulation/Technology/ClericSystem.cs` — recruit Geistliche/Mönche/Prälaten for goods
   (Bread/Books/Garments/Coins), research OCCUPIES the tech's cost triplet for its duration and

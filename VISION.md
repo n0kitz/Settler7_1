@@ -146,7 +146,7 @@ Naming the non-goals protects the vision from drift:
 
 ## The Path There
 
-Six phases carry us from foundation to done. Each ends with tests green and a play-mode
+Eight phases carry us from foundation to done. Each ends with tests green and a play-mode
 screenshot. (Detailed status lives in `project_status.md`; the active plan in `.claude/plans/`.)
 
 | # | Phase | Delivers | Status |
@@ -156,7 +156,11 @@ screenshot. (Detailed status lives in `project_status.md`; the active plan in `.
 | 3 | Building Overhaul | Procedural multi-part buildings; a dominant home castle | ✅ done |
 | 4 | Unit Overhaul | Recognizable settlers, carriers with goods, generals & armies | ✅ done |
 | 5 | UI Fidelity | Parchment trade map, stone tech tree, ÜBERSICHT columns | ✅ done |
-| 6 | Polish & Balance | Content, tuning, edge-cases, the 60 fps bar | ▶ next |
+| 6 | Polish & Balance | AI balance, DE everywhere, UI defects, audio, refactors | ✅ done¹ |
+| 7 | Content | Skirmish map set, campaign arc, economy depth (incl. live carriers) | ✅ done |
+| 8 | Performance & Acceptance | The 60 fps bar, §14 string sweep, final acceptance | ▶ next |
+
+¹ Audio clips are synthesized placeholders — regenerate via Coplay (needs sign-in) or CC0 drop-in.
 
 ---
 
