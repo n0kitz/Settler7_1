@@ -129,6 +129,9 @@ namespace Settlers.Simulation
                 "large_valley" => CreateLargeValleyTradeMap(),
                 "crown_war" => FourPlayerTradeMapFactory.CreateCrownWarTradeMap(),
                 "empire" => FourPlayerTradeMapFactory.CreateEmpireTradeMap(),
+                "highland_duel" => SkirmishTradeMapFactory.CreateHighlandDuelTradeMap(),
+                "golden_meadows" => SkirmishTradeMapFactory.CreateGoldenMeadowsTradeMap(),
+                "the_frontier" => SkirmishTradeMapFactory.CreateTheFrontierTradeMap(),
                 _ => CreateTestTradeMap()
             };
         }

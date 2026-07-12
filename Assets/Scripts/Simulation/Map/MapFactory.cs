@@ -27,11 +27,14 @@ namespace Settlers.Simulation
                 "test_valley"   => CreateTestValley(),
                 "twin_rivers"   => CreateTwinRivers(),
                 "mountain_pass" => CreateMountainPass(),
-                "island_chain"  => CreateIslandChain(),
-                "large_valley"  => CreateLargeValley(),
-                "crown_war"     => CreateCrownWar(),
-                "empire"        => CreateEmpire(),
-                _               => CreateTestValley()
+                "island_chain"   => CreateIslandChain(),
+                "large_valley"   => CreateLargeValley(),
+                "crown_war"      => CreateCrownWar(),
+                "empire"         => CreateEmpire(),
+                "highland_duel"  => SkirmishMapFactory.CreateHighlandDuel(),
+                "golden_meadows" => SkirmishMapFactory.CreateGoldenMeadows(),
+                "the_frontier"   => SkirmishMapFactory.CreateTheFrontier(),
+                _                => CreateTestValley()
             };
         }
 
@@ -39,7 +42,7 @@ namespace Settlers.Simulation
         public static string[] GetMapIds() => new[]
         {
             "test_valley", "twin_rivers", "mountain_pass", "island_chain", "large_valley",
-            "crown_war", "empire"
+            "crown_war", "empire", "highland_duel", "golden_meadows", "the_frontier"
         };
 
         /// <summary>True if this map ID is the tutorial.</summary>
