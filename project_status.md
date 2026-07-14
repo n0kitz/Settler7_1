@@ -4,7 +4,7 @@
 > CLAUDE.md and VISION.md); update at session end. Goal & Definition of Done: [VISION.md](VISION.md).
 > How we build: [CLAUDE.md](CLAUDE.md). Read by the `/status` and `/validate` commands.
 >
-> Last updated: **2026-07-12**
+> Last updated: **2026-07-14**
 
 ## Current Position
 
@@ -142,6 +142,12 @@ next status rewrite.
 
 ## Recent Sessions
 
+- **2026-07-14 — Skill harvest (no code change):** distilled the Phase-1–8 lessons into five
+  new project skills — `settlers-playmode-testing` (MCP recipes, force states, soak),
+  `settlers-localization` (CSV rules, Show()-refresh pattern, §14 discipline),
+  `settlers-performance` (MPB ban, culling, bisection method), `settlers-debugging`
+  (full trap catalogue + protocol), `settlers-acceptance` (finding triage, punch-list
+  sprints, deferred list). CLAUDE.md Skill Reference table extended accordingly.
 - **2026-07-12 — Sprint 8b (rough-edge + §14 string sweep — ROADMAP CODE-COMPLETE):**
   localized the last gameplay-visible EN strings: all 10 mission titles/briefings/objectives
   (`ui.mission.<id>.*` keys, resolved via `LocalizedNames.MissionTitle/Briefing/Objective`,

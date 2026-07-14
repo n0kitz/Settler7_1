@@ -52,6 +52,11 @@ tests are green before moving on. Simulation changes must ship with tests.
 | Camera, terrain, building visuals, lighting, UI layout | `settlers-unity-visuals` |
 | Map design, sector layouts, batch asset creation | `settlers-map-content` |
 | Screenshot workflow, UI reference, visual fidelity | `settlers-7-fidelity` |
+| Play-mode verification: MCP recipes, force states, screenshots, soaks | `settlers-playmode-testing` |
+| UI strings, StringTable CSVs, locale-switch patterns, §14 discipline | `settlers-localization` |
+| Renderers, materials, culling, fps drops (SRP-batching rules) | `settlers-performance` |
+| Anything behaves unexpectedly — trap catalogue + protocol | `settlers-debugging` |
+| Post-roadmap: finding triage, punch-list sprints, balance soaks | `settlers-acceptance` |
 | Cost saving, session protocol, token budgets | `cost-saving` |
 
 ## Session Protocol
