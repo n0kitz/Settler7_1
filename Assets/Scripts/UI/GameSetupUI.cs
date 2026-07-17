@@ -21,6 +21,7 @@ namespace Settlers.UI
         [SerializeField] private TextMeshProUGUI _victoryRulesText;
 
         private string _mapId;
+        private string _mapDisplayFallback = "";
         private int _aiCount = 1;
         private int _maxAiCount = 1;
         private int _vpRequired = 4;
@@ -42,6 +43,8 @@ namespace Settlers.UI
         {
             if (_panelRoot != null)
                 _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
+            RefreshLabels();
         }
 
         public void Hide()
@@ -54,12 +57,13 @@ namespace Settlers.UI
         public void SetMap(string mapId, string displayName, int maxPlayers, int defaultVP)
         {
             _mapId = mapId;
+            _mapDisplayFallback = displayName;
             _maxAiCount = maxPlayers - 1;
             _aiCount = _maxAiCount;
             _vpRequired = defaultVP;
 
             if (_mapNameText != null)
-                _mapNameText.text = displayName;
+                _mapNameText.text = LocalizedNames.Map(mapId, displayName);
 
             RefreshLabels();
         }
@@ -148,10 +152,14 @@ namespace Settlers.UI
         {
             if (_aiCountText != null) _aiCountText.text = $"{_aiCount}";
             if (_vpText != null) _vpText.text = $"{_vpRequired}";
-            if (_difficultyText != null) _difficultyText.text = $"{_difficulty}";
-            if (_personalityText != null) _personalityText.text = $"{_personality}";
-            if (_startingProfileText != null) _startingProfileText.text = $"{_startingProfile}";
-            if (_victoryRulesText != null) _victoryRulesText.text = $"{_victoryRules}";
+            if (_difficultyText != null)
+                _difficultyText.text = LocalizedNames.Difficulty(_difficulty);
+            if (_personalityText != null)
+                _personalityText.text = LocalizedNames.Personality(_personality);
+            if (_startingProfileText != null)
+                _startingProfileText.text = LocalizedNames.StartingProfile(_startingProfile);
+            if (_victoryRulesText != null)
+                _victoryRulesText.text = LocalizedNames.VictoryRules(_victoryRules);
         }
 
         private void OnStartClicked()
@@ -185,7 +193,7 @@ namespace Settlers.UI
 
             // Title
             var titleText = UIFactory.CreateLabel(panelGo.transform, "Title",
-                "Game Setup", 28, FontStyles.Bold, font);
+                L.Get("ui.setup.title"), 28, FontStyles.Bold, font);
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
@@ -225,35 +233,30 @@ namespace Settlers.UI
             var ui = panelGo.AddComponent<GameSetupUI>();
             UIFactory.SetField(ui, "_panelRoot", panelGo);
             UIFactory.SetField(ui, "_mapNameText", mapNameText);
+            ui.RegisterLocaleLabel(titleText, "ui.setup.title");
 
-            // AI Opponents row
-            var aiCountText = CreateSettingRow(settingsGo.transform, "AI Opponents", font,
-                ui.OnAiMinus, ui.OnAiPlus);
+            var aiCountText = CreateSettingRow(settingsGo.transform, ui,
+                "ui.setup.ai_opponents", font, ui.OnAiMinus, ui.OnAiPlus);
             UIFactory.SetField(ui, "_aiCountText", aiCountText);
 
-            // Victory Points row
-            var vpText = CreateSettingRow(settingsGo.transform, "Victory Points", font,
-                ui.OnVpMinus, ui.OnVpPlus);
+            var vpText = CreateSettingRow(settingsGo.transform, ui,
+                "ui.setup.victory_points", font, ui.OnVpMinus, ui.OnVpPlus);
             UIFactory.SetField(ui, "_vpText", vpText);
 
-            // AI Difficulty row
-            var diffText = CreateSettingRow(settingsGo.transform, "AI Difficulty", font,
-                ui.OnDifficultyMinus, ui.OnDifficultyPlus);
+            var diffText = CreateSettingRow(settingsGo.transform, ui,
+                "ui.setup.difficulty", font, ui.OnDifficultyMinus, ui.OnDifficultyPlus);
             UIFactory.SetField(ui, "_difficultyText", diffText);
 
-            // AI Style (personality) row
-            var persText = CreateSettingRow(settingsGo.transform, "AI Style", font,
-                ui.OnPersonalityMinus, ui.OnPersonalityPlus);
+            var persText = CreateSettingRow(settingsGo.transform, ui,
+                "ui.setup.ai_style", font, ui.OnPersonalityMinus, ui.OnPersonalityPlus);
             UIFactory.SetField(ui, "_personalityText", persText);
 
-            // Starting Resources row
-            var spText = CreateSettingRow(settingsGo.transform, "Resources", font,
-                ui.OnStartingProfileMinus, ui.OnStartingProfilePlus);
+            var spText = CreateSettingRow(settingsGo.transform, ui,
+                "ui.setup.resources", font, ui.OnStartingProfileMinus, ui.OnStartingProfilePlus);
             UIFactory.SetField(ui, "_startingProfileText", spText);
 
-            // Victory Rules row
-            var vrText = CreateSettingRow(settingsGo.transform, "Victory Rules", font,
-                ui.OnVictoryRulesMinus, ui.OnVictoryRulesPlus);
+            var vrText = CreateSettingRow(settingsGo.transform, ui,
+                "ui.setup.victory_rules", font, ui.OnVictoryRulesMinus, ui.OnVictoryRulesPlus);
             UIFactory.SetField(ui, "_victoryRulesText", vrText);
 
             // Buttons container
@@ -272,11 +275,11 @@ namespace Settlers.UI
             buttonsLayout.childAlignment = TextAnchor.MiddleCenter;
 
             // Back button
-            CreateButton(buttonsGo.transform, "Back", font,
+            CreateButton(buttonsGo.transform, ui, "ui.setup.back", font,
                 new Color(0.4f, 0.3f, 0.25f, 0.9f), ui.OnBackClicked);
 
             // Start Game button
-            CreateButton(buttonsGo.transform, "Start Game", font,
+            CreateButton(buttonsGo.transform, ui, "ui.setup.start", font,
                 UIColors.BUTTON_GREEN, ui.OnStartClicked);
 
             panelGo.SetActive(false);

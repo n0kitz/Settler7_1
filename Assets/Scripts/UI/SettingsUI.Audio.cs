@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Settlers.Simulation;
 
 namespace Settlers.UI
 {
@@ -14,31 +15,41 @@ namespace Settlers.UI
                         TextMeshProUGUI muteLabel)
             CreateAudioSection(Transform container, TMP_FontAsset font, SettingsUI ui)
         {
-            CreateSectionHeader(container, "Audio", font);
+            CreateSectionHeader(container, "ui.settings.audio", font, ui);
 
-            var (_, musicPct) = CreateRowWithValue(container, "Music Volume", font,
-                ui.OnMusicDown, ui.OnMusicUp, "30%");
+            var (_, musicPct) = CreateRowWithValue(container, "ui.settings.music_volume", font,
+                ui, ui.OnMusicDown, ui.OnMusicUp, "30%");
 
-            var (_, sfxPct) = CreateRowWithValue(container, "SFX Volume", font,
-                ui.OnSfxDown, ui.OnSfxUp, "60%");
+            var (_, sfxPct) = CreateRowWithValue(container, "ui.settings.sfx_volume", font,
+                ui, ui.OnSfxDown, ui.OnSfxUp, "60%");
 
             // Mute toggle row
-            var muteRow = CreateRow(container, "Mute All", font);
+            var muteRow = CreateRow(container, "ui.settings.mute_all", font, ui);
             var muteLabel = UIFactory.CreateLabel(muteRow, "MuteVal", "OFF", 16f, font);
             var muteLabelRect = muteLabel.GetComponent<RectTransform>();
             muteLabelRect.sizeDelta = new Vector2(50f, 30f);
 
-            var muteBtn = UIFactory.CreateButton(muteRow, "Toggle", font,
-                new Color(0.35f, 0.35f, 0.4f), ui.OnToggleMute,
-                new Vector2(70f, 30f), 14f);
+            var muteBtn = CreateToggleButton(muteRow, font, ui, ui.OnToggleMute);
             muteBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(70f, 30f);
 
             return (musicPct, sfxPct, muteLabel);
         }
 
-        private static Transform CreateRow(Transform parent, string label, TMP_FontAsset font)
+        /// <summary>The shared "Toggle" button used by mute/fullscreen/color-blind rows.</summary>
+        private static Button CreateToggleButton(Transform row, TMP_FontAsset font,
+            SettingsUI ui, UnityEngine.Events.UnityAction onClick)
         {
-            var row = new GameObject($"Row_{label.Replace(" ", "")}");
+            var btn = UIFactory.CreateButton(row, L.Get("ui.settings.toggle"), font,
+                new Color(0.35f, 0.35f, 0.4f), onClick, new Vector2(70f, 30f), 14f);
+            ui._chromeLabels.Add(
+                (btn.GetComponentInChildren<TextMeshProUGUI>(), "ui.settings.toggle"));
+            return btn;
+        }
+
+        private static Transform CreateRow(Transform parent, string labelKey,
+            TMP_FontAsset font, SettingsUI ui)
+        {
+            var row = new GameObject($"Row_{labelKey.Substring(labelKey.LastIndexOf('.') + 1)}");
             row.transform.SetParent(parent, false);
             var rect = row.AddComponent<RectTransform>();
             rect.sizeDelta = new Vector2(0f, 36f);
@@ -51,24 +62,26 @@ namespace Settlers.UI
             var le = row.AddComponent<LayoutElement>();
             le.preferredHeight = 36f;
 
-            var lbl = UIFactory.CreateLabel(row.transform, "Lbl", label, 16f, font);
+            var lbl = UIFactory.CreateLabel(row.transform, "Lbl", L.Get(labelKey), 16f, font);
             var lblRect = lbl.GetComponent<RectTransform>();
             lblRect.sizeDelta = new Vector2(150f, 30f);
             var lblLe = lbl.gameObject.AddComponent<LayoutElement>();
             lblLe.preferredWidth = 150f;
             lblLe.preferredHeight = 30f;
             lbl.color = UIColors.TEXT_LIGHT;
+            ui._chromeLabels.Add((lbl, labelKey));
 
             return row.transform;
         }
 
         private static (Transform row, TextMeshProUGUI valLabel)
-            CreateRowWithValue(Transform parent, string label, TMP_FontAsset font,
+            CreateRowWithValue(Transform parent, string labelKey, TMP_FontAsset font,
+                SettingsUI ui,
                 UnityEngine.Events.UnityAction onDown,
                 UnityEngine.Events.UnityAction onUp,
                 string initial)
         {
-            var row = CreateRow(parent, label, font);
+            var row = CreateRow(parent, labelKey, font, ui);
 
             UIFactory.CreateButton(row, "-", font,
                 new Color(0.3f, 0.3f, 0.35f), onDown, new Vector2(30f, 30f), 16f);
@@ -87,13 +100,16 @@ namespace Settlers.UI
             return (row, valLabel);
         }
 
-        private static void CreateSectionHeader(Transform parent, string title, TMP_FontAsset font)
+        private static void CreateSectionHeader(Transform parent, string titleKey,
+            TMP_FontAsset font, SettingsUI ui)
         {
-            var hdr = UIFactory.CreateLabel(parent, $"Hdr_{title}", title, 15f,
-                TMPro.FontStyles.Bold, font);
+            var hdr = UIFactory.CreateLabel(parent,
+                $"Hdr_{titleKey.Substring(titleKey.LastIndexOf('.') + 1)}",
+                L.Get(titleKey), 15f, TMPro.FontStyles.Bold, font);
             hdr.color = UIColors.TEXT_HEADER_GOLD;
             var le = hdr.gameObject.AddComponent<LayoutElement>();
             le.preferredHeight = 28f;
+            ui._chromeLabels.Add((hdr, titleKey));
         }
     }
 }

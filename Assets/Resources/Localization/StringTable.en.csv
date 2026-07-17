@@ -35,6 +35,8 @@ ui.settings.color_blind,Color Blind Mode
 ui.settings.apply_close,Apply & Close
 ui.settings.cancel,Cancel
 ui.settings.reset_defaults,Reset Defaults
+ui.settings.toggle,Toggle
+ui.settings.language_accessibility,Language & Accessibility
 
 # Settings — Quality levels
 ui.settings.quality.low,Low
@@ -556,3 +558,107 @@ ui.mission.c3_m3_last_frontier.briefing,Beyond the old borders lies the frontier
 ui.mission.c3_m3_last_frontier.obj0,Reach 7 Victory Points
 ui.mission.c3_m3_last_frontier.obj1,Own at least 12 sectors
 ui.mission.c3_m3_last_frontier.obj2,Survive 900 seconds
+ui.menu.new_game,New Game
+ui.menu.campaign,Campaign
+ui.menu.tutorial,Tutorial
+ui.menu.load_game,Load Game
+ui.menu.map_editor,Map Editor
+ui.menu.achievements,Achievements
+ui.menu.hall_of_fame,Hall of Fame
+ui.menu.settings,Settings
+ui.menu.quit,Quit
+ui.mapselect.title,Select Map
+ui.mapselect.hint,Select a map to see details
+ui.mapselect.details,<b>{0}</b>\nSectors: {1}\nPlayers: {2}\nVictory Points: {3}
+ui.mapselect.start,Start Game
+ui.setup.title,Game Setup
+ui.setup.ai_opponents,AI Opponents
+ui.setup.victory_points,Victory Points
+ui.setup.difficulty,AI Difficulty
+ui.setup.ai_style,AI Style
+ui.setup.resources,Resources
+ui.setup.victory_rules,Victory Rules
+ui.setup.back,Back
+ui.setup.start,Start Game
+ui.setup.diff.easy,Easy
+ui.setup.diff.normal,Normal
+ui.setup.diff.hard,Hard
+ui.setup.pers.builder,Builder
+ui.setup.pers.warrior,Warrior
+ui.setup.pers.merchant,Merchant
+ui.setup.profile.default,Default
+ui.setup.profile.rich,Rich
+ui.setup.profile.lean,Lean
+ui.setup.rules.standard,Standard
+ui.setup.rules.conquestonly,Conquest Only
+ui.setup.rules.tradeonly,Trade Only
+ui.setup.rules.techonly,Technology Only
+ui.setup.rules.noconquest,No Conquest
+ui.achievements.title,Achievements
+ui.achievements.close,Close [K]
+ui.achievements.toast,Achievement Unlocked!
+ui.achievements.stats,This session:\nBuildings built: {0}\nSectors conquered: {1}\nTechs researched: {2}\nVPs gained: {3}\nTrades completed: {4}\nOutposts claimed: {5}
+ui.halloffame.title,Hall of Fame
+ui.halloffame.empty,No matches recorded yet.
+ui.halloffame.close,Close
+ui.halloffame.win,Win
+ui.halloffame.loss,Loss
+ui.map.test_valley,Test Valley (6 Sectors)
+ui.map.twin_rivers,Twin Rivers (10 Sectors)
+ui.map.mountain_pass,Mountain Pass (12 Sectors, 3 Players)
+ui.map.island_chain,Island Chain (8 Sectors)
+ui.map.large_valley,Large Valley (12 Sectors, 3 Players)
+ui.map.crown_war,Crown War (18 Sectors, 4 Players)
+ui.map.empire,Empire (24 Sectors, 4 Players)
+ui.map.highland_duel,Highland Duel (20 Sectors)
+ui.map.golden_meadows,Golden Meadows (30 Sectors, 3 Players)
+ui.map.the_frontier,The Frontier (40 Sectors, 4 Players)
+ui.map.tutorial_valley,Tutorial Valley
+ui.achievement.first_building.name,Builder
+ui.achievement.first_building.desc,Complete your first building
+ui.achievement.ten_buildings.name,Constructor
+ui.achievement.ten_buildings.desc,Complete 10 buildings
+ui.achievement.first_conquest.name,Conqueror
+ui.achievement.first_conquest.desc,Conquer your first sector
+ui.achievement.five_conquests.name,Warlord
+ui.achievement.five_conquests.desc,Conquer 5 sectors
+ui.achievement.first_tech.name,Scholar
+ui.achievement.first_tech.desc,Research your first technology
+ui.achievement.five_techs.name,Academician
+ui.achievement.five_techs.desc,Research 5 technologies
+ui.achievement.first_vp.name,Point Scorer
+ui.achievement.first_vp.desc,Earn your first victory point
+ui.achievement.three_vps.name,Royal Candidate
+ui.achievement.three_vps.desc,Hold 3 victory points at once
+ui.achievement.prestige_5.name,Noble
+ui.achievement.prestige_5.desc,Reach prestige level 5
+ui.achievement.first_outpost.name,Merchant Prince
+ui.achievement.first_outpost.desc,Claim your first trade outpost
+ui.achievement.first_trade.name,Trader
+ui.achievement.first_trade.desc,Complete your first trade
+ui.achievement.ten_trades.name,Mercator
+ui.achievement.ten_trades.desc,Complete 10 trades
+ui.achievement.first_general.name,Commander
+ui.achievement.first_general.desc,Hire your first general
+ui.achievement.tutorial_done.name,Apprentice
+ui.achievement.tutorial_done.desc,Complete the tutorial
+ui.achievement.campaign_ch1.name,Campaign Hero
+ui.achievement.campaign_ch1.desc,Complete a campaign mission
+
+# Save/Load slots
+ui.saveslot.slot,Slot {0}
+ui.saveslot.empty,— Empty —
+ui.saveslot.overwrite,Overwrite
+ui.saveslot.load,Load
+ui.saveslot.save,Save
+
+# Custom scenarios
+ui.scenario.title,Custom Scenarios
+ui.scenario.play,Play
+ui.scenario.blitz.name,Blitz Match
+ui.scenario.blitz.desc,Rich start, Conquest Only, Hard AI. Fast and brutal.
+ui.scenario.trade_race.name,Trade Race
+ui.scenario.trade_race.desc,Lean start, Trade VPs only. Economy wins the game.
+
+# End screen — player stats line
+ui.endscreen.player_stats,Your game: {0} buildings, {1} sectors, {2} soldiers, {3} techs, {4} outposts, Prestige Lv{5}

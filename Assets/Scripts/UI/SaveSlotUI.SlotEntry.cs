@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Settlers.Simulation;
 
 namespace Settlers.UI
 {
@@ -19,20 +20,22 @@ namespace Settlers.UI
 
             public void Refresh(SlotMetadata meta, Mode mode)
             {
+                NameLabel.text = string.Format(L.Get("ui.saveslot.slot"), SlotIndex + 1);
                 if (meta.Exists)
                 {
-                    NameLabel.text = $"Slot {SlotIndex + 1}";
-                    InfoLabel.text = $"{meta.MapId}  |  {meta.SaveDate}  |  {meta.PlayTime}";
+                    InfoLabel.text =
+                        $"{LocalizedNames.Map(meta.MapId, meta.MapId)}  |  " +
+                        $"{meta.SaveDate}  |  {meta.PlayTime}";
                     InfoLabel.color = new Color(0.7f, 0.7f, 0.65f);
-                    ActionLabel.text = mode == Mode.Save ? "Overwrite" : "Load";
+                    ActionLabel.text = L.Get(mode == Mode.Save
+                        ? "ui.saveslot.overwrite" : "ui.saveslot.load");
                     DeleteGo.SetActive(true);
                 }
                 else
                 {
-                    NameLabel.text = $"Slot {SlotIndex + 1}";
-                    InfoLabel.text = "— Empty —";
+                    InfoLabel.text = L.Get("ui.saveslot.empty");
                     InfoLabel.color = new Color(0.4f, 0.4f, 0.4f);
-                    ActionLabel.text = mode == Mode.Save ? "Save" : "";
+                    ActionLabel.text = mode == Mode.Save ? L.Get("ui.saveslot.save") : "";
                     ActionButton.interactable = mode == Mode.Save;
                     DeleteGo.SetActive(false);
                 }

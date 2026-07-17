@@ -111,5 +111,75 @@ namespace Settlers.Simulation
             return index >= 0 && index < mission.Objectives.Length
                 ? mission.Objectives[index].Description : "";
         }
+
+        /// <summary>Localized display name of a map (fallback = EN DisplayName).</summary>
+        public static string Map(string mapId, string fallback)
+        {
+            string key = MapKey(mapId);
+            return L.Has(key) ? L.Get(key) : fallback;
+        }
+
+        /// <summary>The string-table key for a map display name.</summary>
+        public static string MapKey(string mapId) => "ui.map." + mapId;
+
+        /// <summary>Localized name of an achievement.</summary>
+        public static string AchievementName(Achievement ach)
+            => AchievementName(ach.Id, ach.Name);
+
+        /// <summary>Localized achievement name by id (fallback = EN name).</summary>
+        public static string AchievementName(string achievementId, string fallback)
+        {
+            string key = $"ui.achievement.{achievementId}.name";
+            return L.Has(key) ? L.Get(key) : fallback;
+        }
+
+        /// <summary>Localized description of an achievement.</summary>
+        public static string AchievementDescription(Achievement ach)
+        {
+            string key = $"ui.achievement.{ach.Id}.desc";
+            return L.Has(key) ? L.Get(key) : ach.Description;
+        }
+
+        /// <summary>Localized label of an AI difficulty level.</summary>
+        public static string Difficulty(AIDifficultyLevel level)
+        {
+            string key = "ui.setup.diff." + level.ToString().ToLowerInvariant();
+            return L.Has(key) ? L.Get(key) : level.ToString();
+        }
+
+        /// <summary>Localized label of an AI personality.</summary>
+        public static string Personality(AIPersonalityType type)
+        {
+            string key = "ui.setup.pers." + type.ToString().ToLowerInvariant();
+            return L.Has(key) ? L.Get(key) : type.ToString();
+        }
+
+        /// <summary>Localized label of a starting-resource profile.</summary>
+        public static string StartingProfile(StartingProfileType type)
+        {
+            string key = "ui.setup.profile." + type.ToString().ToLowerInvariant();
+            return L.Has(key) ? L.Get(key) : type.ToString();
+        }
+
+        /// <summary>Localized label of a victory rule set.</summary>
+        public static string VictoryRules(VictoryRuleSetType type)
+        {
+            string key = "ui.setup.rules." + type.ToString().ToLowerInvariant();
+            return L.Has(key) ? L.Get(key) : type.ToString();
+        }
+
+        /// <summary>Localized scenario name (fallback = EN DisplayName, e.g. mod scenarios).</summary>
+        public static string ScenarioName(string scenarioId, string fallback)
+        {
+            string key = $"ui.scenario.{scenarioId}.name";
+            return L.Has(key) ? L.Get(key) : fallback;
+        }
+
+        /// <summary>Localized scenario description (fallback = EN description).</summary>
+        public static string ScenarioDescription(string scenarioId, string fallback)
+        {
+            string key = $"ui.scenario.{scenarioId}.desc";
+            return L.Has(key) ? L.Get(key) : fallback;
+        }
     }
 }

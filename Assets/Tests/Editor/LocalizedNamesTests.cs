@@ -55,6 +55,19 @@ namespace Settlers.Tests
         }
 
         [Test]
+        public void EnglishTable_CoversEveryGermanKey()
+        {
+            var en = StringTablePersistence.Load("en");
+            var de = StringTablePersistence.Load("de");
+
+            foreach (var key in de.Keys)
+            {
+                Assert.IsTrue(en.ContainsKey(key),
+                    $"StringTable.en.csv missing key '{key}' present in de");
+            }
+        }
+
+        [Test]
         public void Resource_UsesLoadedLocale_AndFallsBackToEnumName()
         {
             L.SetLocale("de");

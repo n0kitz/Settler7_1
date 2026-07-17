@@ -15,11 +15,21 @@ namespace Settlers.UI
         [SerializeField] private GameObject _panelRoot;
         [SerializeField] private Transform  _listContainer;
 
+        private TextMeshProUGUI _titleLabel;
+        private TextMeshProUGUI _closeLabel;
+
         public void Show()
         {
             if (_panelRoot == null) return;
             _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
             Rebuild();
+        }
+
+        private void RefreshLocaleTexts()
+        {
+            if (_titleLabel != null) _titleLabel.text = L.Get("ui.halloffame.title");
+            if (_closeLabel != null) _closeLabel.text = L.Get("ui.halloffame.close");
         }
 
         public void Hide()
@@ -46,7 +56,7 @@ namespace Settlers.UI
             if (history.Count == 0)
             {
                 var empty = UIFactory.CreateLabel(_listContainer, "Empty",
-                    "No matches recorded yet.", 16f, UIFactory.GetDefaultFont());
+                    L.Get("ui.halloffame.empty"), 16f, UIFactory.GetDefaultFont());
                 empty.color = UIColors.TEXT_GRAY_DIM;
             }
         }
@@ -76,9 +86,10 @@ namespace Settlers.UI
             rankLe.preferredWidth = 36f;
 
             // Map + outcome
-            string outcome = r.WinnerId == 0 ? "Win" : "Loss";
+            string outcome = L.Get(r.WinnerId == 0
+                ? "ui.halloffame.win" : "ui.halloffame.loss");
             var infoLabel = UIFactory.CreateLabel(row.transform, "Info",
-                $"{r.MapId}  {outcome}", 14f, font);
+                $"{LocalizedNames.Map(r.MapId, r.MapId)}  {outcome}", 14f, font);
             infoLabel.color = r.WinnerId == 0
                 ? new Color(0.4f, 0.9f, 0.4f) : new Color(0.9f, 0.4f, 0.4f);
             var infoLe = infoLabel.gameObject.AddComponent<LayoutElement>();
@@ -115,7 +126,7 @@ namespace Settlers.UI
             panelGo.AddComponent<Image>().color = UIColors.PANEL_BLUE_DARK;
 
             var title = UIFactory.CreateLabel(panelGo.transform, "Title",
-                "Hall of Fame", 26f, FontStyles.Bold, font);
+                L.Get("ui.halloffame.title"), 26f, FontStyles.Bold, font);
             var titleRect = title.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
@@ -139,10 +150,11 @@ namespace Settlers.UI
             var csf = content.AddComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            UIFactory.CreateButton(panelGo.transform, "Close", font,
+            var close = UIFactory.CreateButton(panelGo.transform,
+                L.Get("ui.halloffame.close"), font,
                 UIColors.BUTTON_RED, () => panelGo.SetActive(false),
                 new Vector2(100f, 32f), 15f);
-            var closeBtn = panelGo.GetComponentInChildren<Button>().GetComponent<RectTransform>();
+            var closeBtn = close.GetComponent<RectTransform>();
             closeBtn.anchorMin = new Vector2(0.5f, 0f);
             closeBtn.anchorMax = new Vector2(0.5f, 0f);
             closeBtn.pivot     = new Vector2(0.5f, 0f);
@@ -151,6 +163,8 @@ namespace Settlers.UI
             var ui = panelGo.AddComponent<HallOfFameUI>();
             UIFactory.SetField(ui, "_panelRoot",    panelGo);
             UIFactory.SetField(ui, "_listContainer", (Transform)contentRect.transform);
+            ui._titleLabel = title;
+            ui._closeLabel = close.GetComponentInChildren<TextMeshProUGUI>();
 
             panelGo.SetActive(false);
             return ui;

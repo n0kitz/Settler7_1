@@ -15,12 +15,17 @@ namespace Settlers.UI
         [SerializeField] private GameObject _panelRoot;
         [SerializeField] private Transform  _listContainer;
 
+        private TextMeshProUGUI _titleLabel;
+        private TextMeshProUGUI _closeLabel;
+
         /// <summary>Fired when the player picks a scenario to start.</summary>
         public event System.Action<ScenarioDefinition> OnScenarioSelected;
 
         public void Show()
         {
             if (_panelRoot) _panelRoot.SetActive(true);
+            if (_titleLabel != null) _titleLabel.text = L.Get("ui.scenario.title");
+            if (_closeLabel != null) _closeLabel.text = L.Get("ui.general.close");
             Refresh();
         }
 
@@ -131,10 +136,11 @@ namespace Settlers.UI
             info.AddComponent<LayoutElement>().flexibleWidth = 1f;
 
             var nameLabel = UIFactory.CreateLabel(info.transform, "Name",
-                sc.DisplayName, 15f, FontStyles.Bold, font);
+                LocalizedNames.ScenarioName(sc.ScenarioId, sc.DisplayName),
+                15f, FontStyles.Bold, font);
             nameLabel.color = UIColors.TEXT_HEADER_GOLD;
             var descLabel = UIFactory.CreateLabel(info.transform, "Desc",
-                sc.Description, 11f, font);
+                LocalizedNames.ScenarioDescription(sc.ScenarioId, sc.Description), 11f, font);
             descLabel.color = UIColors.TEXT_GRAY_DIM;
             if (sc.IsModScenario)
             {
@@ -144,7 +150,7 @@ namespace Settlers.UI
             }
 
             var captured = sc;
-            UIFactory.CreateButton(row.transform, "Play", font,
+            UIFactory.CreateButton(row.transform, L.Get("ui.scenario.play"), font,
                 UIColors.BUTTON_GREEN,
                 () => { Hide(); OnScenarioSelected?.Invoke(captured); },
                 new Vector2(70f, 40f), 16f);
@@ -179,7 +185,7 @@ namespace Settlers.UI
             outerLayout.childForceExpandHeight = false;
 
             var title = UIFactory.CreateLabel(panelGo.transform, "Title",
-                "Custom Scenarios", 22f, FontStyles.Bold, font);
+                L.Get("ui.scenario.title"), 22f, FontStyles.Bold, font);
             title.color = UIColors.TEXT_HEADER_GOLD;
             title.gameObject.AddComponent<LayoutElement>().preferredHeight = 30f;
 
@@ -196,8 +202,11 @@ namespace Settlers.UI
             UIFactory.SetField(ui, "_panelRoot",     panelGo);
             UIFactory.SetField(ui, "_listContainer", list.transform);
 
-            UIFactory.CreateButton(panelGo.transform, "Close", font,
+            var closeBtn = UIFactory.CreateButton(panelGo.transform,
+                L.Get("ui.general.close"), font,
                 UIColors.BUTTON_RED, ui.OnCloseClicked, new Vector2(120f, 40f), 16f);
+            ui._titleLabel = title;
+            ui._closeLabel = closeBtn.GetComponentInChildren<TextMeshProUGUI>();
 
             panelGo.SetActive(false);
             return ui;

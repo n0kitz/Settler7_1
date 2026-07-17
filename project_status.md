@@ -106,9 +106,16 @@ SaveSystem, SimulationRunner, Tutorial) · Localization · Settings · Replay ·
   trade/conquer for. Verified by granting tools in play-mode. A future AI-strategy item: the tech
   AI should trade for or conquer an iron sector (or bias tool imports) when its sectors lack iron.
   Cleric `RECRUIT_COSTS` tuning remains optional (recruiting was gated on Bread, now produced).
-- **Campaign mission titles/briefings/objective texts are EN-only** (data strings in
-  `CampaignSystem.Missions.cs`, MissionBriefing/MissionComplete UIs show them raw) — add
-  `ui.mission.*` keys in the Phase-8 string sweep, same pattern as 6b.
+- **Settings controls rows always show "?" as the bound key** (pre-existing, found during the
+  8c locale check) — `SettingsUI.Controls` bakes `_keyBindings?.Get(action) ?? "?"` into the
+  key labels at `Create()` time, before `Initialize()` loads the bindings, and nothing
+  refreshes them afterwards (only `ResetKeyBind` updates its own row). Fix: store the key
+  labels and refresh them in `Show()`/after `LoadKeyBindings()`.
+- **In-game side panels still unlocalized** — `TavernUI` ("Tavern [V]", "Hire General"),
+  `QuestPanel` ("Quests [Q]", "Active/Available Quests", "Accept Quest" + data-driven quest
+  titles/descriptions), `DiplomacyPanel` ("Close"), `SectorPropertyPanel` ("Delete Sector",
+  map editor). Zero `L.Get` calls, no `ui.tavern/quest/diplomacy` keys yet — next string batch
+  (quest text needs a `LocalizedNames` resolver like scenarios got in 8c).
 - **DE names for recipes/outposts/techs/prestige are new prose, flagged for Normen's review**
   (Sprint 6b) — goods vocabulary follows the verified §14.9 list, but work-yard names
   (Kornspeicher, Wagnerei, …), outpost names (…-Kontor) and tech/prestige names are Claude's
@@ -121,10 +128,6 @@ SaveSystem, SimulationRunner, Tutorial) · Localization · Settings · Replay ·
 - **SO `.asset` regeneration pending** — 3 new recipes (trapper/smokehouse/tannery) exist in
   `RecipeDatabase` (runtime source of truth); run `Settlers > Generate All` in the editor when
   convenient to refresh the Inspector-side assets.
-- **SectorPanel(+Actions) still has EN literals** — "(Building)", "(idle)", FoodSetting enum
-  names, and ~9 `ShowFeedback` strings ("Attached …", "General #n marching", …); sweep in the
-  Phase-8 string pass.
-
 ## Key Patterns (bite-you-if-forgotten)
 
 The durable engine traps now live in **[CLAUDE.md → Engine Gotchas](CLAUDE.md)** (fresh EventBus
@@ -142,6 +145,26 @@ next status rewrite.
 
 ## Recent Sessions
 
+- **2026-07-17 — Sprint 8c completed (meta/shell screen localization, 518/518 green):**
+  finished the in-flight meta-screen sweep and closed every shell-screen string gap.
+  Verified the CSV parser skips `#` comments (`StringTablePersistence.cs`) and added the
+  missing reverse parity test `EnglishTable_CoversEveryGermanKey` (DE keys without EN now
+  fail the suite; parity is now enforced both directions). Wired the dormant
+  `ui.pause_menu.*`/`ui.settings.*` keys (existed since early sprints, never consumed):
+  PauseMenuUI + SettingsUI (all 4 partials — headers, rows, quality names via
+  `ui.settings.quality.*`, ON/OFF via `ui.general.on/off`, shared Toggle button) with the
+  label-registry + `Show()`-refresh pattern. HallOfFameUI (title/close/empty/Win/Loss +
+  localized map names), SaveSlotUI (title reuses pause-menu keys; slot rows via new
+  `ui.saveslot.*`), ScenarioSelectionUI (new `LocalizedNames.ScenarioName/Description`
+  resolvers with mod-scenario EN fallback, `ui.scenario.*`), VictoryPanel end-screen
+  leftovers (`ui.endscreen.return_menu`, new `ui.endscreen.player_stats` format key).
+  New DE prose marked "zur Prüfung durch Normen" in the DE CSV. Remaining string gap:
+  in-game side panels (see Known Issues). Play-mode locale check PASSED: every changed panel
+  (MainMenu, Settings all sections, PauseMenu, SaveSlot, HallOfFame, MapSelection, GameSetup,
+  Achievements, ScenarioSelection, VictoryPanel fallback overlay + PostGameSummary) verified
+  by label dump in DE and again after switching back to EN — zero stale strings. Side
+  findings: keybinding "?" bug (see Known Issues) and 3 junk match-history records
+  (`MapId='m'`, old synthetic test data) rendering literally in the Ruhmeshalle.
 - **2026-07-14 — Skill harvest (no code change):** distilled the Phase-1–8 lessons into five
   new project skills — `settlers-playmode-testing` (MCP recipes, force states, soak),
   `settlers-localization` (CSV rules, Show()-refresh pattern, §14 discipline),

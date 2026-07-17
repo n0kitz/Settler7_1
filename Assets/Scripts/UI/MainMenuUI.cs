@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
+using Settlers.Simulation;
 
 namespace Settlers.UI
 {
@@ -13,6 +15,8 @@ namespace Settlers.UI
         [SerializeField] private GameObject _panelRoot;
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _versionText;
+
+        private readonly List<(TextMeshProUGUI label, string key)> _buttonLabels = new();
 
         /// <summary>Fired when the player clicks New Game.</summary>
         public event System.Action OnNewGame;
@@ -42,6 +46,13 @@ namespace Settlers.UI
         {
             if (_panelRoot != null)
                 _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
+        }
+
+        private void RefreshLocaleTexts()
+        {
+            foreach (var (label, key) in _buttonLabels)
+                if (label != null) label.text = L.Get(key);
         }
 
         public void Hide()
@@ -154,54 +165,28 @@ namespace Settlers.UI
             UIFactory.SetField(ui, "_panelRoot", panelGo);
             UIFactory.SetField(ui, "_titleText", titleText);
 
-            // New Game button
-            UIFactory.CreateButton(buttonContainer.transform, "New Game", font,
-                UIColors.BUTTON_GREEN, ui.OnNewGameClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Campaign button
-            UIFactory.CreateButton(buttonContainer.transform, "Campaign", font,
-                new Color(0.6f, 0.4f, 0.1f), ui.OnCampaignClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Tutorial button
-            UIFactory.CreateButton(buttonContainer.transform, "Tutorial", font,
-                new Color(0.3f, 0.5f, 0.7f), ui.OnTutorialClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Load Game button
-            UIFactory.CreateButton(buttonContainer.transform, "Load Game", font,
-                UIColors.BUTTON_BLUE, ui.OnLoadGameClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Map Editor button
-            UIFactory.CreateButton(buttonContainer.transform, "Map Editor", font,
-                new Color(0.35f, 0.28f, 0.5f), ui.OnMapEditorClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Achievements button
-            UIFactory.CreateButton(buttonContainer.transform, "Achievements", font,
-                new Color(0.4f, 0.3f, 0.1f), ui.OnAchievementsClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Hall of Fame button
-            UIFactory.CreateButton(buttonContainer.transform, "Hall of Fame", font,
-                new Color(0.5f, 0.38f, 0.08f), ui.OnHallOfFameClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Settings button
-            UIFactory.CreateButton(buttonContainer.transform, "Settings", font,
-                new Color(0.28f, 0.28f, 0.35f), ui.OnSettingsClicked,
-                new Vector2(280f, 48f), 20f);
-
-            // Quit button
-            UIFactory.CreateButton(buttonContainer.transform, "Quit", font,
-                UIColors.BUTTON_RED, ui.OnQuitClicked,
-                new Vector2(280f, 48f), 20f);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.new_game", font,
+                UIColors.BUTTON_GREEN, ui.OnNewGameClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.campaign", font,
+                new Color(0.6f, 0.4f, 0.1f), ui.OnCampaignClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.tutorial", font,
+                new Color(0.3f, 0.5f, 0.7f), ui.OnTutorialClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.load_game", font,
+                UIColors.BUTTON_BLUE, ui.OnLoadGameClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.map_editor", font,
+                new Color(0.35f, 0.28f, 0.5f), ui.OnMapEditorClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.achievements", font,
+                new Color(0.4f, 0.3f, 0.1f), ui.OnAchievementsClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.hall_of_fame", font,
+                new Color(0.5f, 0.38f, 0.08f), ui.OnHallOfFameClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.settings", font,
+                new Color(0.28f, 0.28f, 0.35f), ui.OnSettingsClicked);
+            CreateMenuButton(buttonContainer.transform, ui, "ui.menu.quit", font,
+                UIColors.BUTTON_RED, ui.OnQuitClicked);
 
             // Version text (bottom)
             var versionText = UIFactory.CreateLabel(panelGo.transform, "Version",
-                "v0.12 — Phase 12", 12, FontStyles.Normal, font);
+                "v1.0-rc", 12, FontStyles.Normal, font);
             var verRect = versionText.GetComponent<RectTransform>();
             verRect.anchorMin = new Vector2(0.5f, 0f);
             verRect.anchorMax = new Vector2(0.5f, 0f);
@@ -215,5 +200,12 @@ namespace Settlers.UI
             return ui;
         }
 
+        private static void CreateMenuButton(Transform parent, MainMenuUI ui, string key,
+            TMP_FontAsset font, Color color, UnityEngine.Events.UnityAction onClick)
+        {
+            var btn = UIFactory.CreateButton(parent, L.Get(key), font, color, onClick,
+                new Vector2(280f, 48f), 20f);
+            ui._buttonLabels.Add((btn.GetComponentInChildren<TextMeshProUGUI>(), key));
+        }
     }
 }

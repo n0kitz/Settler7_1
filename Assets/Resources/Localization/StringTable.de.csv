@@ -36,6 +36,9 @@ ui.settings.color_blind,Farbenblind-Modus
 ui.settings.apply_close,Übernehmen & Schließen
 ui.settings.cancel,Abbrechen
 ui.settings.reset_defaults,Standardwerte
+# Neue DE-Strings — zur Prüfung durch Normen
+ui.settings.toggle,Umschalten
+ui.settings.language_accessibility,Sprache & Barrierefreiheit
 
 # Settings — Quality levels
 ui.settings.quality.low,Niedrig
@@ -555,3 +558,108 @@ ui.mission.c3_m3_last_frontier.briefing,Jenseits der alten Grenzen liegt das Gre
 ui.mission.c3_m3_last_frontier.obj0,Erreicht 7 Siegpunkte
 ui.mission.c3_m3_last_frontier.obj1,Besitzt mindestens 12 Sektoren
 ui.mission.c3_m3_last_frontier.obj2,Überdauert 900 Sekunden
+# --- Meta-Screens (Menü/Kartenwahl/Setup/Erfolge/Ruhmeshalle) — NEUE DE-PROSA, zur Prüfung durch Normen ---
+ui.menu.new_game,Neues Spiel
+ui.menu.campaign,Kampagne
+ui.menu.tutorial,Tutorial
+ui.menu.load_game,Spiel laden
+ui.menu.map_editor,Karteneditor
+ui.menu.achievements,Erfolge
+ui.menu.hall_of_fame,Ruhmeshalle
+ui.menu.settings,Einstellungen
+ui.menu.quit,Beenden
+ui.mapselect.title,Karte wählen
+ui.mapselect.hint,Wählt eine Karte für Details
+ui.mapselect.details,<b>{0}</b>\nSektoren: {1}\nSpieler: {2}\nSiegpunkte: {3}
+ui.mapselect.start,Spiel starten
+ui.setup.title,Spieleinstellungen
+ui.setup.ai_opponents,KI-Gegner
+ui.setup.victory_points,Siegpunkte
+ui.setup.difficulty,KI-Schwierigkeit
+ui.setup.ai_style,KI-Stil
+ui.setup.resources,Startressourcen
+ui.setup.victory_rules,Siegregeln
+ui.setup.back,Zurück
+ui.setup.start,Spiel starten
+ui.setup.diff.easy,Leicht
+ui.setup.diff.normal,Normal
+ui.setup.diff.hard,Schwer
+ui.setup.pers.builder,Baumeister
+ui.setup.pers.warrior,Krieger
+ui.setup.pers.merchant,Händler
+ui.setup.profile.default,Standard
+ui.setup.profile.rich,Üppig
+ui.setup.profile.lean,Karg
+ui.setup.rules.standard,Standard
+ui.setup.rules.conquestonly,Nur Eroberung
+ui.setup.rules.tradeonly,Nur Handel
+ui.setup.rules.techonly,Nur Technologie
+ui.setup.rules.noconquest,Keine Eroberung
+ui.achievements.title,Erfolge
+ui.achievements.close,Schließen [K]
+ui.achievements.toast,Erfolg freigeschaltet!
+ui.achievements.stats,Diese Partie:\nGebäude errichtet: {0}\nSektoren erobert: {1}\nTechnologien erforscht: {2}\nSiegpunkte erhalten: {3}\nHandel abgeschlossen: {4}\nKontore beansprucht: {5}
+ui.halloffame.title,Ruhmeshalle
+ui.halloffame.empty,Noch keine Partien verzeichnet.
+ui.halloffame.close,Schließen
+ui.halloffame.win,Sieg
+ui.halloffame.loss,Niederlage
+ui.map.test_valley,Testtal (6 Sektoren)
+ui.map.twin_rivers,Zwillingsflüsse (10 Sektoren)
+ui.map.mountain_pass,Bergpass (12 Sektoren, 3 Spieler)
+ui.map.island_chain,Inselkette (8 Sektoren)
+ui.map.large_valley,Großes Tal (12 Sektoren, 3 Spieler)
+ui.map.crown_war,Krieg um die Krone (18 Sektoren, 4 Spieler)
+ui.map.empire,Imperium (24 Sektoren, 4 Spieler)
+ui.map.highland_duel,Hochland-Duell (20 Sektoren)
+ui.map.golden_meadows,Goldene Auen (30 Sektoren, 3 Spieler)
+ui.map.the_frontier,Das Grenzland (40 Sektoren, 4 Spieler)
+ui.map.tutorial_valley,Tutorial-Tal
+ui.achievement.first_building.name,Baumeister
+ui.achievement.first_building.desc,Errichtet Euer erstes Gebäude
+ui.achievement.ten_buildings.name,Konstrukteur
+ui.achievement.ten_buildings.desc,Errichtet 10 Gebäude
+ui.achievement.first_conquest.name,Eroberer
+ui.achievement.first_conquest.desc,Erobert Euren ersten Sektor
+ui.achievement.five_conquests.name,Kriegsherr
+ui.achievement.five_conquests.desc,Erobert 5 Sektoren
+ui.achievement.first_tech.name,Gelehrter
+ui.achievement.first_tech.desc,Erforscht Eure erste Technologie
+ui.achievement.five_techs.name,Akademiker
+ui.achievement.five_techs.desc,Erforscht 5 Technologien
+ui.achievement.first_vp.name,Punktesammler
+ui.achievement.first_vp.desc,Erhaltet Euren ersten Siegpunkt
+ui.achievement.three_vps.name,Thronanwärter
+ui.achievement.three_vps.desc,Haltet 3 Siegpunkte gleichzeitig
+ui.achievement.prestige_5.name,Adliger
+ui.achievement.prestige_5.desc,Erreicht Prestige-Stufe 5
+ui.achievement.first_outpost.name,Handelsfürst
+ui.achievement.first_outpost.desc,Beansprucht Euren ersten Handelsaußenposten
+ui.achievement.first_trade.name,Händler
+ui.achievement.first_trade.desc,Schließt Euren ersten Handel ab
+ui.achievement.ten_trades.name,Mercator
+ui.achievement.ten_trades.desc,Schließt 10 Handelsgeschäfte ab
+ui.achievement.first_general.name,Kommandant
+ui.achievement.first_general.desc,Heuert Euren ersten General an
+ui.achievement.tutorial_done.name,Lehrling
+ui.achievement.tutorial_done.desc,Schließt das Tutorial ab
+ui.achievement.campaign_ch1.name,Held der Kampagne
+ui.achievement.campaign_ch1.desc,Schließt eine Kampagnenmission ab
+
+# Spielstände — neue DE-Strings, zur Prüfung durch Normen
+ui.saveslot.slot,Spielstand {0}
+ui.saveslot.empty,— Leer —
+ui.saveslot.overwrite,Überschreiben
+ui.saveslot.load,Laden
+ui.saveslot.save,Speichern
+
+# Eigene Szenarien — neue DE-Strings, zur Prüfung durch Normen
+ui.scenario.title,Eigene Szenarien
+ui.scenario.play,Spielen
+ui.scenario.blitz.name,Blitzpartie
+ui.scenario.blitz.desc,Reicher Start, nur Eroberung, schwere KI. Schnell und gnadenlos.
+ui.scenario.trade_race.name,Handelswettlauf
+ui.scenario.trade_race.desc,Karger Start, nur Handels-Siegpunkte. Die Wirtschaft entscheidet.
+
+# Endbildschirm — Statistikzeile, zur Prüfung durch Normen
+ui.endscreen.player_stats,Eure Partie: {0} Gebäude, {1} Sektoren, {2} Soldaten, {3} Technologien, {4} Außenposten, Prestige-Stufe {5}

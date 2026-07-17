@@ -1,16 +1,33 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Settlers.Simulation;
 
 namespace Settlers.UI
 {
     public partial class GameSetupUI
     {
-        private static TextMeshProUGUI CreateSettingRow(Transform parent, string label,
-            TMP_FontAsset font, UnityEngine.Events.UnityAction onMinus,
+        private readonly System.Collections.Generic.List<(TextMeshProUGUI label, string key)>
+            _localeLabels = new();
+
+        private void RegisterLocaleLabel(TextMeshProUGUI label, string key)
+            => _localeLabels.Add((label, key));
+
+        /// <summary>Re-resolves all baked strings after a locale switch (called on Show).</summary>
+        private void RefreshLocaleTexts()
+        {
+            foreach (var (label, key) in _localeLabels)
+                if (label != null) label.text = L.Get(key);
+            if (_mapNameText != null && !string.IsNullOrEmpty(_mapId))
+                _mapNameText.text = LocalizedNames.Map(_mapId, _mapDisplayFallback);
+        }
+
+        private static TextMeshProUGUI CreateSettingRow(Transform parent, GameSetupUI ui,
+            string labelKey, TMP_FontAsset font, UnityEngine.Events.UnityAction onMinus,
             UnityEngine.Events.UnityAction onPlus)
         {
-            var rowGo = new GameObject($"Row_{label.Replace(" ", "")}");
+            string label = L.Get(labelKey);
+            var rowGo = new GameObject($"Row_{labelKey.Replace("ui.setup.", "")}");
             rowGo.transform.SetParent(parent, false);
 
             var rowRect = rowGo.AddComponent<RectTransform>();
@@ -32,6 +49,7 @@ namespace Settlers.UI
             var labelLE = labelTmp.gameObject.AddComponent<LayoutElement>();
             labelLE.preferredWidth = 160f;
             labelLE.flexibleWidth = 1f;
+            ui.RegisterLocaleLabel(labelTmp, labelKey);
 
             // Minus button
             CreateSmallButton(rowGo.transform, "-", font, onMinus);
@@ -79,10 +97,11 @@ namespace Settlers.UI
             text.alignment = TextAlignmentOptions.Center;
         }
 
-        private static void CreateButton(Transform parent, string label,
+        private static void CreateButton(Transform parent, GameSetupUI ui, string labelKey,
             TMP_FontAsset font, Color bgColor, UnityEngine.Events.UnityAction onClick)
         {
-            UIFactory.CreateButton(parent, label, font, bgColor, onClick);
+            var btn = UIFactory.CreateButton(parent, L.Get(labelKey), font, bgColor, onClick);
+            ui.RegisterLocaleLabel(btn.GetComponentInChildren<TextMeshProUGUI>(), labelKey);
         }
     }
 }

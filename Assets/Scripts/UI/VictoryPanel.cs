@@ -197,9 +197,9 @@ namespace Settlers.UI
             // Player stats summary
             float statsY = rowTop - standings.Count * ROW_HEIGHT - 0.02f;
             var playerStats = standings.Find(s => s.PlayerId == 0);
-            string statsStr = $"Your game: {playerStats.Buildings} buildings, {playerStats.Sectors} sectors, " +
-                              $"{playerStats.Army} soldiers, {playerStats.Techs} techs, " +
-                              $"{playerStats.Outposts} outposts, Prestige Lv{playerStats.Prestige}";
+            string statsStr = string.Format(L.Get("ui.endscreen.player_stats"),
+                playerStats.Buildings, playerStats.Sectors, playerStats.Army,
+                playerStats.Techs, playerStats.Outposts, playerStats.Prestige);
             var statsLabel = UIFactory.CreateLabel(overlayTransform, "PlayerStats", statsStr, 12, _font);
             statsLabel.alignment = TextAlignmentOptions.Center;
             statsLabel.color = new Color(0.7f, 0.85f, 0.7f);
@@ -217,7 +217,7 @@ namespace Settlers.UI
 
         private void CreateReturnButton(Transform parent, float yCenter)
         {
-            var btn = UIFactory.CreateButton(parent, "Return to Menu", _font,
+            var btn = UIFactory.CreateButton(parent, L.Get("ui.endscreen.return_menu"), _font,
                 new Color(0.3f, 0.45f, 0.3f, 0.9f),
                 () => OnReturnToMenu?.Invoke());
 

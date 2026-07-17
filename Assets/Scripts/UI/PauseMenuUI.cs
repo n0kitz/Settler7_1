@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.Collections.Generic;
+using Settlers.Simulation;
 
 namespace Settlers.UI
 {
@@ -16,6 +18,8 @@ namespace Settlers.UI
         private float _previousTimeScale = 1f;
         private SaveSlotUI _saveSlotUI;
         private SettingsUI _settingsUI;
+        private TextMeshProUGUI _titleLabel;
+        private readonly List<(TextMeshProUGUI label, string key)> _buttonLabels = new();
 
         /// <summary>Fired when the player clicks Settings.</summary>
         public event System.Action OnSettings;
@@ -33,6 +37,14 @@ namespace Settlers.UI
             Time.timeScale = 0f;
             if (_panelRoot != null)
                 _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
+        }
+
+        private void RefreshLocaleTexts()
+        {
+            if (_titleLabel != null) _titleLabel.text = L.Get("ui.pause_menu.title");
+            foreach (var (label, key) in _buttonLabels)
+                if (label != null) label.text = L.Get(key);
         }
 
         public void Hide()
@@ -125,7 +137,7 @@ namespace Settlers.UI
 
             // Title
             var titleText = UIFactory.CreateLabel(boxGo.transform, "Title",
-                "Paused", 28, FontStyles.Bold, font);
+                L.Get("ui.pause_menu.title"), 28, FontStyles.Bold, font);
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
@@ -152,29 +164,19 @@ namespace Settlers.UI
 
             var ui = panelGo.AddComponent<PauseMenuUI>();
             UIFactory.SetField(ui, "_panelRoot", panelGo);
+            ui._titleLabel = titleText;
 
-            // Resume button
-            UIFactory.CreateButton(btnContainer.transform, "Resume", font,
+            CreateMenuButton(btnContainer.transform, ui, "ui.pause_menu.resume", font,
                 UIColors.BUTTON_GREEN, ui.OnResumeClicked);
-
-            // Save Game button
-            UIFactory.CreateButton(btnContainer.transform, "Save Game", font,
+            CreateMenuButton(btnContainer.transform, ui, "ui.pause_menu.save_game", font,
                 UIColors.BUTTON_BLUE, ui.OnSaveGameClicked);
-
-            // Load Game button
-            UIFactory.CreateButton(btnContainer.transform, "Load Game", font,
+            CreateMenuButton(btnContainer.transform, ui, "ui.pause_menu.load_game", font,
                 UIColors.BUTTON_BLUE, ui.OnLoadGameClicked);
-
-            // Achievements button
-            UIFactory.CreateButton(btnContainer.transform, "Achievements", font,
+            CreateMenuButton(btnContainer.transform, ui, "ui.menu.achievements", font,
                 new Color(0.4f, 0.3f, 0.1f), ui.OnAchievementsClicked);
-
-            // Settings button
-            UIFactory.CreateButton(btnContainer.transform, "Settings", font,
+            CreateMenuButton(btnContainer.transform, ui, "ui.pause_menu.settings", font,
                 new Color(0.28f, 0.28f, 0.35f), ui.OnSettingsClicked);
-
-            // Quit to Menu button
-            UIFactory.CreateButton(btnContainer.transform, "Quit to Menu", font,
+            CreateMenuButton(btnContainer.transform, ui, "ui.pause_menu.quit_to_menu", font,
                 UIColors.BUTTON_RED, ui.OnQuitToMenuClicked);
 
             // Create the save slot panel (shared by save and load)
@@ -184,5 +186,11 @@ namespace Settlers.UI
             return ui;
         }
 
+        private static void CreateMenuButton(Transform parent, PauseMenuUI ui, string key,
+            TMP_FontAsset font, Color color, UnityEngine.Events.UnityAction onClick)
+        {
+            var btn = UIFactory.CreateButton(parent, L.Get(key), font, color, onClick);
+            ui._buttonLabels.Add((btn.GetComponentInChildren<TextMeshProUGUI>(), key));
+        }
     }
 }

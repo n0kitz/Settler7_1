@@ -9,26 +9,27 @@ namespace Settlers.UI
     {
         private KeyBindings _keyBindings;
 
-        private static readonly (string action, string label)[] REBINDABLE_ACTIONS =
+        private static readonly string[] REBINDABLE_ACTIONS =
         {
-            ("toggle_quest",        "Quests"),
-            ("toggle_tech",         "Technology"),
-            ("toggle_trade",        "Trade Map"),
-            ("toggle_army",         "Army"),
-            ("toggle_tavern",       "Tavern"),
-            ("toggle_prestige",     "Prestige"),
-            ("toggle_diplomacy",    "Diplomacy"),
-            ("toggle_achievements", "Achievements"),
+            "toggle_quest",
+            "toggle_tech",
+            "toggle_trade",
+            "toggle_army",
+            "toggle_tavern",
+            "toggle_prestige",
+            "toggle_diplomacy",
+            "toggle_achievements",
         };
 
         /// <summary>Builds the Controls section with one row per rebindable action.</summary>
         private static void CreateControlsSection(Transform container,
             TMP_FontAsset font, SettingsUI ui)
         {
-            CreateSectionHeader(container, "Controls", font);
+            CreateSectionHeader(container, "ui.settings.controls", font, ui);
 
-            foreach (var (action, displayLabel) in REBINDABLE_ACTIONS)
+            foreach (var action in REBINDABLE_ACTIONS)
             {
+                string labelKey = "ui.settings.controls." + action;
                 var row = new GameObject($"CtrlRow_{action}");
                 row.transform.SetParent(container, false);
                 row.AddComponent<RectTransform>().sizeDelta = new Vector2(0f, 32f);
@@ -41,11 +42,13 @@ namespace Settlers.UI
                 var le = row.AddComponent<LayoutElement>();
                 le.preferredHeight = 32f;
 
-                var lbl = UIFactory.CreateLabel(row.transform, "Lbl", displayLabel, 14f, font);
+                var lbl = UIFactory.CreateLabel(row.transform, "Lbl",
+                    L.Get(labelKey), 14f, font);
                 var lblLe = lbl.gameObject.AddComponent<LayoutElement>();
                 lblLe.preferredWidth = 130f;
                 lblLe.preferredHeight = 28f;
                 lbl.color = UIColors.TEXT_LIGHT;
+                ui._chromeLabels.Add((lbl, labelKey));
 
                 var boundKey = ui._keyBindings?.Get(action) ?? "?";
                 var keyLbl = UIFactory.CreateLabel(row.transform, "Key", boundKey, 14f, font);
@@ -55,10 +58,13 @@ namespace Settlers.UI
                 keyLe.preferredHeight = 28f;
 
                 var capturedAction = action;
-                UIFactory.CreateButton(row.transform, "Reset", font,
+                var resetBtn = UIFactory.CreateButton(row.transform,
+                    L.Get("ui.settings.controls.reset"), font,
                     new Color(0.3f, 0.3f, 0.35f),
                     () => ui.ResetKeyBind(capturedAction, keyLbl),
                     new Vector2(55f, 28f), 12f);
+                ui._chromeLabels.Add((resetBtn.GetComponentInChildren<TextMeshProUGUI>(),
+                    "ui.settings.controls.reset"));
             }
         }
 

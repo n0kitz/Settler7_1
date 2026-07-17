@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 using Settlers.Simulation;
 
 namespace Settlers.UI
@@ -24,11 +25,20 @@ namespace Settlers.UI
         [SerializeField] private TextMeshProUGUI _fullscreenLabel;
 
         private SettingsState _state;
-        private static readonly string[] QUALITY_NAMES = { "Low", "Medium", "High", "Ultra" };
+        private static readonly string[] QUALITY_CODES = { "low", "medium", "high", "ultra" };
+        private readonly List<(TextMeshProUGUI label, string key)> _chromeLabels = new();
 
         public void Show()
         {
             if (_panelRoot != null) _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
+            if (_state != null) Refresh();
+        }
+
+        private void RefreshLocaleTexts()
+        {
+            foreach (var (label, key) in _chromeLabels)
+                if (label != null) label.text = L.Get(key);
         }
 
         public void Hide()
@@ -55,11 +65,12 @@ namespace Settlers.UI
             if (_sfxPct != null)
                 _sfxPct.text = Pct(_state.SfxVolume);
             if (_muteLabel != null)
-                _muteLabel.text = _state.MasterMute ? "ON" : "OFF";
+                _muteLabel.text = OnOff(_state.MasterMute);
             if (_qualityLabel != null)
-                _qualityLabel.text = QUALITY_NAMES[_state.GraphicsQuality];
+                _qualityLabel.text =
+                    L.Get("ui.settings.quality." + QUALITY_CODES[_state.GraphicsQuality]);
             if (_fullscreenLabel != null)
-                _fullscreenLabel.text = _state.Fullscreen ? "ON" : "OFF";
+                _fullscreenLabel.text = OnOff(_state.Fullscreen);
             RefreshLanguage();
         }
 
@@ -104,5 +115,7 @@ namespace Settlers.UI
         }
 
         private static string Pct(float v) => $"{Mathf.RoundToInt(v * 100f)}%";
+
+        private static string OnOff(bool v) => L.Get(v ? "ui.general.on" : "ui.general.off");
     }
 }

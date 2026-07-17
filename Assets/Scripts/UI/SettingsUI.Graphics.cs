@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Settlers.Simulation;
 
 namespace Settlers.UI
 {
@@ -13,13 +14,13 @@ namespace Settlers.UI
         private static (TextMeshProUGUI qualityLabel, TextMeshProUGUI fullscreenLabel)
             CreateGraphicsSection(Transform container, TMP_FontAsset font, SettingsUI ui)
         {
-            CreateSectionHeader(container, "Graphics", font);
+            CreateSectionHeader(container, "ui.settings.graphics", font, ui);
 
-            var (_, qualityLabel) = CreateRowWithValue(container, "Quality", font,
-                ui.OnQualityPrev, ui.OnQualityNext, "High");
+            var (_, qualityLabel) = CreateRowWithValue(container, "ui.settings.quality", font,
+                ui, ui.OnQualityPrev, ui.OnQualityNext, "High");
 
             // Fullscreen toggle row
-            var fsRow = CreateRow(container, "Fullscreen", font);
+            var fsRow = CreateRow(container, "ui.settings.fullscreen", font, ui);
             var fsLabel = UIFactory.CreateLabel(fsRow, "FsVal", "OFF", 16f, font);
             var fsRect = fsLabel.GetComponent<RectTransform>();
             fsRect.sizeDelta = new Vector2(50f, 30f);
@@ -27,9 +28,7 @@ namespace Settlers.UI
             fsLe.preferredWidth = 50f;
             fsLe.preferredHeight = 30f;
 
-            UIFactory.CreateButton(fsRow, "Toggle", font,
-                new Color(0.35f, 0.35f, 0.4f), ui.OnToggleFullscreen,
-                new Vector2(70f, 30f), 14f);
+            CreateToggleButton(fsRow, font, ui, ui.OnToggleFullscreen);
 
             return (qualityLabel, fsLabel);
         }
@@ -60,9 +59,9 @@ namespace Settlers.UI
             var cardBg = card.AddComponent<Image>();
             cardBg.color = UIColors.PANEL_BLUE_DARK;
 
-            // Title
-            var title = UIFactory.CreateLabel(card.transform, "Title", "Settings",
-                24f, FontStyles.Bold, font);
+            // Title (registered below once the component exists)
+            var title = UIFactory.CreateLabel(card.transform, "Title",
+                L.Get("ui.settings.title"), 24f, FontStyles.Bold, font);
             var titleRect = title.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
@@ -91,6 +90,7 @@ namespace Settlers.UI
 
             var ui = panelGo.AddComponent<SettingsUI>();
             UIFactory.SetField(ui, "_panelRoot", panelGo);
+            ui._chromeLabels.Add((title, "ui.settings.title"));
 
             var (musicPct, sfxPct, muteLabel) = CreateAudioSection(content.transform, font, ui);
             var (qualLabel, fsLabel)           = CreateGraphicsSection(content.transform, font, ui);
@@ -119,10 +119,14 @@ namespace Settlers.UI
             btnLayout.childForceExpandHeight = true;
             btnLayout.childAlignment = TextAnchor.MiddleCenter;
 
-            UIFactory.CreateButton(btnRow.transform, "Apply & Close", font,
-                UIColors.BUTTON_GREEN, ui.OnApply);
-            UIFactory.CreateButton(btnRow.transform, "Cancel", font,
-                UIColors.BUTTON_RED, ui.OnClose);
+            var applyBtn = UIFactory.CreateButton(btnRow.transform,
+                L.Get("ui.settings.apply_close"), font, UIColors.BUTTON_GREEN, ui.OnApply);
+            ui._chromeLabels.Add(
+                (applyBtn.GetComponentInChildren<TextMeshProUGUI>(), "ui.settings.apply_close"));
+            var cancelBtn = UIFactory.CreateButton(btnRow.transform,
+                L.Get("ui.settings.cancel"), font, UIColors.BUTTON_RED, ui.OnClose);
+            ui._chromeLabels.Add(
+                (cancelBtn.GetComponentInChildren<TextMeshProUGUI>(), "ui.settings.cancel"));
 
             panelGo.SetActive(false);
             return ui;

@@ -16,6 +16,10 @@ namespace Settlers.UI
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _detailsText;
 
+        private TextMeshProUGUI _startLabel;
+        private readonly System.Collections.Generic.List<(TextMeshProUGUI label, string mapId)>
+            _mapButtonLabels = new();
+
         private string _selectedMapId;
 
         /// <summary>Fired when a map is selected and confirmed.</summary>
@@ -25,6 +29,25 @@ namespace Settlers.UI
         {
             if (_panelRoot != null)
                 _panelRoot.SetActive(true);
+            RefreshLocaleTexts();
+        }
+
+        private void RefreshLocaleTexts()
+        {
+            if (_titleText != null) _titleText.text = L.Get("ui.mapselect.title");
+            if (_startLabel != null) _startLabel.text = L.Get("ui.mapselect.start");
+            foreach (var (label, mapId) in _mapButtonLabels)
+                if (label != null)
+                    label.text = LocalizedNames.Map(mapId, MapFactory.CreateMap(mapId).DisplayName);
+
+            if (string.IsNullOrEmpty(_selectedMapId))
+            {
+                if (_detailsText != null) _detailsText.text = L.Get("ui.mapselect.hint");
+            }
+            else
+            {
+                OnMapClicked(_selectedMapId);
+            }
         }
 
         public void Hide()
@@ -40,10 +63,9 @@ namespace Settlers.UI
 
             if (_detailsText != null)
             {
-                _detailsText.text = $"<b>{info.DisplayName}</b>\n" +
-                    $"Sectors: {info.Graph.SectorCount}\n" +
-                    $"Players: {info.PlayerCount}\n" +
-                    $"Victory Points: {info.VPRequired}";
+                _detailsText.text = string.Format(L.Get("ui.mapselect.details"),
+                    LocalizedNames.Map(mapId, info.DisplayName),
+                    info.Graph.SectorCount, info.PlayerCount, info.VPRequired);
             }
         }
 
@@ -73,7 +95,7 @@ namespace Settlers.UI
 
             // Title
             var titleText = UIFactory.CreateLabel(panelGo.transform, "Title",
-                "Select Map", 24, FontStyles.Bold, font);
+                L.Get("ui.mapselect.title"), 24, FontStyles.Bold, font);
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
@@ -103,7 +125,7 @@ namespace Settlers.UI
 
             // Details panel
             var detailsText = UIFactory.CreateLabel(panelGo.transform, "Details",
-                "Select a map to see details", 14, FontStyles.Normal, font);
+                L.Get("ui.mapselect.hint"), 14, FontStyles.Normal, font);
             var detailsRect = detailsText.GetComponent<RectTransform>();
             detailsRect.anchorMin = new Vector2(0.55f, 0.25f);
             detailsRect.anchorMax = new Vector2(0.95f, 0.9f);
@@ -131,7 +153,7 @@ namespace Settlers.UI
             startBtn.colors = startColors;
 
             var startLabel = UIFactory.CreateLabel(startBtnGo.transform, "Label",
-                "Start Game", 18, FontStyles.Bold, font);
+                L.Get("ui.mapselect.start"), 18, FontStyles.Bold, font);
             var startLabelRect = startLabel.GetComponent<RectTransform>();
             startLabelRect.anchorMin = Vector2.zero;
             startLabelRect.anchorMax = Vector2.one;
@@ -145,6 +167,7 @@ namespace Settlers.UI
             UIFactory.SetField(ui, "_mapListContainer", listGo.transform);
             UIFactory.SetField(ui, "_titleText", titleText);
             UIFactory.SetField(ui, "_detailsText", detailsText);
+            ui._startLabel = startLabel;
 
             startBtn.onClick.AddListener(ui.OnStartClicked);
 
@@ -153,7 +176,7 @@ namespace Settlers.UI
             {
                 var info = MapFactory.CreateMap(mapId);
                 CreateMapButton(listGo.transform, ui, mapId,
-                    $"{info.DisplayName}", font);
+                    LocalizedNames.Map(mapId, info.DisplayName), font);
             }
 
             return ui;
@@ -194,6 +217,7 @@ namespace Settlers.UI
             tmp.alignment = TextAlignmentOptions.MidlineLeft;
             tmp.color = Color.white;
             if (font != null) tmp.font = font;
+            ui._mapButtonLabels.Add((tmp, mapId));
 
             string capturedId = mapId;
             btn.onClick.AddListener(() => ui.OnMapClicked(capturedId));

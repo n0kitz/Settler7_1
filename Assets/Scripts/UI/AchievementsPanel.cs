@@ -17,9 +17,10 @@ namespace Settlers.UI
         [SerializeField] private Transform  _listContainer;
         [SerializeField] private TextMeshProUGUI _statsText;
 
+        private TextMeshProUGUI _titleText;
+        private TextMeshProUGUI _closeLabel;
         private AchievementSystem _achievements;
         private PlayerStats       _stats;
-        private bool _dirty = true;
 
         private void Update()
         {
@@ -31,7 +32,6 @@ namespace Settlers.UI
         {
             _achievements = achievements;
             _stats        = stats;
-            _dirty        = true;
         }
 
         public void Toggle()
@@ -39,13 +39,13 @@ namespace Settlers.UI
             if (_panelRoot == null) return;
             bool next = !_panelRoot.activeSelf;
             _panelRoot.SetActive(next);
-            if (next && _dirty) Rebuild();
+            if (next) Rebuild();
         }
 
         public void Show()
         {
             if (_panelRoot != null) _panelRoot.SetActive(true);
-            if (_dirty) Rebuild();
+            Rebuild();
         }
 
         public void Hide()
@@ -55,7 +55,8 @@ namespace Settlers.UI
 
         private void Rebuild()
         {
-            _dirty = false;
+            if (_titleText != null) _titleText.text = L.Get("ui.achievements.title");
+            if (_closeLabel != null) _closeLabel.text = L.Get("ui.achievements.close");
             if (_achievements == null || _listContainer == null) return;
 
             // Clear existing rows
@@ -91,7 +92,8 @@ namespace Settlers.UI
             iconLe.preferredWidth = 24f;
 
             var info = UIFactory.CreateLabel(row.transform, "Info",
-                $"<b>{ach.Name}</b>\n{ach.Description}", 12f, font);
+                $"<b>{LocalizedNames.AchievementName(ach)}</b>\n" +
+                LocalizedNames.AchievementDescription(ach), 12f, font);
             info.color = ach.IsUnlocked ? UIColors.TEXT_LIGHT : UIColors.TEXT_GRAY_DIM;
             info.textWrappingMode = TMPro.TextWrappingModes.Normal;
             var infoLe = info.gameObject.AddComponent<LayoutElement>();
@@ -110,13 +112,9 @@ namespace Settlers.UI
 
         private string FormatStats()
         {
-            return $"This session:\n" +
-                   $"Buildings built: {_stats.BuildingsBuilt}\n" +
-                   $"Sectors conquered: {_stats.SectorsConquered}\n" +
-                   $"Techs researched: {_stats.TechsResearched}\n" +
-                   $"VPs gained: {_stats.VPsGained}\n" +
-                   $"Trades completed: {_stats.TradesCompleted}\n" +
-                   $"Outposts claimed: {_stats.OutpostsClaimed}";
+            return string.Format(L.Get("ui.achievements.stats"),
+                _stats.BuildingsBuilt, _stats.SectorsConquered, _stats.TechsResearched,
+                _stats.VPsGained, _stats.TradesCompleted, _stats.OutpostsClaimed);
         }
 
         public static AchievementsPanel Create(Transform canvasTransform, TMP_FontAsset font)
@@ -133,7 +131,7 @@ namespace Settlers.UI
             bg.color = UIColors.PANEL_BLUE_DARK;
 
             var title = UIFactory.CreateLabel(panelGo.transform, "Title",
-                "Achievements", 22f, FontStyles.Bold, font);
+                L.Get("ui.achievements.title"), 22f, FontStyles.Bold, font);
             var titleRect = title.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
@@ -190,14 +188,13 @@ namespace Settlers.UI
             statsLabel.verticalAlignment = TMPro.VerticalAlignmentOptions.Top;
 
             // Close button
-            UIFactory.CreateButton(panelGo.transform, "Close [K]", font,
+            var closeBtn = UIFactory.CreateButton(panelGo.transform,
+                L.Get("ui.achievements.close"), font,
                 UIColors.BUTTON_RED, () => {
                     panelGo.SetActive(false);
-                }, new Vector2(140f, 36f), 16f).GetComponent<RectTransform>()
-                .anchoredPosition = Vector2.zero;
+                }, new Vector2(140f, 36f), 16f);
 
-            var closeRect = panelGo.GetComponentInChildren<UnityEngine.UI.Button>()
-                .GetComponent<RectTransform>();
+            var closeRect = closeBtn.GetComponent<RectTransform>();
             closeRect.anchorMin = new Vector2(0.5f, 0f);
             closeRect.anchorMax = new Vector2(0.5f, 0f);
             closeRect.pivot     = new Vector2(0.5f, 0f);
@@ -207,6 +204,8 @@ namespace Settlers.UI
             UIFactory.SetField(panel, "_panelRoot",     panelGo);
             UIFactory.SetField(panel, "_listContainer", (Transform)contentRect.transform);
             UIFactory.SetField(panel, "_statsText",     statsLabel);
+            panel._titleText  = title;
+            panel._closeLabel = closeBtn.GetComponentInChildren<TextMeshProUGUI>();
 
             panelGo.SetActive(false);
             return panel;

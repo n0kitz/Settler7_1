@@ -19,22 +19,20 @@ namespace Settlers.UI
         private static (TextMeshProUGUI langLabel, TextMeshProUGUI cbLabel)
             CreateLanguageSection(Transform container, TMP_FontAsset font, SettingsUI ui)
         {
-            CreateSectionHeader(container, "Language & Accessibility", font);
+            CreateSectionHeader(container, "ui.settings.language_accessibility", font, ui);
 
-            var (_, langLabel) = CreateRowWithValue(container, "Language", font,
-                ui.OnLanguagePrev, ui.OnLanguageNext, "English");
+            var (_, langLabel) = CreateRowWithValue(container, "ui.settings.language", font,
+                ui, ui.OnLanguagePrev, ui.OnLanguageNext, "English");
 
             // Color blind toggle row
-            var cbRow = CreateRow(container, "Color Blind Mode", font);
+            var cbRow = CreateRow(container, "ui.settings.color_blind", font, ui);
             var cbLabel = UIFactory.CreateLabel(cbRow, "CbVal", "OFF", 16f, font);
             var cbRect = cbLabel.GetComponent<RectTransform>();
             cbRect.sizeDelta = new Vector2(50f, 30f);
             var cbLe = cbLabel.gameObject.AddComponent<LayoutElement>();
             cbLe.preferredWidth = 50f;
             cbLe.preferredHeight = 30f;
-            UIFactory.CreateButton(cbRow, "Toggle", font,
-                new Color(0.35f, 0.35f, 0.4f), ui.OnToggleColorBlind,
-                new Vector2(70f, 30f), 14f);
+            CreateToggleButton(cbRow, font, ui, ui.OnToggleColorBlind);
 
             return (langLabel, cbLabel);
         }
@@ -71,7 +69,7 @@ namespace Settlers.UI
             if (_languageLabel != null)
                 _languageLabel.text = LOCALE_DISPLAY[_localeIndex];
             if (_colorBlindLabel != null)
-                _colorBlindLabel.text = _state.ColorBlindMode ? "ON" : "OFF";
+                _colorBlindLabel.text = OnOff(_state.ColorBlindMode);
         }
 
         // --- Apply extension ---

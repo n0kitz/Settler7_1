@@ -24,6 +24,7 @@ namespace Settlers.UI
 
         private Mode _currentMode;
         private TextMeshProUGUI _titleLabel;
+        private TextMeshProUGUI _closeLabel;
         private SlotEntry[] _slots;
 
         /// <summary>Fired after a successful load so callers can refresh visuals.</summary>
@@ -38,7 +39,10 @@ namespace Settlers.UI
         {
             _currentMode = mode;
             if (_titleLabel != null)
-                _titleLabel.text = mode == Mode.Save ? "Save Game" : "Load Game";
+                _titleLabel.text = L.Get(mode == Mode.Save
+                    ? "ui.pause_menu.save_game" : "ui.pause_menu.load_game");
+            if (_closeLabel != null)
+                _closeLabel.text = L.Get("ui.general.close");
             RefreshSlots();
             if (_panelRoot != null)
                 _panelRoot.SetActive(true);
@@ -254,9 +258,10 @@ namespace Settlers.UI
 
         private static void CreateCloseButton(Transform parent, TMP_FontAsset font, SaveSlotUI ui)
         {
-            var btn = UIFactory.CreateButton(parent, "Close", font,
+            var btn = UIFactory.CreateButton(parent, L.Get("ui.general.close"), font,
                 new Color(0.35f, 0.3f, 0.3f, 0.9f), ui.Hide,
                 new Vector2(0f, 38f), 16f);
+            ui._closeLabel = btn.GetComponentInChildren<TextMeshProUGUI>();
 
             var rect = btn.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.35f, 0f);
